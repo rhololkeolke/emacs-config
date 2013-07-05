@@ -7,6 +7,20 @@
 (global-hl-line-mode t) ;; enables line highlighting
 (set-face-background 'hl-line "MistyRose")
 
+; disable C-z to prevent accidently backgrounding
+(global-unset-key (kbd "C-z"))
+(global-set-key (kbd "s-z") 'undo) ; map super-z to undo
+
+
+;; show matching parenthesis/brace
+(defun match-paren (arg)
+  "Go to the matching paren if on a paren; otherwise insert %."
+  (interactive "p")
+  (cond ((looking-at "\\s\(") (forward-list 1) (backward-char 1))
+	((looking-at "\\s\)") (forward-char 1) (backward-list 1))
+	(t (self-insert-command (or arg 1)))))
+(global-set-key "%" 'match-paren)
+
 
 ;; ===================================================
 ;; emacs-for-python
@@ -80,6 +94,7 @@
 ;; rosemacs
 ;; --------
 ;; Package for working with ROS from within emacs
+;; http://www.ros.org/wiki/rosemacs
 ;; ===============================================
 
 (add-to-list 'load-path "~/.emacs.d/rosemacs")
@@ -87,3 +102,86 @@
 (invoke-rosemacs)
 
 (global-set-key "\C-x\C-r" ros-keymap)
+
+;; ========================================
+;; yaml-mode
+;; ----------
+;; Mode for editing yaml files
+;; https://github.com/yoshiki/yaml-mode
+;; ========================================
+
+(add-to-list 'load-path "~/.emacs.d/yaml-mode")
+(require 'yaml-mode)
+(add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
+(add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
+
+
+;; ============================================
+;; ROS
+;; -----
+;; General Improvements when editing ros files
+;; ============================================
+(add-to-list 'auto-mode-alist '("\\.test$" . xml-mode))
+
+;; ========================================================
+;; C-Mode Config
+;; -------------
+;; General improvements for when working with C/C++ files
+;; ========================================================
+
+(defun my-c-mode-common-hook()
+  (c-set-offset 'substatement-open 0)
+  
+  (setq c++-tab-always-indent t)
+  (setq c-basic-offset 4)
+  (setq c-indent-level 4)
+  
+  (setq tab-stop-list '(4 8 12 16 20 24 28 32 36 40 44 48 52 56 60))
+  (setq tab-width 4)
+  (setq indent-tabs-mode t)
+)
+
+(add-hook 'c-mode-common-hook 'my-c-mode-common-hook)
+(add-hook 'c-mode-common-hook '(lambda ()
+				 (local-set-key (kbd "RET") 'newline-and-indent)))
+
+;; =============================================================
+;; Compliation Mode
+;; -----------------
+;; Tweaks and improvements to general compilation mode behavior
+;; =============================================================
+
+(defun my-compilation-hook ()
+  (when (not (get-buffer-window "*compilation*"))
+    (save-selected-window
+      (save-excursion
+        (let* ((w (split-window-vertically))
+               (h (window-height w)))
+          (select-window w)
+          (switch-to-buffer "*compilation*")
+          (shrink-window (- h 15)))))))
+(add-hook 'compilation-mode-hook 'my-compilation-hook)
+
+;; Helper for compilation. Close the compilation window if
+;; there was no error at all.
+(defun compilation-exit-autoclose (status code msg)
+  ;; If M-x compile exists with a 0
+  (when (and (eq status 'exit) (zerop code))
+    ;; then bury the *compilation* buffer, so that C-x b doesn't go there
+    (bury-buffer)
+    ;; and delete the *compilation* window
+    (message "0 Errors. Killing compliation window")
+    (delete-window (get-buffer-window (get-buffer "*compilation*"))))
+  (unless (and (eq status 'exit) (zerop code))
+    (message "Errors detected. Enlarging window")
+    (when (< (window-height (get-buffer-window (get-buffer "*compilation*"))) 35)
+    (setq w (get-buffer-window (current-buffer)))
+    (select-window (get-buffer-window (get-buffer "*compilation*")))
+    (enlarge-window (- 35 (window-height (get-buffer-window (get-buffer "*compilation*")))))
+    (select-window w)))
+  ;; Always return the anticipated result of compilation-exit-message-function
+  (cons msg code))
+;; Specify my function (maybe I should have done a lambda function)
+(setq compilation-exit-message-function 'compilation-exit-autoclose)
+
+(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
