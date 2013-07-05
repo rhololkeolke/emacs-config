@@ -254,3 +254,26 @@
 (autoload 'markdown-ode "markdown-mode" "Major mode for editing Markdown files" t)
 (add-to-list 'auto-mode-alist '("\\.markdown$" . markdown-mode))
 (add-to-list 'auto-mode-alist '("\\.md$" . markdown-mode))
+
+;; =============================================
+;; Flymake
+;; ---------
+;; Syntax Checking
+;; https://github.com/illusori/emacs-flymake
+;; =============================================
+
+(add-to-list 'load-path "~/emacs.d/emacs-flymake")
+(require 'flymake)
+
+(defun configure-flymake-for-ros ()
+  (set (make-local-variable 'rospkg) (get-buffer-ros-package))
+  (when (not (equal nil rospkg))
+    (setq flymake-allowed-file-name-masks
+	  (cons '(".+\\.\\(cpp\\|c\\|cxx\\|hpp\\|h\\|hxx\\)$"
+		  flymake-ros-cc-init
+		  flymake-simple-cleanup
+		  flymake-get-real-file-name)
+		flymake-allowed-file-name-masks)))
+    (flymake-mode))
+(add-hook 'c-mode-hook 'configure-flymake-for-ros)
+(add-hook 'c++-mode-hook 'configure-flymake-for-ros)
