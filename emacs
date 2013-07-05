@@ -123,6 +123,36 @@
 ;; ============================================
 (add-to-list 'auto-mode-alist '("\\.test$" . xml-mode))
 
+(defun ros-make-test ()
+  (interactive)
+  (set (make-local-variable 'rospkg) (get-buffer-ros-package))
+  (when (not (equal nil rospkg))
+    (set (make-local-variable 'compile-command) (concat "/opt/ros/fuerte/bin/rosmake -t " rospkg)))
+  (compile compile-command))
+
+(defun ros-make-clean ()
+  (interactive)
+  (set (make-local-variable 'rospkg) (get-buffer-ros-package))
+  (when (not (equal nil rospkg))
+    (set (make-local-variable 'compile-command) (concat "/opt/ros/fuerte/bin/rosmake --pre-clean " rospkg)))
+  (compile compile-command))
+
+(defun my-ros-make ()
+  (interactive)
+  (set (make-local-variable 'rospkg) (get-buffer-ros-package))
+  (when (not (equal nil rospkg))
+    (set (make-local-variable 'compile-command) (concat "/opt/ros/fuerte/bin/rosmake " rospkg)))
+  (compile compile-command))
+
+; if the file being opened is in a ROS package then set the f8-f10 compile shortcuts
+(add-hook 'find-file-hook '(lambda ()
+			     (set (make-local-variable 'rospkg) (get-buffer-ros-package))
+			     (when (not (equal nil rospkg))
+			       (local-set-key (kbd "<f8>") 'ros-make-test)
+			       (local-set-key (kbd "<f9>") 'my-ros-make)
+			       (local-set-key (kbd "<f10>") 'ros-make-clean))))
+
+
 ;; ========================================================
 ;; C-Mode Config
 ;; -------------
