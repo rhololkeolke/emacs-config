@@ -185,3 +185,15 @@
 (setq compilation-exit-message-function 'compilation-exit-autoclose)
 
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
+
+;; ============================================
+;; Markdown Mode
+;; --------------
+;; Mode for editing markdown files
+;; http://jblevins.org/projects/markdown-mode/
+;; ============================================
+
+(add-to-list 'load-path "~/.emacs.d/markdown-mode")
+(autoload 'markdown-ode "markdown-mode" "Major mode for editing Markdown files" t)
+(add-to-list 'auto-mode-alist '("\\.markdown$" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.md$" . markdown-mode))
