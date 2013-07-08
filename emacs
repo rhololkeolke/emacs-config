@@ -311,3 +311,13 @@
 ; https://github.com/purcell/flymake-coffee
 (require 'flymake-coffee)
 (add-hook 'coffee-mode-hook 'flymake-coffee-load)
+
+;; =====================================
+;; json-mode
+;; ---------
+;; mode for editing json files
+;; https://github.com/joshwnj/json-mode
+;; =====================================
+
+(add-to-list 'load-path "~/.emacs.d/json-mode")
+(require 'json-mode)
