@@ -16,3 +16,6 @@
 [submodule "emacs.d/emacs-flymake"]
 	path = emacs.d/emacs-flymake
 	url = https://github.com/illusori/emacs-flymake.git
+[submodule "emacs.d/lintnode"]
+	path = emacs.d/lintnode
+	url = https://github.com/davidmiller/lintnode.git
