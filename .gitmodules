@@ -19,3 +19,6 @@
 [submodule "emacs.d/lintnode"]
 	path = emacs.d/lintnode
 	url = https://github.com/davidmiller/lintnode.git
+[submodule "emacs.d/json-mode"]
+	path = emacs.d/json-mode
+	url = https://github.com/joshwnj/json-mode.git
