@@ -279,3 +279,35 @@
     (flymake-mode))
 (add-hook 'c-mode-hook 'configure-flymake-for-ros)
 (add-hook 'c++-mode-hook 'configure-flymake-for-ros)
+
+;; ==============================================
+;; Javascript
+;; -----------
+;; General Improvements for editing Javascript
+;; Based on http://blog.deadpansincerity.com/2011/05/setting-up-emacs-as-a-javascript-editing-environment-for-fun-and-profit/
+;; ==============================================
+
+(add-to-list 'load-path "~/.emacs.d/lintnode")
+(require 'flymake-jslint)
+;; Make sure the lintnode executable can be found
+(setq lintnode-location "/.emacs.d/lintnode")
+;; Start the server when we first open a js file and start Checking
+(add-hook 'js-mode-hook (lambda () (lintnode-hook)))
+
+;; =========================================
+;; Coffee-Mode
+;; -----------
+;; Mode for editing coffee scripts
+;; https://github.com/defunkt/coffee-mode
+;; =========================================
+
+(require 'coffee-mode)
+
+;(setq whitespace-action '(auto-cleanup)) ;; automatically clean up bad whitespace
+;(setq whitespace-style '(trailing space-before-tab indentation empty space-after-tab)) ;; only show bad whitespace
+;(add-hook 'coffee-mode-hook (lambda () (whitespace-mode)))
+
+; flymake-coffee
+; https://github.com/purcell/flymake-coffee
+(require 'flymake-coffee)
+(add-hook 'coffee-mode-hook 'flymake-coffee-load)
