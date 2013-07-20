@@ -301,6 +301,7 @@
 ;; https://github.com/defunkt/coffee-mode
 ;; =========================================
 
+(add-to-list 'load-path "~/.emacs.d/coffee-mode")
 (require 'coffee-mode)
 
 ;(setq whitespace-action '(auto-cleanup)) ;; automatically clean up bad whitespace
@@ -309,6 +310,11 @@
 
 ; flymake-coffee
 ; https://github.com/purcell/flymake-coffee
+; requires flymake-easy
+; https://github.com/purcell/flymake-easy
+(add-to-list 'load-path "~/.emacs.d/flymake-easy")
+(require 'flymake-easy)
+(add-to-list 'load-path "~/.emacs.d/flymake-coffee")
 (require 'flymake-coffee)
 (add-hook 'coffee-mode-hook 'flymake-coffee-load)
 
