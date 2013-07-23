@@ -81,7 +81,7 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
- '(coffee-tab-width 4)
+ '(coffee-tab-width 2)
  '(safe-local-variable-values (quote ((eval ignore-errors "Write-contents-functions is a buffer-local alternative to before-save-hook" (add-hook (quote write-contents-functions) (lambda nil (delete-trailing-whitespace) nil)) (require (quote whitespace)) "Sometimes the mode needs to be toggled off and on." (whitespace-mode 0) (whitespace-mode 1)) (whitespace-line-column . 80) (whitespace-style face trailing lines-tail) (require-final-newline . t)))))
 (custom-set-faces
   ;; custom-set-faces was added by Custom.
@@ -311,6 +311,9 @@
 ; https://github.com/purcell/flymake-coffee
 (require 'flymake-coffee)
 (add-hook 'coffee-mode-hook 'flymake-coffee-load)
+
+(add-hook 'coffee-mode-hook (lambda ()
+			      (add-to-list 'write-file-functions 'delete-trailing-whitespace)))
 
 ;; =====================================
 ;; json-mode
