@@ -31,3 +31,6 @@
 [submodule "emacs.d/flymake-easy"]
 	path = emacs.d/flymake-easy
 	url = https://github.com/purcell/flymake-easy.git
+[submodule "emacs.d/floobits"]
+	path = emacs.d/floobits
+	url = https://github.com/Floobits/floobits-emacs.git
