@@ -22,3 +22,12 @@
 [submodule "emacs.d/json-mode"]
 	path = emacs.d/json-mode
 	url = https://github.com/joshwnj/json-mode.git
+[submodule "emacs.d/coffee-mode"]
+	path = emacs.d/coffee-mode
+	url = https://github.com/defunkt/coffee-mode.git
+[submodule "emacs.d/flymake-coffee"]
+	path = emacs.d/flymake-coffee
+	url = https://github.com/purcell/flymake-coffee.git
+[submodule "emacs.d/flymake-easy"]
+	path = emacs.d/flymake-easy
+	url = https://github.com/purcell/flymake-easy.git
