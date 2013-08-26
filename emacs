@@ -330,3 +330,18 @@
 
 (add-to-list 'load-path "~/.emacs.d/json-mode")
 (require 'json-mode)
+
+;; =====================================
+;; go-mode
+;; ---------
+;; mode for editing go code
+;; https://github.com/dominikh/go-mode.el
+;; ======================================
+(add-to-list 'load-path "~/.emacs.d/go-mode.el/")
+(require 'go-mode)
+(add-hook 'before-save-hook 'gofmt-before-save)
+(add-hook 'go-mode-hook (lambda ()
+			  (local-set-key (kbd "C-c C-r") 'go-remove-unused-imports)))
+(add-hook 'go-mode-hook (lambda ()
+			  (local-set-key (kbd "C-c i") 'go-goto-imports)))
+
