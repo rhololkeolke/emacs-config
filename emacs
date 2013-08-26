@@ -345,3 +345,11 @@
 (add-hook 'go-mode-hook (lambda ()
 			  (local-set-key (kbd "C-c i") 'go-goto-imports)))
 
+;; ======================================
+;; go-flymake
+;; ----------
+;; Flymake for go code
+;; https://github.com/dougm/goflymake
+;; ======================================
+(add-to-list 'load-path "~/.emacs.d/goflymake/")
+(require 'go-flymake)
