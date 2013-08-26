@@ -34,3 +34,6 @@
 [submodule "emacs.d/floobits"]
 	path = emacs.d/floobits
 	url = https://github.com/Floobits/floobits-emacs.git
+[submodule "emacs.d/go-mode.el"]
+	path = emacs.d/go-mode.el
+	url = https://github.com/dominikh/go-mode.el.git
