@@ -376,3 +376,12 @@
 (setq company-idle-delay .3)
 (setq company-echo-delay 0)
 (setq company-begin-commands '(self-insert-command))
+
+;; ==========================================
+;; go-errcheck
+;; ------------
+;; Checks for unchecked go-errors
+;; https://github.com/dominikh/go-errcheck.el
+;; ==========================================
+;;(add-to-list 'load-path "~/.emacs.d/go-errcheck/")
+;;(require 'go-errcheck)
