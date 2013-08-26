@@ -331,6 +331,15 @@
 (add-to-list 'load-path "~/.emacs.d/json-mode")
 (require 'json-mode)
 
+;; ===============================================
+;; company mode
+;; ------------
+;; mode of autocompletion
+;; https://github.com/company-mode/company-mode
+;; ==============================================
+(add-to-list 'load-path "~/.emacs.d/company")
+(require 'company)
+
 ;; =====================================
 ;; go-mode
 ;; ---------
@@ -353,3 +362,17 @@
 ;; ======================================
 (add-to-list 'load-path "~/.emacs.d/goflymake/")
 (require 'go-flymake)
+
+;; ======================================
+;; gocode
+;; -------
+;; Autocomplete for Go
+;; https://github.com/nsf/gocode
+;; ======================================
+(add-to-list 'load-path "~/.emacs.d/gocode/emacs-company")
+(require 'company-go)
+(setq company-tooltip-limit 20)
+(setq company-minimum-prefix-length 0)
+(setq company-idle-delay .3)
+(setq company-echo-delay 0)
+(setq company-begin-commands '(self-insert-command))
