@@ -37,3 +37,6 @@
 [submodule "emacs.d/go-mode.el"]
 	path = emacs.d/go-mode.el
 	url = https://github.com/dominikh/go-mode.el.git
+[submodule "emacs.d/goflymake"]
+	path = emacs.d/goflymake
+	url = https://github.com/dougm/goflymake.git
