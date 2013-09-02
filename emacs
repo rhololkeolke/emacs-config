@@ -327,9 +327,16 @@
 ;; mode for editing json files
 ;; https://github.com/joshwnj/json-mode
 ;; =====================================
-
 (add-to-list 'load-path "~/.emacs.d/json-mode")
 (require 'json-mode)
+
+;; ======================================
+;; Floobits
+;; ----------
+;; online collaborative programming
+;; https://floobits.com
+;; ======================================
+(load "~/.emacs.d/floobits/floobits.el")
 
 ;; ===============================================
 ;; company mode
