@@ -98,11 +98,11 @@
 ;; http://www.ros.org/wiki/rosemacs
 ;; ===============================================
 
-(add-to-list 'load-path "~/.emacs.d/rosemacs")
-(require 'rosemacs)
-(invoke-rosemacs)
+;(add-to-list 'load-path "~/.emacs.d/rosemacs")
+;(require 'rosemacs)
+;(invoke-rosemacs)
 
-(global-set-key "\C-x\C-r" ros-keymap)
+;(global-set-key "\C-x\C-r" ros-keymap)
 
 ;; ========================================
 ;; yaml-mode
