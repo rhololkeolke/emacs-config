@@ -21,6 +21,18 @@
 	(t (self-insert-command (or arg 1)))))
 (global-set-key "%" 'match-paren)
 
+; set asm-mode on .s file
+(add-to-list 'auto-mode-alist '("\\.s$" . asm-mode))
+
+;; ================
+;; Dockerfile Mode
+;; ================
+
+(add-to-list 'load-path "~/.emacs.d/dockerfile-mode")
+(require 'dockerfile-mode)
+(add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode))
+
+
 
 ;; ===================================================
 ;; emacs-for-python
@@ -103,69 +115,6 @@
 (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
 
-
-;; ============================================
-;; ROS
-;; -----
-;; General Improvements when editing ros files
-;; ============================================
-(add-to-list 'auto-mode-alist '("\\.test$" . xml-mode))
-
-(defun ros-make-test ()
-  (interactive)
-  (set (make-local-variable 'rospkg) (get-buffer-ros-package))
-  (when (not (equal nil rospkg))
-    (set (make-local-variable 'compile-command) (concat "/opt/ros/fuerte/bin/rosmake -t " rospkg)))
-  (compile compile-command))
-
-(defun ros-make-clean ()
-  (interactive)
-  (set (make-local-variable 'rospkg) (get-buffer-ros-package))
-  (when (not (equal nil rospkg))
-    (set (make-local-variable 'compile-command) (concat "/opt/ros/fuerte/bin/rosmake --pre-clean " rospkg)))
-  (compile compile-command))
-
-(defun my-ros-make ()
-  (interactive)
-  (set (make-local-variable 'rospkg) (get-buffer-ros-package))
-  (when (not (equal nil rospkg))
-    (set (make-local-variable 'compile-command) (concat "/opt/ros/fuerte/bin/rosmake " rospkg)))
-  (compile compile-command))
-
-; if the file being opened is in a ROS package then set the f8-f10 compile shortcuts
-(add-hook 'find-file-hook '(lambda ()
-			     (set (make-local-variable 'rospkg) (get-buffer-ros-package))
-			     (when (not (equal nil rospkg))
-			       (local-set-key (kbd "<f8>") 'ros-make-test)
-			       (local-set-key (kbd "<f9>") 'my-ros-make)
-			       (local-set-key (kbd "<f10>") 'ros-make-clean))))
-
-(defun flymake-get-ros-project-include-dirs ()
-  (append ; put together the rospack list and the dynamic reconfigure list
-   (split-string ; split on spaces
-    (replace-regexp-in-string "^" "-I" (replace-regexp-in-string " " " -I" (substring (shell-command-to-string (format "rospack cflags-only-I %s 2>/dev/null" (get-buffer-ros-package))) 0 -1))) " ") ; replace ^ with -I and " " with " -I"
-  ;; if dynamic reconfigure is being used the cfg/cpp folder must be included
-  (if (file-directory-p (concat (substring (shell-command-to-string (format "rospack find %s" (get-buffer-ros-package))) 0 -1) "/cfg")) (list (format "-I%s" (concat (substring (shell-command-to-string (format "rospack find %s" (get-buffer-ros-package))) 0 -1) "/cfg/cpp"))))))
-
-;; checks if this project is using the c++0x spec
-(defun flymake-check-if-cpp0x ()
-  (with-current-buffer (find-file-noselect (concat (substring (shell-command-to-string (format "rospack find %s" (get-buffer-ros-package))) 0 -1) "/CMakeLists.txt"))
-    (if (save-excursion ;; Don't change location of point
-      (goto-char (point-min)) ;; From the beginning...
-      (if (re-search-forward "^[\s]*\\(SET\\|set\\)(CMAKE_CXX_FLAGS[\s]+\"\\${CMAKE_CXX_FLAGS}[\s]+-std=c\\+\\+0x\")[\s]*$" nil t 1) t nil)) t nil)))
-
-
-(defun flymake-ros-cc-init ()
-  (let* (;; Create teamp file which is copy of current file
-	 (temp-file (flymake-init-create-temp-buffer-copy 'flymake-create-temp-inplace))
-	 ;; Get relative path of temp file from current directory
-	 (local-file (file-relative-name temp-file (file-name-directory buffer-file-name))))
-
-    ;; Construct compile command which is defined as a list
-    ;; first element is program name "g++" in this case
-    ;; second element is list of options
-    ;; so this means "g++ -Wall -Wextra -fsyntax-only tempfile-path"
-    (list "g++" (append (list "-Wall" "-Wextra" "-fsyntax-only") (if (flymake-check-if-cpp0x) (list "-std=c++0x")) (flymake-get-ros-project-include-dirs)  (list local-file) ))))
 
 
 ;; ========================================================
@@ -253,19 +202,6 @@
 
 (add-to-list 'load-path "~/emacs.d/emacs-flymake")
 (require 'flymake)
-
-(defun configure-flymake-for-ros ()
-  (set (make-local-variable 'rospkg) (get-buffer-ros-package))
-  (when (not (equal nil rospkg))
-    (setq flymake-allowed-file-name-masks
-	  (cons '(".+\\.\\(cpp\\|c\\|cxx\\|hpp\\|h\\|hxx\\)$"
-		  flymake-ros-cc-init
-		  flymake-simple-cleanup
-		  flymake-get-real-file-name)
-		flymake-allowed-file-name-masks)))
-    (flymake-mode))
-(add-hook 'c-mode-hook 'configure-flymake-for-ros)
-(add-hook 'c++-mode-hook 'configure-flymake-for-ros)
 
 ;; ==============================================
 ;; Javascript
