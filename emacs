@@ -32,7 +32,7 @@
 (require 'dockerfile-mode)
 (add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode))
 
-
+(setq LaTeX-command-style '(("" "%(PDF)%(latex) -file-line-error %S%(PDFout)")))
 
 ;; ===================================================
 ;; emacs-for-python
@@ -276,6 +276,8 @@
 ;; mode for editing go code
 ;; https://github.com/dominikh/go-mode.el
 ;; ======================================
+(setenv "GOPATH" "~/workspace/go")
+(setenv "PATH" (concat (getenv "PATH") ":" (getenv "PATH") "/bin"))
 (add-to-list 'load-path "~/.emacs.d/go-mode.el/")
 (require 'go-mode)
 (add-hook 'before-save-hook 'gofmt-before-save)
