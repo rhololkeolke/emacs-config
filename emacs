@@ -315,5 +315,5 @@
 ;; Checks for unchecked go-errors
 ;; https://github.com/dominikh/go-errcheck.el
 ;; ==========================================
-;;(add-to-list 'load-path "~/.emacs.d/go-errcheck/")
-;;(require 'go-errcheck)
+(add-to-list 'load-path "~/.emacs.d/go-errcheck/")
+(require 'go-errcheck)
