@@ -26,6 +26,17 @@
 	(t (self-insert-command (or arg 1)))))
 (global-set-key "%" 'match-paren)
 
+; set asm-mode on .s file
+(add-to-list 'auto-mode-alist '("\\.s$" . asm-mode))
+
+;; ================
+;; Dockerfile Mode
+;; ================
+
+(add-to-list 'load-path "~/.emacs.d/dockerfile-mode")
+(require 'dockerfile-mode)
+(add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode))
+
 ;; =============
 ;; latex
 ;; =============
@@ -33,6 +44,8 @@
 ;; only start server for okular comms when in latex mode
 (add-hook 'LaTeX-mode-hook 'server-start)
 (setq TeX-PDF-mode t) ;; use pdflatex instead of latex
+(setq LaTeX-command-style '(("" "%(PDF)%(latex) -file-line-error %S%(PDFout)")))
+
 
 ;; Starndard emacs latex setup
 (setq TeX-auto-save t)
@@ -150,7 +163,13 @@
 
 (setq jedi:setup-keys t)
 (add-hook 'python-mode-hook 'jedi:setup)
-
+(custom-set-variables
+  ;; custom-set-variables was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ '(coffee-tab-width 2)
+ '(safe-local-variable-values (quote ((eval ignore-errors "Write-contents-functions is a buffer-local alternative to before-save-hook" (add-hook (quote write-contents-functions) (lambda nil (delete-trailing-whitespace) nil)) (require (quote whitespace)) "Sometimes the mode needs to be toggled off and on." (whitespace-mode 0) (whitespace-mode 1)) (whitespace-line-column . 80) (whitespace-style face trailing lines-tail) (require-final-newline . t)))))
 (custom-set-faces
   ;; custom-set-faces was added by Custom.
   ;; If you edit it by hand, you could mess it up, so be careful.
@@ -421,6 +440,8 @@
 ;; mode for editing go code
 ;; https://github.com/dominikh/go-mode.el
 ;; ======================================
+(setenv "GOPATH" "~/workspace/go")
+(setenv "PATH" (concat (getenv "PATH") ":" (getenv "PATH") "/bin"))
 (add-to-list 'load-path "~/.emacs.d/go-mode.el/")
 (require 'go-mode)
 (add-hook 'before-save-hook 'gofmt-before-save)
@@ -458,5 +479,5 @@
 ;; Checks for unchecked go-errors
 ;; https://github.com/dominikh/go-errcheck.el
 ;; ==========================================
-;;(add-to-list 'load-path "~/.emacs.d/go-errcheck/")
-;;(require 'go-errcheck)
+(add-to-list 'load-path "~/.emacs.d/go-errcheck/")
+(require 'go-errcheck)
