@@ -4,13 +4,18 @@
 ;; Improvements used throughout all modes
 ;; ======================================
 
+;; Unbind Pesky Sleep Button
+(global-unset-key [(control z)])
+(global-unset-key [(control x)(control z)])
+
+;; Windows Style Undo
+(global-set-key [(control z)] 'undo)
+
+; syntax highlight the emacs file in my config
+(add-to-list 'auto-mode-alist '("emacs$" . emacs-lisp-mode))
+
 (global-hl-line-mode t) ;; enables line highlighting
 (set-face-background 'hl-line "MistyRose")
-
-; disable C-z to prevent accidently backgrounding
-(global-unset-key (kbd "C-z"))
-(global-set-key (kbd "s-z") 'undo) ; map super-z to undo
-
 
 ;; show matching parenthesis/brace
 (defun match-paren (arg)
@@ -20,6 +25,75 @@
 	((looking-at "\\s\)") (forward-char 1) (backward-list 1))
 	(t (self-insert-command (or arg 1)))))
 (global-set-key "%" 'match-paren)
+
+;; =============
+;; latex
+;; =============
+
+;; only start server for okular comms when in latex mode
+(add-hook 'LaTeX-mode-hook 'server-start)
+(setq TeX-PDF-mode t) ;; use pdflatex instead of latex
+
+;; Starndard emacs latex setup
+(setq TeX-auto-save t)
+(setq TeX-parse-self t)
+(setq-default TeX-master nil)
+
+(add-hook 'LaTeX-mode-hook 'visual-line-mode)
+(add-hook 'LaTeX-mode-hook 'flyspell-mode)
+(add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
+
+; enable auto-fill mode
+(add-hook 'LaTeX-mode-hook 'auto-fill-mode)
+(add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+(setq reftex-plug-into-AUCTeX t)
+
+;; enable synctex correlation
+(setq TeX-source-correlate-method 'synctex)
+;; enable synctex generation
+(custom-set-variables '(LaTeX-command "latex -syntex=1"))
+
+;; use okular as the pdf viewer
+(setq TeX-view-program-list
+      '(("okular" "okular --unique %o#src:%n%b")))
+(setq TeX-view-program-selection '((output-pdf "okular")))
+;(setq TeX-view-program-selection
+;      '((output-df "okular")))
+
+(defun turn-on-outline-minor-mode()
+  (outline-minor-mode 1))
+(add-hook 'LaTeX-mode-hook 'turn-on-outline-minor-mode)
+(add-hook 'latex-mode-hook 'turn-on-outline-minor-mode)
+(setq outline-minor-mode-prefix "\C-c \C-o")
+
+(require 'tex-site)
+(autoload 'reftex-mode "reftex" "RefTeX Minor Mode" t)
+(autoload 'turn-on-reftex "reftex" "RefTeX Minor Mode" nil)
+(autoload 'reftex-citation "reftex-cite" "Make citation" nil)
+(autoload 'reftex-index-phrase-mode "reftex-index" "Phrase Mode" t)
+(add-hook 'latex-mode-hook 'turn-on-reftex) ; with Emacs latex mode
+;; (add-hook 'reftex-load-hook 'imenu-add-menubar-index)
+(add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+
+(setq LaTeX-eqnarray-label "eq"
+ LaTeX-equation-label "eq"
+ LaTeX-figure-label "fig"
+ LaTeX-table-label "tab"
+ LaTeX-myChapter-label "chap"
+ TeX-auto-save t
+ TeX-newline-function 'reindent-then-newline-and-indent
+ TeX-parse-self t
+ TeX-style-path
+ '("style/" "auto/"
+  "/usr/share/emacs21/site-lisp/auctex/style/"
+  "/var/lib/auctex/emacs21/"
+  "/usr/local/share/emacs/site-lisp/auctex/style/")
+ LaTeX-section-hook
+ '(LaTeX-section-heading
+  LaTeX-section-title
+  LaTeX-section-toc
+  LaTeX-section-section
+  LaTeX-section-label))
 
 
 ;; ===================================================
@@ -76,13 +150,7 @@
 
 (setq jedi:setup-keys t)
 (add-hook 'python-mode-hook 'jedi:setup)
-(custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
- '(coffee-tab-width 2)
- '(safe-local-variable-values (quote ((eval ignore-errors "Write-contents-functions is a buffer-local alternative to before-save-hook" (add-hook (quote write-contents-functions) (lambda nil (delete-trailing-whitespace) nil)) (require (quote whitespace)) "Sometimes the mode needs to be toggled off and on." (whitespace-mode 0) (whitespace-mode 1)) (whitespace-line-column . 80) (whitespace-style face trailing lines-tail) (require-final-newline . t)))))
+
 (custom-set-faces
   ;; custom-set-faces was added by Custom.
   ;; If you edit it by hand, you could mess it up, so be careful.
@@ -122,63 +190,63 @@
 ;; -----
 ;; General Improvements when editing ros files
 ;; ============================================
-(add-to-list 'auto-mode-alist '("\\.test$" . xml-mode))
+;(add-to-list 'auto-mode-alist '("\\.test$" . xml-mode))
 
-(defun ros-make-test ()
-  (interactive)
-  (set (make-local-variable 'rospkg) (get-buffer-ros-package))
-  (when (not (equal nil rospkg))
-    (set (make-local-variable 'compile-command) (concat "/opt/ros/fuerte/bin/rosmake -t " rospkg)))
-  (compile compile-command))
+;(defun ros-make-test ()
+;  (interactive)
+;  (set (make-local-variable 'rospkg) (get-buffer-ros-package))
+;  (when (not (equal nil rospkg))
+;    (set (make-local-variable 'compile-command) (concat "/opt/ros/fuerte/bin/rosmake -t " rospkg)))
+;  (compile compile-command))
 
-(defun ros-make-clean ()
-  (interactive)
-  (set (make-local-variable 'rospkg) (get-buffer-ros-package))
-  (when (not (equal nil rospkg))
-    (set (make-local-variable 'compile-command) (concat "/opt/ros/fuerte/bin/rosmake --pre-clean " rospkg)))
-  (compile compile-command))
+;; (defun ros-make-clean ()
+;;   (interactive)
+;;   (set (make-local-variable 'rospkg) (get-buffer-ros-package))
+;;   (when (not (equal nil rospkg))
+;;     (set (make-local-variable 'compile-command) (concat "/opt/ros/fuerte/bin/rosmake --pre-clean " rospkg)))
+;;   (compile compile-command))
 
-(defun my-ros-make ()
-  (interactive)
-  (set (make-local-variable 'rospkg) (get-buffer-ros-package))
-  (when (not (equal nil rospkg))
-    (set (make-local-variable 'compile-command) (concat "/opt/ros/fuerte/bin/rosmake " rospkg)))
-  (compile compile-command))
+;; (defun my-ros-make ()
+;;   (interactive)
+;;   (set (make-local-variable 'rospkg) (get-buffer-ros-package))
+;;   (when (not (equal nil rospkg))
+;;     (set (make-local-variable 'compile-command) (concat "/opt/ros/fuerte/bin/rosmake " rospkg)))
+;;   (compile compile-command))
 
-; if the file being opened is in a ROS package then set the f8-f10 compile shortcuts
-(add-hook 'find-file-hook '(lambda ()
-			     (set (make-local-variable 'rospkg) (get-buffer-ros-package))
-			     (when (not (equal nil rospkg))
-			       (local-set-key (kbd "<f8>") 'ros-make-test)
-			       (local-set-key (kbd "<f9>") 'my-ros-make)
-			       (local-set-key (kbd "<f10>") 'ros-make-clean))))
+;; ; if the file being opened is in a ROS package then set the f8-f10 compile shortcuts
+;; (add-hook 'find-file-hook '(lambda ()
+;; 			     (set (make-local-variable 'rospkg) (get-buffer-ros-package))
+;; 			     (when (not (equal nil rospkg))
+;; 			       (local-set-key (kbd "<f8>") 'ros-make-test)
+;; 			       (local-set-key (kbd "<f9>") 'my-ros-make)
+;; 			       (local-set-key (kbd "<f10>") 'ros-make-clean))))
 
-(defun flymake-get-ros-project-include-dirs ()
-  (append ; put together the rospack list and the dynamic reconfigure list
-   (split-string ; split on spaces
-    (replace-regexp-in-string "^" "-I" (replace-regexp-in-string " " " -I" (substring (shell-command-to-string (format "rospack cflags-only-I %s 2>/dev/null" (get-buffer-ros-package))) 0 -1))) " ") ; replace ^ with -I and " " with " -I"
-  ;; if dynamic reconfigure is being used the cfg/cpp folder must be included
-  (if (file-directory-p (concat (substring (shell-command-to-string (format "rospack find %s" (get-buffer-ros-package))) 0 -1) "/cfg")) (list (format "-I%s" (concat (substring (shell-command-to-string (format "rospack find %s" (get-buffer-ros-package))) 0 -1) "/cfg/cpp"))))))
+;; (defun flymake-get-ros-project-include-dirs ()
+;;   (append ; put together the rospack list and the dynamic reconfigure list
+;;    (split-string ; split on spaces
+;;     (replace-regexp-in-string "^" "-I" (replace-regexp-in-string " " " -I" (substring (shell-command-to-string (format "rospack cflags-only-I %s 2>/dev/null" (get-buffer-ros-package))) 0 -1))) " ") ; replace ^ with -I and " " with " -I"
+;;   ;; if dynamic reconfigure is being used the cfg/cpp folder must be included
+;;   (if (file-directory-p (concat (substring (shell-command-to-string (format "rospack find %s" (get-buffer-ros-package))) 0 -1) "/cfg")) (list (format "-I%s" (concat (substring (shell-command-to-string (format "rospack find %s" (get-buffer-ros-package))) 0 -1) "/cfg/cpp"))))))
 
-;; checks if this project is using the c++0x spec
-(defun flymake-check-if-cpp0x ()
-  (with-current-buffer (find-file-noselect (concat (substring (shell-command-to-string (format "rospack find %s" (get-buffer-ros-package))) 0 -1) "/CMakeLists.txt"))
-    (if (save-excursion ;; Don't change location of point
-      (goto-char (point-min)) ;; From the beginning...
-      (if (re-search-forward "^[\s]*\\(SET\\|set\\)(CMAKE_CXX_FLAGS[\s]+\"\\${CMAKE_CXX_FLAGS}[\s]+-std=c\\+\\+0x\")[\s]*$" nil t 1) t nil)) t nil)))
+;; ;; checks if this project is using the c++0x spec
+;; (defun flymake-check-if-cpp0x ()
+;;   (with-current-buffer (find-file-noselect (concat (substring (shell-command-to-string (format "rospack find %s" (get-buffer-ros-package))) 0 -1) "/CMakeLists.txt"))
+;;     (if (save-excursion ;; Don't change location of point
+;;       (goto-char (point-min)) ;; From the beginning...
+;;       (if (re-search-forward "^[\s]*\\(SET\\|set\\)(CMAKE_CXX_FLAGS[\s]+\"\\${CMAKE_CXX_FLAGS}[\s]+-std=c\\+\\+0x\")[\s]*$" nil t 1) t nil)) t nil)))
 
 
-(defun flymake-ros-cc-init ()
-  (let* (;; Create teamp file which is copy of current file
-	 (temp-file (flymake-init-create-temp-buffer-copy 'flymake-create-temp-inplace))
-	 ;; Get relative path of temp file from current directory
-	 (local-file (file-relative-name temp-file (file-name-directory buffer-file-name))))
+;; (defun flymake-ros-cc-init ()
+;;   (let* (;; Create teamp file which is copy of current file
+;; 	 (temp-file (flymake-init-create-temp-buffer-copy 'flymake-create-temp-inplace))
+;; 	 ;; Get relative path of temp file from current directory
+;; 	 (local-file (file-relative-name temp-file (file-name-directory buffer-file-name))))
 
-    ;; Construct compile command which is defined as a list
-    ;; first element is program name "g++" in this case
-    ;; second element is list of options
-    ;; so this means "g++ -Wall -Wextra -fsyntax-only tempfile-path"
-    (list "g++" (append (list "-Wall" "-Wextra" "-fsyntax-only") (if (flymake-check-if-cpp0x) (list "-std=c++0x")) (flymake-get-ros-project-include-dirs)  (list local-file) ))))
+;;     ;; Construct compile command which is defined as a list
+;;     ;; first element is program name "g++" in this case
+;;     ;; second element is list of options
+;;     ;; so this means "g++ -Wall -Wextra -fsyntax-only tempfile-path"
+;;     (list "g++" (append (list "-Wall" "-Wextra" "-fsyntax-only") (if (flymake-check-if-cpp0x) (list "-std=c++0x")) (flymake-get-ros-project-include-dirs)  (list local-file) ))))
 
 
 ;; ========================================================
