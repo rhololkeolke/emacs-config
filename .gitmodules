@@ -48,4 +48,4 @@
 	url = https://github.com/dominikh/go-errcheck.el.git
 [submodule "emacs.d/dockerfile-mode"]
 	path = emacs.d/dockerfile-mode
-	url = git@github.com:spotify/dockerfile-mode.git
+	url = https://github.com/spotify/dockerfile-mode.git
