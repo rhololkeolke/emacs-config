@@ -3,3 +3,5 @@
 emacs.d/auto-save
 emacs.d/ac-comphist.dat
 emacs.d/eproject.lst
+emacs.d/session.*
+emacs.d/elpa/archives/*

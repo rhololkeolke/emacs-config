@@ -15,7 +15,7 @@
 (add-to-list 'auto-mode-alist '("emacs$" . emacs-lisp-mode))
 
 (global-hl-line-mode t) ;; enables line highlighting
-(set-face-background 'hl-line "MistyRose")
+;(set-face-background 'hl-line "deep pink")
 
 ;; show matching parenthesis/brace
 (defun match-paren (arg)
@@ -24,10 +24,27 @@
   (cond ((looking-at "\\s\(") (forward-list 1) (backward-char 1))
 	((looking-at "\\s\)") (forward-char 1) (backward-list 1))
 	(t (self-insert-command (or arg 1)))))
-(global-set-key "%" 'match-paren)
+(global-set-key (kbd "C-%") 'match-paren)
 
-; set asm-mode on .s file
-(add-to-list 'auto-mode-alist '("\\.s$" . asm-mode))
+;; ================
+;; Monokai Theme
+;; ================
+(custom-set-variables
+ '(custom-safe-themes (quote ("479eba125f9e97a0208b642a99eee1d816fa208fe3a06f73e444504beb0b17f7" "74ddce841a40b0f285f601e3a1ffc44596d1d38dc5e4ca1ed12d8ba24e950f50" default))))
+(add-to-list 'custom-theme-load-path "~/.emacs.d/monokai-theme")
+(load-theme 'monokai)
+
+;; =================
+;; Font Tweaks
+;; =================
+
+(defun font-exists-p (font) "Check if font exists" (if (null (x-list-fonts font)) nil t))
+(if (font-exists-p "Inconsolata") ; only bother with this if custom font exists on the system
+    (if window-system ; verify that this is running from the GUI and not the terminal
+	(progn
+	  (if (>= (x-display-pixel-width) 1920) ; adjust the font size based on the display resolution
+	      (set-face-attribute 'default nil :height 100 :font "Inconsolata")
+	    (set-face-attribute 'default nil :height 90 :font "Inconsolata")))))
 
 ;; ================
 ;; Dockerfile Mode
@@ -44,7 +61,8 @@
 ;; only start server for okular comms when in latex mode
 (add-hook 'LaTeX-mode-hook 'server-start)
 (setq TeX-PDF-mode t) ;; use pdflatex instead of latex
-(setq LaTeX-command-style '(("" "%(PDF)%(latex) -file-line-error %S%(PDFout)")))
+
+(setq LaTeX-item-indent 0) ; indent \item commands by 2 spaces
 
 
 ;; Starndard emacs latex setup
@@ -64,7 +82,17 @@
 ;; enable synctex correlation
 (setq TeX-source-correlate-method 'synctex)
 ;; enable synctex generation
-(custom-set-variables '(LaTeX-command "latex -syntex=1"))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(LaTeX-command "latex -syntex=1")
+ '(TeX-PDF-mode t t)
+ '(TeX-source-correlate-method (quote synctex) t)
+ '(TeX-source-correlate-mode t)
+ '(TeX-source-correlate-start-server t)
+)
 
 ;; use okular as the pdf viewer
 (setq TeX-view-program-list
@@ -108,6 +136,12 @@
   LaTeX-section-section
   LaTeX-section-label))
 
+;; =========
+;; ASM Mode
+;; =========
+
+; set asm-mode on .s file
+(add-to-list 'auto-mode-alist '("\\.s$" . asm-mode))
 
 ;; ===================================================
 ;; emacs-for-python
@@ -163,33 +197,13 @@
 
 (setq jedi:setup-keys t)
 (add-hook 'python-mode-hook 'jedi:setup)
-(custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
- '(coffee-tab-width 2)
- '(safe-local-variable-values (quote ((eval ignore-errors "Write-contents-functions is a buffer-local alternative to before-save-hook" (add-hook (quote write-contents-functions) (lambda nil (delete-trailing-whitespace) nil)) (require (quote whitespace)) "Sometimes the mode needs to be toggled off and on." (whitespace-mode 0) (whitespace-mode 1)) (whitespace-line-column . 80) (whitespace-style face trailing lines-tail) (require-final-newline . t)))))
+
 (custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  )
-
-
-;; ===============================================
-;; rosemacs
-;; --------
-;; Package for working with ROS from within emacs
-;; http://www.ros.org/wiki/rosemacs
-;; ===============================================
-
-;(add-to-list 'load-path "~/.emacs.d/rosemacs")
-;(require 'rosemacs)
-;(invoke-rosemacs)
-
-;(global-set-key "\C-x\C-r" ros-keymap)
 
 ;; ========================================
 ;; yaml-mode
@@ -202,70 +216,6 @@
 (require 'yaml-mode)
 (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
-
-
-;; ============================================
-;; ROS
-;; -----
-;; General Improvements when editing ros files
-;; ============================================
-;(add-to-list 'auto-mode-alist '("\\.test$" . xml-mode))
-
-;(defun ros-make-test ()
-;  (interactive)
-;  (set (make-local-variable 'rospkg) (get-buffer-ros-package))
-;  (when (not (equal nil rospkg))
-;    (set (make-local-variable 'compile-command) (concat "/opt/ros/fuerte/bin/rosmake -t " rospkg)))
-;  (compile compile-command))
-
-;; (defun ros-make-clean ()
-;;   (interactive)
-;;   (set (make-local-variable 'rospkg) (get-buffer-ros-package))
-;;   (when (not (equal nil rospkg))
-;;     (set (make-local-variable 'compile-command) (concat "/opt/ros/fuerte/bin/rosmake --pre-clean " rospkg)))
-;;   (compile compile-command))
-
-;; (defun my-ros-make ()
-;;   (interactive)
-;;   (set (make-local-variable 'rospkg) (get-buffer-ros-package))
-;;   (when (not (equal nil rospkg))
-;;     (set (make-local-variable 'compile-command) (concat "/opt/ros/fuerte/bin/rosmake " rospkg)))
-;;   (compile compile-command))
-
-;; ; if the file being opened is in a ROS package then set the f8-f10 compile shortcuts
-;; (add-hook 'find-file-hook '(lambda ()
-;; 			     (set (make-local-variable 'rospkg) (get-buffer-ros-package))
-;; 			     (when (not (equal nil rospkg))
-;; 			       (local-set-key (kbd "<f8>") 'ros-make-test)
-;; 			       (local-set-key (kbd "<f9>") 'my-ros-make)
-;; 			       (local-set-key (kbd "<f10>") 'ros-make-clean))))
-
-;; (defun flymake-get-ros-project-include-dirs ()
-;;   (append ; put together the rospack list and the dynamic reconfigure list
-;;    (split-string ; split on spaces
-;;     (replace-regexp-in-string "^" "-I" (replace-regexp-in-string " " " -I" (substring (shell-command-to-string (format "rospack cflags-only-I %s 2>/dev/null" (get-buffer-ros-package))) 0 -1))) " ") ; replace ^ with -I and " " with " -I"
-;;   ;; if dynamic reconfigure is being used the cfg/cpp folder must be included
-;;   (if (file-directory-p (concat (substring (shell-command-to-string (format "rospack find %s" (get-buffer-ros-package))) 0 -1) "/cfg")) (list (format "-I%s" (concat (substring (shell-command-to-string (format "rospack find %s" (get-buffer-ros-package))) 0 -1) "/cfg/cpp"))))))
-
-;; ;; checks if this project is using the c++0x spec
-;; (defun flymake-check-if-cpp0x ()
-;;   (with-current-buffer (find-file-noselect (concat (substring (shell-command-to-string (format "rospack find %s" (get-buffer-ros-package))) 0 -1) "/CMakeLists.txt"))
-;;     (if (save-excursion ;; Don't change location of point
-;;       (goto-char (point-min)) ;; From the beginning...
-;;       (if (re-search-forward "^[\s]*\\(SET\\|set\\)(CMAKE_CXX_FLAGS[\s]+\"\\${CMAKE_CXX_FLAGS}[\s]+-std=c\\+\\+0x\")[\s]*$" nil t 1) t nil)) t nil)))
-
-
-;; (defun flymake-ros-cc-init ()
-;;   (let* (;; Create teamp file which is copy of current file
-;; 	 (temp-file (flymake-init-create-temp-buffer-copy 'flymake-create-temp-inplace))
-;; 	 ;; Get relative path of temp file from current directory
-;; 	 (local-file (file-relative-name temp-file (file-name-directory buffer-file-name))))
-
-;;     ;; Construct compile command which is defined as a list
-;;     ;; first element is program name "g++" in this case
-;;     ;; second element is list of options
-;;     ;; so this means "g++ -Wall -Wextra -fsyntax-only tempfile-path"
-;;     (list "g++" (append (list "-Wall" "-Wextra" "-fsyntax-only") (if (flymake-check-if-cpp0x) (list "-std=c++0x")) (flymake-get-ros-project-include-dirs)  (list local-file) ))))
 
 
 ;; ========================================================
@@ -354,19 +304,6 @@
 (add-to-list 'load-path "~/emacs.d/emacs-flymake")
 (require 'flymake)
 
-(defun configure-flymake-for-ros ()
-  (set (make-local-variable 'rospkg) (get-buffer-ros-package))
-  (when (not (equal nil rospkg))
-    (setq flymake-allowed-file-name-masks
-	  (cons '(".+\\.\\(cpp\\|c\\|cxx\\|hpp\\|h\\|hxx\\)$"
-		  flymake-ros-cc-init
-		  flymake-simple-cleanup
-		  flymake-get-real-file-name)
-		flymake-allowed-file-name-masks)))
-    (flymake-mode))
-(add-hook 'c-mode-hook 'configure-flymake-for-ros)
-(add-hook 'c++-mode-hook 'configure-flymake-for-ros)
-
 ;; ==============================================
 ;; Javascript
 ;; -----------
@@ -391,10 +328,6 @@
 (add-to-list 'load-path "~/.emacs.d/coffee-mode")
 (require 'coffee-mode)
 
-;(setq whitespace-action '(auto-cleanup)) ;; automatically clean up bad whitespace
-;(setq whitespace-style '(trailing space-before-tab indentation empty space-after-tab)) ;; only show bad whitespace
-;(add-hook 'coffee-mode-hook (lambda () (whitespace-mode)))
-
 ; flymake-coffee
 ; https://github.com/purcell/flymake-coffee
 ; requires flymake-easy
@@ -416,14 +349,6 @@
 ;; =====================================
 (add-to-list 'load-path "~/.emacs.d/json-mode")
 (require 'json-mode)
-
-;; ======================================
-;; Floobits
-;; ----------
-;; online collaborative programming
-;; https://floobits.com
-;; ======================================
-(load "~/.emacs.d/floobits/floobits.el")
 
 ;; ===============================================
 ;; company mode
