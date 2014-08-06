@@ -1,9 +1,6 @@
 [submodule "emacs.d/emacs-for-python"]
 	path = emacs.d/emacs-for-python
 	url = https://github.com/gabrielelanaro/emacs-for-python.git
-[submodule "emacs.d/el-get"]
-	path = emacs.d/el-get
-	url = https://github.com/dimitri/el-get.git
 [submodule "emacs.d/yaml-mode"]
 	path = emacs.d/yaml-mode
 	url = https://github.com/yoshiki/yaml-mode.git
@@ -28,9 +25,6 @@
 [submodule "emacs.d/flymake-easy"]
 	path = emacs.d/flymake-easy
 	url = https://github.com/purcell/flymake-easy.git
-[submodule "emacs.d/floobits"]
-	path = emacs.d/floobits
-	url = https://github.com/Floobits/floobits-emacs.git
 [submodule "emacs.d/go-mode.el"]
 	path = emacs.d/go-mode.el
 	url = https://github.com/dominikh/go-mode.el.git
@@ -49,9 +43,6 @@
 [submodule "emacs.d/dockerfile-mode"]
 	path = emacs.d/dockerfile-mode
 	url = https://github.com/spotify/dockerfile-mode.git
-[submodule "emacs.d/color-theme-solarized"]
-	path = emacs.d/color-theme-solarized
-	url = https://github.com/sellout/emacs-color-theme-solarized.git
 [submodule "emacs.d/monokai-theme"]
 	path = emacs.d/monokai-theme
 	url = https://github.com/oneKelvinSmith/monokai-emacs.git
