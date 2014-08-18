@@ -333,13 +333,9 @@
 (add-hook 'coffee-mode-hook (lambda ()
 			      (add-to-list 'write-file-functions 'delete-trailing-whitespace)))
 
-;; =====================================
+;; ==========
 ;; json-mode
-;; ---------
-;; mode for editing json files
-;; https://github.com/joshwnj/json-mode
-;; =====================================
-(add-to-list 'load-path "~/.emacs.d/json-mode")
+;; ==========
 (require 'json-mode)
 
 ;; ===============================================
@@ -376,6 +372,7 @@
 (add-to-list 'load-path "~/.emacs.d/goflymake/")
 (setenv "GOPATH" (expand-file-name (getenv "GOPATH")))
 (require 'go-flycheck)
+(add-to-list 'auto-mode-alist '("\\.go$" . flycheck-mode))
 
 ;; ======================================
 ;; gocode
