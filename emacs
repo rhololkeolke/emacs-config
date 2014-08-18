@@ -27,12 +27,17 @@
 (global-set-key (kbd "C-%") 'match-paren)
 
 ;; ================
+;; MELPA
+;; ================
+(require 'package)
+(add-to-list 'package-archives
+  '("melpa" . "http://melpa.milkbox.net/packages/") t)
+
+;; ================
 ;; Monokai Theme
 ;; ================
-(custom-set-variables
- '(custom-safe-themes (quote ("479eba125f9e97a0208b642a99eee1d816fa208fe3a06f73e444504beb0b17f7" "74ddce841a40b0f285f601e3a1ffc44596d1d38dc5e4ca1ed12d8ba24e950f50" default))))
 (add-to-list 'custom-theme-load-path "~/.emacs.d/monokai-theme")
-(load-theme 'monokai)
+(load-theme 'monokai t)
 
 ;; =================
 ;; Font Tweaks
@@ -42,9 +47,11 @@
 (if (font-exists-p "Inconsolata") ; only bother with this if custom font exists on the system
     (if window-system ; verify that this is running from the GUI and not the terminal
 	(progn
-	  (if (>= (x-display-pixel-width) 1920) ; adjust the font size based on the display resolution
-	      (set-face-attribute 'default nil :height 100 :font "Inconsolata")
-	    (set-face-attribute 'default nil :height 90 :font "Inconsolata")))))
+	  (if (eq system-type 'darwin)
+	      (set-face-attribute 'default nil :height 130 :font "Inconsolata")
+	    (if (>= (x-display-pixel-width) 1920) ; adjust the font size based on the display resolution
+		(set-face-attribute 'default nil :height 100 :font "Inconsolata")
+	      (set-face-attribute 'default nil :height 90 :font "Inconsolata"))))))
 
 ;; ================
 ;; Dockerfile Mode
@@ -168,26 +175,6 @@
 ; disable auto-pairing of parenthesis
 (setq skeleton-pair nil)
 
-
-;; ====================================
-;; el-get
-;; ------
-;; Package installation tool for emacs
-;; https://github.com/dimitri/el-get
-;; ====================================
-
-(add-to-list 'load-path "~/.emacs.d/el-get/el-get")
-
-(unless (require 'el-get nil 'noerror)
-  (with-current-buffer
-      (url-retrieve-synchronously
-       "https://raw.github.com/dimitri/el-get/master/el-get-install.el")
-    (goto-char (point-max))
-    (eval-print-last-sexp)))
-
-(add-to-list 'el-get-recipe-path "~/.emacs.d/el-get-user/recipes")
-(el-get 'sync)
-
 ;; ==========================================
 ;; jedi
 ;; ----
@@ -294,6 +281,11 @@
 (add-to-list 'auto-mode-alist '("\\.markdown$" . markdown-mode))
 (add-to-list 'auto-mode-alist '("\\.md$" . markdown-mode))
 
+;; ========
+;; Flycheck
+;; ========
+(require 'flycheck)
+
 ;; =============================================
 ;; Flymake
 ;; ---------
@@ -301,8 +293,8 @@
 ;; https://github.com/illusori/emacs-flymake
 ;; =============================================
 
-(add-to-list 'load-path "~/emacs.d/emacs-flymake")
-(require 'flymake)
+;(add-to-list 'load-path "~/emacs.d/emacs-flymake")
+;(require 'flymake)
 
 ;; ==============================================
 ;; Javascript
@@ -382,7 +374,7 @@
 ;; https://github.com/dougm/goflymake
 ;; ======================================
 (add-to-list 'load-path "~/.emacs.d/goflymake/")
-(require 'go-flymake)
+(require 'go-flycheck)
 
 ;; ======================================
 ;; gocode
