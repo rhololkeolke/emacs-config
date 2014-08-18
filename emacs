@@ -374,6 +374,7 @@
 ;; https://github.com/dougm/goflymake
 ;; ======================================
 (add-to-list 'load-path "~/.emacs.d/goflymake/")
+(setenv "GOPATH" (expand-file-name (getenv "GOPATH")))
 (require 'go-flycheck)
 
 ;; ======================================
