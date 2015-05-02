@@ -1,10 +1,6 @@
 \#*\#
 *~
 .\#*
-emacs.d/auto-save
-emacs.d/ac-comphist.dat
-emacs.d/eproject.lst
-emacs.d/session.*
-emacs.d/elpa/archives/*
-emacs.d/SessionDesktop.el
-emacs.d/flycheck/
+emacs.d/.cask/
+SessionDesktop.el
+.nosearch
