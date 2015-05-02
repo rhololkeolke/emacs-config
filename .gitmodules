@@ -43,3 +43,6 @@
 [submodule "emacs.d/monokai-theme"]
 	path = emacs.d/monokai-theme
 	url = https://github.com/oneKelvinSmith/monokai-emacs.git
+[submodule "emacs.d/flycheck"]
+	path = emacs.d/flycheck
+	url = git@github.com:flycheck/flycheck.git
