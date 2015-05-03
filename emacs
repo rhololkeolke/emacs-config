@@ -145,6 +145,13 @@
 (require 'monokai-theme)
 (load-theme 'monokai t)
 
+;; ========
+;; Magit
+;; ========
+
+(setq magit-auto-revert-mode nil)
+
+
 ;; ==============================================
 ;; Dockerfile Mode
 ;; ----------------
@@ -363,10 +370,8 @@
                "* %?\n%U\n" :clock-in t :clock-resume t)
               ("s" "org-protocol" entry (file "~/Dropbox/org-mode/refile.org")
                "* TODO Review %c\n%U\n" :immediate-finish t)
-              ("m" "Meeting" entry (file "~/Dropbox/org-mode/refile.org")
-               "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
 	      ("e" "Event" entry (file "~/Dropbox/org-mode/calendar.org")
-	       "* EVENT %^{Name} :EVENT:\n%U\nSCHEDULED: %(org-time-stamp)\n:PROPERTIES:\n:CATEGORY: Event\n:LOCATION: %^{Location}\n:END:\n%?")
+	       "* EVENT %^{Name} :EVENT:\n%U\nSCHEDULED: %^T\n:PROPERTIES:\n:CATEGORY: Event\n:LOCATION: %^{Location}\n:END:\n%?")
               ("p" "Phone call" entry (file "~/Dropbox/org-mode/refile.org")
                "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)
               ("h" "Habit" entry (file "~/Dropbox/org-mode/refile.org")
