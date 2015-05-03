@@ -3,6 +3,8 @@
 ;; -------------------
 ;; Improvements used throughout all modes
 ;; ======================================
+(load "server")
+(unless (server-running-p) (server-start))
 
 ;; Unbind Pesky Sleep Button
 (global-unset-key [(control z)])
@@ -192,8 +194,6 @@
 (add-hook 'LaTeX-mode-hook
           (lambda () (local-set-key (kbd "<S-s-mouse-1>") #'TeX-view))
           )
-
-(server-start); start emacs in server mode so that skim can talk to it
 
 ;; Auctex Company Backend
 (require 'company-auctex)
