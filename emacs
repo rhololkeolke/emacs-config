@@ -311,7 +311,7 @@
 
 (setq org-todo-keywords
       (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
-              (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)" "PHONE" "MEETING"))))
+              (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)" "PHONE" "EVENT"))))
 
 (setq org-todo-keyword-faces
       (quote (("TODO" :foreground "red" :weight bold)
@@ -320,7 +320,7 @@
               ("WAITING" :foreground "orange" :weight bold)
               ("HOLD" :foreground "magenta" :weight bold)
               ("CANCELLED" :foreground "forest green" :weight bold)
-              ("MEETING" :foreground "forest green" :weight bold)
+	      ("EVENT" :foreground "forest green" :weight bold)
               ("PHONE" :foreground "forest green" :weight bold))))
 
 (setq org-use-fast-todo-selection t)
@@ -365,6 +365,8 @@
                "* TODO Review %c\n%U\n" :immediate-finish t)
               ("m" "Meeting" entry (file "~/Dropbox/org-mode/refile.org")
                "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
+	      ("e" "Event" entry (file "~/Dropbox/org-mode/calendar.org")
+	       "* EVENT %^{Name} :EVENT:\n%U\nSCHEDULED: %(org-time-stamp)\n:PROPERTIES:\n:CATEGORY: Event\n:LOCATION: %^{Location}\n:END:\n%?")
               ("p" "Phone call" entry (file "~/Dropbox/org-mode/refile.org")
                "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)
               ("h" "Habit" entry (file "~/Dropbox/org-mode/refile.org")
@@ -609,7 +611,6 @@
 (run-at-time "24:01" nil 'bh/org-agenda-to-appt)
 
 (run-at-time "00:59" 3600 'org-save-all-org-buffers)
-
 
 ;; =====================================================
 ;; Mobile Org
