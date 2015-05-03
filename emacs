@@ -254,18 +254,23 @@
 (require 'org-depend)
 (load-file "~/.emacs.d/norang-org.el")
 (add-to-list 'auto-mode-alist '("\\.\\(org\\|org_archive\\|txt\\)$" . org-mode))
+(defun my-org-mode-hook()
+  (progn
+    (turn-on-flyspell)
+    (auto-fill-mode 1)))
+(add-hook 'org-mode-hook 'my-org-mode-hook)
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-ca" 'org-agenda)
 (global-set-key "\C-cb" 'org-iswitchb)
 
-(setq org-agenda-files (quote ("~/Dropbox/org-mode")))
+(setq org-agenda-files (quote ("~/Dropbox/org-mode" "~/Dropbox/org-mode/wiki")))
 ;; The following setting is different from the document so that you
 ;; can override the document org-agenda-files by setting your
 ;; org-agenda-files in the variable org-user-agenda-files
 ;;
 (if (boundp 'org-user-agenda-files)
     (setq org-agenda-files org-user-agenda-files)
-  (setq org-agenda-files (quote ("~/Dropbox/org-mode"))))
+  (setq org-agenda-files (quote ("~/Dropbox/org-mode" "~/Dropbox/org-mode/wiki"))))
 
 ;; Custom Key Bindings
 (global-set-key (kbd "<f12>") 'org-agenda)
@@ -336,6 +341,16 @@
 ;; I use C-c c to start capture mode
 (global-set-key (kbd "C-c c") 'org-capture)
 
+(setq org-wiki-directory "~/Dropbox/org-mode/wiki")
+(defun capture-wiki-page (path)
+  (let ((name (read-string "Name: ")))
+    (let ((filename (expand-file-name (format "%s.org" name) path)))
+      (if (file-exists-p filename)
+	  (progn (find-file filename) (org-capture-kill))
+	filename))))
+
+(global-set-key (kbd "C-c w") 'org-wiki-create-or-open)
+
 ;; Capture templates for: TODO tasks, Notes, appointments, phone calls, meetings, and org-protocol
 (setq org-capture-templates
       (quote (("t" "todo" entry (file "~/Dropbox/org-mode/refile.org")
@@ -346,14 +361,17 @@
                "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
               ("j" "Journal" entry (file+datetree "~/Dropbox/org-mode/diary.org")
                "* %?\n%U\n" :clock-in t :clock-resume t)
-              ("w" "org-protocol" entry (file "~/Dropbox/org-mode/refile.org")
+              ("s" "org-protocol" entry (file "~/Dropbox/org-mode/refile.org")
                "* TODO Review %c\n%U\n" :immediate-finish t)
               ("m" "Meeting" entry (file "~/Dropbox/org-mode/refile.org")
                "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
               ("p" "Phone call" entry (file "~/Dropbox/org-mode/refile.org")
                "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)
               ("h" "Habit" entry (file "~/Dropbox/org-mode/refile.org")
-               "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"<%Y-%m-%d %a .+1d/3d>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
+               "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"<%Y-%m-%d %a .+1d/3d>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n")
+	      ("w" "Wiki" plain (file (capture-wiki-page org-wiki-directory))
+	       "#+FILETAGS: WIKI\n* %^{Title}\n  :PROPERTIES:\n  :TAGS: %^{tags}\n  :END:\n%U\n\n%?" :clock-in t :clock-resume t)
+	      )))
 
 (add-hook 'org-clock-out-hook 'bh/remove-empty-drawer-on-clock-out 'append)
 
@@ -383,7 +401,10 @@
 
 ;; Custom agenda command definitions
 (setq org-agenda-custom-commands
-      (quote (("N" "Notes" tags "NOTE"
+      (quote (("W" "Wiki" tags "WIKI"
+	       ((org-agenda-overriding-header "Wiki Pages")
+		(org-tags-match-list-sublevels t)))
+	      ("N" "Notes" tags "NOTE"
                ((org-agenda-overriding-header "Notes")
                 (org-tags-match-list-sublevels t)))
               ("h" "Habits" tags-todo "STYLE=\"habit\""
@@ -452,8 +473,8 @@
                 (tags "-REFILE/"
                       ((org-agenda-overriding-header "Tasks to Archive")
                        (org-agenda-skip-function 'bh/skip-non-archivable-tasks)
-                       (org-tags-match-list-sublevels nil))))
-               nil))))
+                       (org-tags-match-list-sublevels nil)))
+               nil)))))
 
 (setq org-agenda-auto-exclude-function 'bh/org-auto-exclude-function)
 
@@ -514,6 +535,7 @@
                             ("@home" . ?H)
                             ("@school" . ?f)
                             (:endgroup)
+			    ("WIKI" . ?x)
                             ("WAITING" . ?w)
                             ("HOLD" . ?h)
                             ("PERSONAL" . ?P)
@@ -586,7 +608,7 @@
 ; If we leave Emacs running overnight - reset the appointments one minute after midnight
 (run-at-time "24:01" nil 'bh/org-agenda-to-appt)
 
-(run-at-time "00:59" 300 'org-save-all-org-buffers)
+(run-at-time "00:59" 3600 'org-save-all-org-buffers)
 
 
 ;; =====================================================
@@ -603,5 +625,5 @@
 ;; Set to the name of the file where new notes will be stored
 (setq org-mobile-inbox-for-pull "~/Dropbox/org-mode/inbox.org")
 
-(run-at-time "01:00" 300 'org-mobile-push)
-(run-at-time "01:01" 300 'org-mobile-pull)
+(run-at-time "01:00" 1800 'org-mobile-push)
+(run-at-time "01:05" 1800 'org-mobile-pull)

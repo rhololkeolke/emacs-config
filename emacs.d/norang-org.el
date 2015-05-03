@@ -35,7 +35,7 @@
   (interactive)
   (save-excursion
     (beginning-of-line 0)
-    (org-remove-empty-drawer-at (point))))
+    (org-remove-empty-drawer-at "LOGBOOK" (point))))
 
 ; Exclude DONE state tasks from refile targets
 (defun bh/verify-refile-target ()
