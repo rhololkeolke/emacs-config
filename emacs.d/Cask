@@ -36,6 +36,7 @@
 (depends-on "multiple-cursors")
 (depends-on "nyan-mode")
 (depends-on "org")
+(depends-on "org-mobile-sync")
 (depends-on "org-plus-contrib")
 (depends-on "pallet")
 (depends-on "popwin")
