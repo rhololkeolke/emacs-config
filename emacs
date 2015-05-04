@@ -777,10 +777,10 @@ nil are ignored."
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
 (defun git-repo-root ()
-  (expand-file-name "build.gradle" (substring (shell-command-to-string "git rev-parse --show-toplevel") 0 -1)))
+  (substring (shell-command-to-string "git rev-parse --show-toplevel") 0 -1))
 
 (defun is-gradle-project-p ()
-  (if (file-exists-p (git-repo-root))
+  (if (file-exists-p (expand-file-name "build.gradle" (git-repo-root)))
       t
     nil))
 
