@@ -193,10 +193,19 @@
 
 ;; use Skim as default pdf viewer
 ;; Skim's displayline is used for forward search (from .tex to .pdf)
-;; option -b highlights the current line; option -g opens Skim in the background  
+;; option -b highlights the current line; option -g opens Skim in the background
+(eval-after-load "tex"
+  '(add-to-list 'TeX-expand-list '("%a" (lambda nil (expand-file-name (buffer-file-name))))))
 (setq TeX-view-program-selection '((output-pdf "PDF Viewer")))
-(setq TeX-view-program-list
-     '(("PDF Viewer" "/Applications/Skim.app/Contents/SharedSupport/displayline -b -g %n %o %b")))
+(if (eq system-type 'darwin)
+    (setq TeX-view-program-list
+	  '(("PDF Viewer" "/Applications/Skim.app/Contents/SharedSupport/displayline -b -g %n %o %b")))
+
+  (when (require 'latex nil t)
+    (push '("%(masterdir)" (lambda nil (file-truename (TeX-master-directory))))
+	  TeX-expand-list)
+    (setq TeX-view-program-list
+	  '(("PDF Viewer" "okular --unique %o#src:%n%(masterdir)./%b")))))
 
 (add-hook 'LaTeX-mode-hook
           (lambda () (local-set-key (kbd "<S-s-mouse-1>") #'TeX-view))
@@ -540,14 +549,14 @@
                             ("@errand" . ?e)
                             ("@office" . ?o)
                             ("@home" . ?H)
-                            ("@school" . ?f)
+                            ("@school" . ?s)
                             (:endgroup)
 			    ("WIKI" . ?x)
                             ("WAITING" . ?w)
                             ("HOLD" . ?h)
                             ("PERSONAL" . ?P)
                             ("WORK" . ?W)
-                            ("SCHOOL" . ?F)
+                            ("SCHOOL" . ?S)
                             ("ORG" . ?O)
                             ("NOTE" . ?n)
                             ("CANCELLED" . ?c)
