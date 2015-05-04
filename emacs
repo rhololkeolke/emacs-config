@@ -1,3 +1,88 @@
+;; =============
+;; Server Stuff
+;; =============
+
+(setq eval-expression-debug-on-error t)
+
+(defun client-save-kill-emacs(&optional display)
+  "This is a function that can be used to shutdown save buffers and shutdown
+the emacs daemon. It should be called using emacsclient -e '(client-save-kill-emacs)'. This
+function will check to see if there are any modified buffers or active clients or frame.
+If so an X window will be opened and the user will be prompted."
+
+  (let (new-frame modified-buffers active-clients-or-frames)
+
+					; Check if there are modified buffers or active clients or frames.
+    (setq modified-buffers (modified-buffers-exist))
+    (setq active-clients-or-frames ( or (> (length server-clients) 1)
+					(> (length (frame-list)) 1)
+					))
+
+					; Create a new frame if prompts are needed.
+    (when (or modified-buffers active-clients-or-frames)
+      (when (not (eq window-system 'x))
+	(message "Initializing x windows system.")
+	(x-initialize-window-system))
+      (when (not display) (setq display (getenv "DISPLAY")))
+      (message "Opening frame on display: %s" display)
+      (select-frame (make-frame-on-display display '((window-system . x)))))
+
+					; Save the current frame.
+    (setq new-frame (selected-frame))
+
+
+					; When displaying the number of clients and frames:
+					; subtract 1 from the clients for this client.
+					; subtract 2 from the frames this frame (that we just created) and the default frame.
+    (when ( or (not active-clients-or-frames)
+	       (yes-or-no-p (format "There are currently %d clients and %d frames. Exit anyway?" (- (length server-clients) 1) (- (length (frame-list)) 2))))
+
+					; If the user quits during the save dialog then don't exit emacs.
+					; Still close the terminal though.
+      (let((inhibit-quit t))
+					; Save buffers
+	(with-local-quit
+	  (save-some-buffers))
+
+	(if quit-flag
+	    (setq quit-flag nil)
+					; Kill all remaining clients
+	  (progn
+	    (dolist (client server-clients)
+	      (server-delete-client client))
+					; Exit emacs
+	    (kill-emacs)))
+	))
+
+					; If we made a frame then kill it.
+    (when (or modified-buffers active-clients-or-frames) (delete-frame new-frame))
+    )
+  )
+
+
+(defun modified-buffers-exist()
+    "This function will check to see if there are any buffers
+that have been modified.  It will return true if there are
+and nil otherwise. Buffers that have buffer-offer-save set to
+nil are ignored."
+    (let (modified-found)
+      (dolist (buffer (buffer-list))
+	(when (and (buffer-live-p buffer)
+		   (buffer-modified-p buffer)
+		   (not (buffer-base-buffer buffer))
+		   (or
+		    (buffer-file-name buffer)
+		    (progn
+		      (set-buffer buffer)
+		      (and buffer-offer-save (> (buffer-size) 0))))
+		   )
+	  (setq modified-found t)
+	  )
+	)
+      modified-found
+      )
+    )
+
 ;; ======================================
 ;; Global Improvements
 ;; -------------------
@@ -31,15 +116,24 @@
 ;; Font Tweaks
 ;; =================
 (defun font-exists-p (font) "Check if font exists" (if (null (x-list-fonts font)) nil t))
-(if (font-exists-p "Inconsolata") ; only bother with this if custom font exists on the system
+(defun set-font-and-res ()
+  (if (font-exists-p "Inconsolata") ; only bother with this if custom font exists on the system
     (if window-system ; verify that this is running from the GUI and not the terminal
 	(progn
 	  (if (eq system-type 'darwin)
 	      (set-face-attribute 'default nil :height 130 :font "Inconsolata")
 	    (if (>= (x-display-pixel-width) 1920) ; adjust the font size based on the display resolution
 		(set-face-attribute 'default nil :height 100 :font "Inconsolata")
-	      (set-face-attribute 'default nil :height 90 :font "Inconsolata"))))))
-
+	      (set-face-attribute 'default nil :height 90 :font "Inconsolata")))))))
+(add-hook 'after-make-frame-functions
+	  (lambda ()
+	    (if window-system
+		(set-font-and-res))))
+(add-hook 'after-init-hook
+	  (lambda ()
+	    (if window-system
+		(set-font-and-res))))
+  
 ;; ===============================================================
 ;; Cask
 ;; -----
@@ -151,6 +245,33 @@
 
 (setq magit-auto-revert-mode nil)
 
+(eval-after-load 'magit
+  '(progn
+     (defun magit-insert-unmerged-commits ()
+       (magit-git-insert-section (unmerged "Unmerged commits:")
+                                 (apply-partially 'magit-wash-log 'unique)
+                                 "log" "--format=format:%h %s" "master..HEAD"))
+
+     (magit-define-section-jumper unmerged  "Unmerged commits")
+
+     (add-hook 'magit-status-sections-hook 'magit-insert-unmerged-commits t)))
+
+;; ================
+;; ANSI Color Mode
+;; ================
+
+(define-derived-mode fundamental-ansi-mode fundamental-mode "fundamental ansi"
+  "Fundamental mode that understands ansi colors."
+  (require 'ansi-color)
+  (ansi-color-apply-on-region (point-min) (point-max)))
+(add-to-list 'auto-mode-alist '("\\*compilation\\*" . fundamental-ansi-mode))
+
+;; ======================
+;; Scala-mode2
+;; -----------
+;; Scala mode for >=2.9
+;; ======================
+(require 'scala-mode2)
 
 ;; ==============================================
 ;; Dockerfile Mode
@@ -642,3 +763,36 @@
 
 (run-at-time "01:00" 1800 'org-mobile-push)
 (run-at-time "01:05" 1800 'org-mobile-pull)
+
+;; ========================
+;; Compilation Mode Tweaks
+;; ========================
+
+; colorize the compilation buffer
+(require 'ansi-color)
+(defun colorize-compilation-buffer ()
+  (toggle-read-only)
+  (ansi-color-apply-on-region (point-min) (point-max))
+  (toggle-read-only))
+(add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
+
+(defun git-repo-root ()
+  (expand-file-name "build.gradle" (substring (shell-command-to-string "git rev-parse --show-toplevel") 0 -1)))
+
+(defun is-gradle-project-p ()
+  (if (file-exists-p (git-repo-root))
+      t
+    nil))
+
+(defun in-directory (dir)
+  "Runs execute-extended-command with default-directory set to the given directory."
+  (interactive "DIn directory: ")
+  (let ((default-directory dir))
+    (call-interactively 'execute-extended-command)))
+
+(defun set-java-scala-compile-command ()
+  (if (is-gradle-project-p)
+      (set (make-local-variable 'compile-command)
+	   (format "cd %s; /opt/gradle/bin/gradle classes" (git-repo-root)))))
+(add-hook 'java-mode-hook 'set-java-scala-compile-command)
+(add-hook 'scala-mode-hook 'set-java-scala-compile-command)
