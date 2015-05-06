@@ -617,7 +617,7 @@ nil are ignored."
                        (org-agenda-skip-function 'bh/skip-non-archivable-tasks)
                        (org-tags-match-list-sublevels nil)))
                nil)))))
-
+ 
 (setq org-agenda-auto-exclude-function 'bh/org-auto-exclude-function)
 
 ;;
@@ -801,3 +801,17 @@ nil are ignored."
 	   (format "cd %s; /opt/gradle/bin/gradle classes" (git-repo-root)))))
 (add-hook 'java-mode-hook 'set-java-scala-compile-command)
 (add-hook 'scala-mode-hook 'set-java-scala-compile-command)
+
+
+;; ==========
+;; Org-gcal
+;; ==========
+(require 'org-gcal)
+(setq org-gcal-client-id "413311419098-verlgqvfl6gsn5nld1e5p7apkaubqsq3.apps.googleusercontent.com"
+      org-gcal-client-secret "FJT9P2Q6JbxIvKBipd67H_7o"
+      org-gcal-file-alist '(("digidevin@gmail.com" . "~/Dropbox/org-mode/calendar.org")))
+
+;; ======
+;; calfw
+;; ======
+(require 'calfw-org)
