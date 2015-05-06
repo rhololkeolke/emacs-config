@@ -825,6 +825,8 @@ nil are ignored."
       org-gcal-client-secret "FJT9P2Q6JbxIvKBipd67H_7o"
       org-gcal-file-alist '(("digidevin@gmail.com" . "~/Dropbox/org-mode/calendar.org")))
 
+(run-at-time "00:15" 1800 'org-gcal-fetch)
+
 ;; ======
 ;; calfw
 ;; ======
