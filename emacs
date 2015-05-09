@@ -91,6 +91,10 @@ nil are ignored."
 (load "server")
 (unless (server-running-p) (server-start))
 
+;; Set the web browser
+(setq browse-url-browser-function 'browse-url-generic
+      browse-url-generic-program "google-chrome")
+
 ;; Unbind Pesky Sleep Button
 (global-unset-key [(control z)])
 (global-unset-key [(control x)(control z)])
