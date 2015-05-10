@@ -259,6 +259,7 @@ nil are ignored."
      (magit-define-section-jumper unmerged  "Unmerged commits")
 
      (add-hook 'magit-status-sections-hook 'magit-insert-unmerged-commits t)))
+(setq magit-auto-revert-mode nil)
 
 ;; ================
 ;; ANSI Color Mode
@@ -305,6 +306,11 @@ nil are ignored."
   (setq ispell-program-name "hunspell")
   (setq ispell-extra-args '("-d en_US")))
  )
+
+;; ==========
+;; Nyan Mode
+;; ==========
+(add-to-list 'auto-mode-alist '("*" . nyan-mode))
 
 ;; ====================================
 ;; Auctex
