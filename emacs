@@ -790,8 +790,8 @@ nil are ignored."
 ;; Set to the name of the file where new notes will be stored
 (setq org-mobile-inbox-for-pull "~/Dropbox/org-mode/inbox.org")
 
-(run-at-time "01:00" 1800 'org-mobile-push)
-(run-at-time "01:05" 1800 'org-mobile-pull)
+;;(run-at-time "01:00" 1800 'org-mobile-push)
+;;(run-at-time "01:05" 1800 'org-mobile-pull)
 
 ;; ========================
 ;; Compilation Mode Tweaks
@@ -835,7 +835,7 @@ nil are ignored."
       org-gcal-client-secret "FJT9P2Q6JbxIvKBipd67H_7o"
       org-gcal-file-alist '(("digidevin@gmail.com" . "~/Dropbox/org-mode/calendar.org")))
 
-(run-at-time "00:15" 1800 'org-gcal-fetch)
+;;(run-at-time "00:15" 1800 'org-gcal-fetch)
 
 ;; ======
 ;; calfw
