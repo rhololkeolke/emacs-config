@@ -9,3 +9,5 @@ bookmarks
 org-clock-save.el
 emacs.d/org-gcal/
 emacs.d/url/
+emacs.d/request/*
+emacs.d/session.*
