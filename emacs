@@ -60,27 +60,28 @@ nil are ignored."
 	(t (self-insert-command (or arg 1)))))
 (global-set-key (kbd "C-%") 'match-paren)
 
+;; get rid of yes or no prompt
+(fset 'yes-or-no-p 'y-or-n-p)
+;; remove confirmation if file or buffer does not exist
+(setq confirm-nonexistent-file-or-buffer nil)
+;; remove splash screen and echo area message
+(setq inhibit-startup-message t inhibit-startup-echo-area-message t)
+
 ;; =================
 ;; Font Tweaks
 ;; =================
-(defun font-exists-p (font) "Check if font exists" (if (null (x-list-fonts font)) nil t))
-(defun set-font-and-res ()
-  (if (font-exists-p "Inconsolata") ; only bother with this if custom font exists on the system
-    (if window-system ; verify that this is running from the GUI and not the terminal
-	(progn
-	  (if (eq system-type 'darwin)
-	      (set-face-attribute 'default nil :height 130 :font "Inconsolata")
-	    (if (>= (x-display-pixel-width) 1920) ; adjust the font size based on the display resolution
-		(set-face-attribute 'default nil :height 100 :font "Inconsolata")
-	      (set-face-attribute 'default nil :height 90 :font "Inconsolata")))))))
-(add-hook 'after-make-frame-functions
-	  (lambda ()
-	    (if window-system
-		(set-font-and-res))))
-(add-hook 'after-init-hook
-	  (lambda ()
-	    (if window-system
-		(set-font-and-res))))
+(defun font-exists-p (font)
+  "Check if font exists"
+  (if (not (eq (member font (font-family-list)) nil))
+      t
+    nil))
+(defun set-font (&optional frame)
+  (if (font-exists-p "Inconsolata")
+      (progn
+	(add-to-list 'default-frame-alist '(font . "Inconsolata:pixelsize=14"))
+	(set-face-attribute 'default t :font "Inconsolata:pixelsize=14"))))
+    
+(add-hook 'after-make-frame-functions 'set-font)
   
 ;; ===============================================================
 ;; Cask
@@ -785,3 +786,8 @@ nil are ignored."
 ;; calfw
 ;; ======
 (require 'calfw-org)
+
+;; =======
+;; scratch
+;; =======
+(autoload 'scratch "scratch" nil t) ; M-x scratch will open a new scratch buffer in the current major mode
