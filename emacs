@@ -1,5 +1,5 @@
-;; =============
 ;; Server Stuff
+;; =============
 ;; =============
 
 (setq eval-expression-debug-on-error t)
@@ -263,61 +263,72 @@ nil are ignored."
 ;; Latex for Emacs
 ;; https://www.gnu.org/software/auctex/
 ;; ====================================
+(require 'latex nil t)
+(require 'latex-preview nil t)
 
-;; TODO: This is currently only configured properly for mac
-;; need to add conditional configuration for linux
-(setq TeX-auto-save t)
 (setq TeX-parse-self t)
-(setq-default TeX-master nil)
-(add-hook 'LaTeX-mode-hook 'visual-line-mode)
-(add-hook 'LaTeX-mode-hook 'flyspell-mode)
-(add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
-(add-hook 'LaTeX-mode-hook 'turn-on-reftex)
-(add-hook 'LaTeX-mode-hook 'auto-fill-mode)
-(setq reftex-plug-into-AUCTeX t)
+(setq TeX-save-query nil)
 (setq TeX-PDF-mode t)
 
-;; make latexmk available via C-c C-c
-;; Note: SyncTeX is setup via ~/.latexmkrc (see below)
-(add-hook 'LaTeX-mode-hook (lambda ()
-  (push
-    '("latexmk" "latexmk -pdf %s" TeX-run-TeX nil t
-      :help "Run latexmk on file")
-    TeX-command-list)))
-(add-hook 'TeX-mode-hook '(lambda () (setq TeX-command-default "latexmk")))
+(add-hook 'LaTeX-mode-hook 'visual-line-mode) ; C-a, C-e, and C-k work with visual line breaks instead of true file line breaks
+(add-hook 'LaTeX-mode-hook 'flyspell-mode)
+(add-hook 'LaTeX-mode-hook 'LaTeX-math-mode) ; Allows for quick inserting of symbols with '`' prefix
+(add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+(add-hook 'LaTeX-mode-hook 'auto-fill-mode)
 
-;; use Skim as default pdf viewer
-;; Skim's displayline is used for forward search (from .tex to .pdf)
-;; option -b highlights the current line; option -g opens Skim in the background
-(eval-after-load "tex"
-  '(add-to-list 'TeX-expand-list '("%a" (lambda nil (expand-file-name (buffer-file-name))))))
-(setq TeX-view-program-selection '((output-pdf "PDF Viewer")))
+(setq reftex-plug-into-AUCTeX t)
+
+(require 'auctex-latexmk)
+(auctex-latexmk-setup)
+(add-hook 'TeX-mode-hook '(lambda ()
+			    (setq TeX-command-default "LatexMk")))
+
+(setq TeX-view-program-list '())
 (if (eq system-type 'darwin)
-    (setq TeX-view-program-list
-	  '(("PDF Viewer" "/Applications/Skim.app/Contents/SharedSupport/displayline -b -g %n %o %b")))
+    (add-to-list 'TeX-view-program-list '("PDF Viewer" "/Applications/Skim.app/Contents/SharedSupport/displayline -b -g %n %o %b"))
+  (add-to-list 'TeX-view-program-list '("PDF Viewer" "okular --unique %o#src:%n%a")))
+(setq TeX-view-program-selection '())
+(add-to-list 'TeX-view-program-selection
+	     '(output-pdf "PDF Viewer"))
 
-  (when (require 'latex nil t)
-    (push '("%(masterdir)" (lambda nil (file-truename (TeX-master-directory))))
-	  TeX-expand-list)
-    (setq TeX-view-program-list
-	  '(("PDF Viewer" "okular --unique %o#src:%n%(masterdir)./%b")))))
-
-(add-hook 'LaTeX-mode-hook
-          (lambda () (local-set-key (kbd "<S-s-mouse-1>") #'TeX-view))
-          )
+;; ;; Set shortcut to jump to line in PDF Viewer
+(add-hook 'LaTeX-mode-hook (lambda () (local-set-key (kbd "<S-s-mouse-1>") #'TeX-view)))
 
 ;; Auctex Company Backend
 (require 'company-auctex)
 (company-auctex-init)
+(add-hook 'TeX-mode-hook (lambda () (setq-local company-backends
+						(append '(company-math-symbols-latex company-latex-commands)
+							company-backends))))
 
-;; local configuration for TeX modes
-(defun my-latex-mode-setup ()
-  (setq-local company-backends
-              (append '(company-math-symbols-latex company-latex-commands)
-                      company-backends)))
+(defvar idle-timer-latexmk-timer nil)
+(defun idle-timer-latexmk-callback ()
+  (interactive)
+  (message "Running LatexMk (%s)" (current-time-string))
+  (TeX-save-document "")
+  (TeX-run-latexmk "LatexMk"
+		   (TeX-command-expand "latexmk %S%(mode) %t" 'TeX-master-file)
+		   (TeX-master-file)))
+(defun idle-timer-latexmk-run-once (secs)
+  (interactive "nNumber of idle seconds: ")
+  (when (timerp idle-timer-latexmk-timer)
+    (cancel-timer idle-timer-latexmk-timer))
+  (setq idle-timer-latexmk-timer
+	(run-with-idle-timer secs nil #'idle-timer-latexmk-callback)))
+(defun idle-timer-latexmk-start (secs)
+  (interactive "nNumber of idle seconds: ")
+  (when (timerp idle-timer-latexmk-timer)
+    (cancel-timer idle-timer-latexmk-timer))
+  (setq idle-timer-latexmk-timer
+	(run-with-timer secs secs #'idle-timer-latexmk-callback)))
+(defun idle-timer-latexmk-stop ()
+  (interactive)
+  (when (timerp idle-timer-latexmk-timer)
+    (cancel-timer idle-timer-latexmk-timer))
+  (setq idle-timer-latexmk-timer nil))
 
-(add-hook 'TeX-mode-hook 'my-latex-mode-setup)
-
+;; (add-hook 'TeX-mode-hook '(lambda ()
+;; 			    (idle-timer-latexmk-start 5)))
 
 ;; =============================
 ;; ASM Mode
@@ -374,14 +385,20 @@ nil are ignored."
 (global-set-key "\C-ca" 'org-agenda)
 (global-set-key "\C-cb" 'org-iswitchb)
 
-(setq org-agenda-files (quote ("~/Dropbox/org-mode" "~/Dropbox/org-mode/wiki")))
+(setq org-agenda-files (quote ("~/Dropbox/org-mode")))
 ;; The following setting is different from the document so that you
 ;; can override the document org-agenda-files by setting your
 ;; org-agenda-files in the variable org-user-agenda-files
 ;;
 (if (boundp 'org-user-agenda-files)
     (setq org-agenda-files org-user-agenda-files)
-  (setq org-agenda-files (quote ("~/Dropbox/org-mode" "~/Dropbox/org-mode/wiki"))))
+  (setq org-agenda-files (quote ("~/Dropbox/org-mode"))))
+
+;; ===============
+;; Plain Org- Wiki
+;; ===============
+(add-to-list 'load-path "~/.emacs.d/")
+(require 'plain-org-wiki)
 
 ;; Custom Key Bindings
 (global-set-key (kbd "<f12>") 'org-agenda)
@@ -411,6 +428,7 @@ nil are ignored."
 (global-set-key (kbd "<f9> v") 'visible-mode)
 (global-set-key (kbd "<f9> l") 'org-toggle-link-display)
 (global-set-key (kbd "<f9> SPC") 'bh/clock-in-last-task)
+(global-set-key (kbd "<f9> w") 'plain-org-wiki-helm)
 (global-set-key (kbd "C-<f9>") 'previous-buffer)
 (global-set-key (kbd "M-<f9>") 'org-toggle-inline-images)
 (global-set-key (kbd "C-x n r") 'narrow-to-region)
@@ -791,3 +809,11 @@ nil are ignored."
 ;; scratch
 ;; =======
 (autoload 'scratch "scratch" nil t) ; M-x scratch will open a new scratch buffer in the current major mode
+
+
+;; =======
+;; Image+
+;; =======
+(require 'image+)
+(eval-after-load 'image '(require 'image+))
+(eval-after-load 'image+ '(imagex-global-sticky-mode 1))
