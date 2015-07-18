@@ -1,0 +1,24 @@
+# -*- conf-unix -*-
+GMAIL{
+  %INBOX:"digidevin@gmail.com"/clear@imap.gmail.com:993! "In"
+  %[Gmail]/Sent:"digidevin@gmail.com"/clear@imap.gmail.com:993! "Sent"
+  %[Gmail]/Draft:"digidevin@gmail.com"/clear@imap.gmail.com:993! "Draft"
+  %[Gmail]/Trash:"digidevin@gmail.com"/clear@imap.gmail.com:993! "Trash"
+  %[Gmail]/Spam:"digidevin@gmail.com"/clear@imap.gmail.com:993! "Spam"
+}
+
+# CASE{
+#   %INBOX:"dts34@case.edu"/clear@imap.gmail.com:993! "In"
+#   %[Gmail]/Sent:"dts34@case.edu"/clear@imap.gmail.com:993! "Sent"
+#   %[Gmail]/Draft:"dts34@case.edu"/clear@imap.gmail.com:993! "Draft"
+#   %[Gmail]/Trash:"dts34@case.edu"/clear@imap.gmail.com:993! "Trash"
+#   %[Gmail]/Spam:"dts34@case.edu"/clear@imap.gmail.com:993! "Spam"
+# }
+
+# CMU{
+#   %INBOX:"dschwab@andrew.cmu.edu"/clear@imap.gmail.com:993! "In"
+#   %[Gmail]/Sent:"dschwab@andrew.cmu.edu"/clear@imap.gmail.com:993! "Sent"
+#   %[Gmail]/Draft:"dschwab@andrew.cmu.edu"/clear@imap.gmail.com:993! "Draft"
+#   %[Gmail]/Trash:"dschwab@andrew.cmu.edu"/clear@imap.gmail.com:993! "Trash"
+#   %[Gmail]/Spam:"dschwab@andrew.cmu.edu"/clear@imap.gmail.com:993! "Spam"
+# }

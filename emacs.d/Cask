@@ -58,6 +58,7 @@
 (depends-on "smex")
 (depends-on "swiper")
 (depends-on "use-package")
+(depends-on "wanderlust")
 (depends-on "web-mode")
 (depends-on "yaml-mode")
 (depends-on "yasnippet")
