@@ -893,3 +893,75 @@ nil are ignored."
       wl-default-spec "%")
 
 (setq wl-folder-check-async t)
+
+;; ==========
+;; Lastpass
+;; ==========
+
+(defun lastpass-logged-in-p ()
+  (if (equal nil (string-match-p "lpass \\[agent\\]" (shell-command-to-string "/bin/ps aux")))
+      nil
+    t))
+
+(defun lastpass-login (username)
+  (interactive "sEnter your username: ")
+  (if (string= "" username)
+      (error "You must enter a username"))
+  (if (lastpass-logged-in-p) 
+      t 
+    (let ((login-response (shell-command-to-string (format "lpass login %s" username))))
+      (if (string-match-p "Success" login-response)
+	  t
+	(error (format "lastpass failed to login: %s" login-response))))))
+
+(defun lastpass-logout ()
+  (interactive)
+  (shell-command "lpass logout -f"))
+
+(defun lastpass-show (url)
+  (interactive "sEnter URL to show: ")
+  (if (lastpass-logged-in-p)
+      (shell-command-to-string (format "lpass show %s" url))
+    (error "You are not logged in")))
+ 
+(defun lastpass-get-username (url)
+  (interactive "sEnter URL to show: ")
+  (if (lastpass-logged-in-p)
+      (let ((entry (lastpass-show url)))
+	(and (string-match "^Username: \\(.*\\)$" entry)
+	     (match-string 1 entry)))))
+
+(defun lastpass-get-password (url)
+  (interactive "sEnter URL to show: ")
+  (if (lastpass-logged-in-p)
+      (let ((entry (lastpass-show url)))
+	(and (string-match "^Password: \\(.*\\)$" entry)
+	     (match-string 1 entry)))))
+
+
+;; ===========
+;; ERC Config
+;; ===========
+
+(require 'erc)
+(setq erc-echo-notices-in-minibuffer-flag t)
+(setq erc-autojoin-channels-alist
+      '((".*\\.freenode.net" "#emacs" "#gaygeeks" "#bitcoin" "#ubuntu" "##linux" "#python" "#bash" "#electronics")
+	(".*\\.case.edu" "#cwru")))
+
+(erc-track-mode t)
+(setq erc-track-exclude-types '("JOIN" "NICK" "PART" "QUIT" "MODE"
+                                 "324" "329" "332" "333" "353" "477"))
+;; don't show any of this
+(setq erc-hide-list '("JOIN" "PART" "QUIT" "NICK"))
+
+(defun erc-start-or-switch ()
+  "Connect to ERC, or switch to last active buffer"
+  (interactive)
+  (if (get-buffer "irc.freenode.net:6667")
+      (erc-track-switch-buffer 1)
+    (when (y-or-n-p "Start ERC? ")
+      (erc :server "irc.freenode.net" :port 6667 :nick (lastpass-get-username "freenode.net") :password (lastpass-get-password "freenode.net"))
+      (erc :server "irc.case.edu" :port 6667 :nick "rhol"))))
+
+(global-set-key (kbd "<f9> e") 'erc-start-or-switch)
