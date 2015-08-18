@@ -1,0 +1,14 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: latex image figure
+# key: imgfig
+# binding: direct-keybinding
+# --
+
+\FloatBarrier
+\begin{figure}[h!]
+  \centering
+  \includegraphics{$0}
+  \caption{$2}
+  \label{$1}
+\end{figure}
+\FloatBarrier

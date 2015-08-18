@@ -253,6 +253,32 @@ nil are ignored."
  )
 
 ;; ==========
+;; YASnippets
+;; ==========
+(require 'yasnippet)
+
+(defun shk-yas/helm-prompt (prompt choices &optional display-fn)
+    "Use helm to select a snippet. Put this into `yas-prompt-functions.'"
+    (interactive)
+    (setq display-fn (or display-fn 'identity))
+    (if (require 'helm-config)
+        (let (tmpsource cands result rmap)
+          (setq cands (mapcar (lambda (x) (funcall display-fn x)) choices))
+          (setq rmap (mapcar (lambda (x) (cons (funcall display-fn x) x)) choices))
+          (setq tmpsource
+                (list
+                 (cons 'name prompt)
+                 (cons 'candidates cands)
+                 '(action . (("Expand" . (lambda (selection) selection))))
+                 ))
+          (setq result (helm-other-buffer '(tmpsource) "*helm-select-yasnippet"))
+          (if (null result)
+              (signal 'quit "user quit!")
+            (cdr (assoc result rmap))))
+      nil))
+(add-to-list 'yas-prompt-functions 'shk-yas/helm-prompt)
+
+;; ==========
 ;; Nyan Mode
 ;; ==========
 (add-to-list 'auto-mode-alist '("*" . nyan-mode))
@@ -275,6 +301,7 @@ nil are ignored."
 (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode) ; Allows for quick inserting of symbols with '`' prefix
 (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
 (add-hook 'LaTeX-mode-hook 'auto-fill-mode)
+(add-hook 'LaTeX-mode-hook 'yas-minor-mode)
 
 (setq reftex-plug-into-AUCTeX t)
 
@@ -393,6 +420,14 @@ nil are ignored."
 (if (boundp 'org-user-agenda-files)
     (setq org-agenda-files org-user-agenda-files)
   (setq org-agenda-files (quote ("~/Dropbox/org-mode"))))
+
+(defun reload-org-buffers ()
+  (interactive)
+  (mapc '(lambda (buffer-name)
+	   (with-current-buffer buffer-name
+	     (if (derived-mode-p 'org-mode)
+		 (revert-buffer t t))))
+	(buffer-list)))
 
 ;; ===============
 ;; Plain Org- Wiki
@@ -946,7 +981,7 @@ nil are ignored."
 (require 'erc)
 (setq erc-echo-notices-in-minibuffer-flag t)
 (setq erc-autojoin-channels-alist
-      '((".*\\.freenode.net" "#emacs" "#gaygeeks" "#bitcoin" "#ubuntu" "##linux" "#python" "#bash" "#electronics")
+      '((".*\\.freenode.net" "#emacs" "#gaygeeks" "#bitcoin" "#ubuntu" "##linux" "#python" "#bash" "#electronics" "#ros")
 	(".*\\.case.edu" "#cwru")))
 
 (erc-track-mode t)
