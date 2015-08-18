@@ -833,7 +833,7 @@ nil are ignored."
 ;; ======
 ;; BBDB
 ;; ======
-(setq bbdb-file "~/Dropbox/org-mode/bbdb")
+(setq bbdb-file "~/Dropbox/org-mode/bbdb.olbb")
 (require 'bbdb)
 (bbdb-initialize)
 
@@ -870,4 +870,110 @@ nil are ignored."
     ;; http://flex.ee.uec.ac.jp/texi/bbdb/bbdb_11.html
 
     '(( "From" . "no.?reply\\|DAEMON\\|daemon\\|facebookmail\\|twitter")))
-)
+
+
+;; ==========================
+;; Wanderlust - email client
+;; ==========================
+
+(autoload 'wl "wl" "Wanderlust" t)
+(autoload 'wl-other-frame "wl" "Wanderlust on new frame." t)
+(autoload 'wl-draft "wl-draft" "Write draft with Wanderlust." t)
+
+;; IMAP, gmail
+(setq elmo-imap4-default-server "imap.gmail.com"
+      elmo-imap4-default-user "digidevin@gmail.com"
+      elmo-imap4-default-authenticate-type 'clear
+      elmo-imap4-default-port '993
+      elmo-imap4-default-stream-type 'ssl
+      elmo-imap4-use-modified-utf7 t)
+
+;; SMTP
+(setq wl-smtp-connection-type 'starttls
+      wl-smtp-posting-port 587
+      wl-smtp-authenticate-type "plain"
+      wl-smtp-posting-user "digidevin@gmail.com"
+      wl-smtp-posting-server "smtp.gmail.com"
+      wl-local-domain "gmail.com"
+      wl-message-id-domain "smtp.gmail.com")
+
+(setq wl-default-folder "%inbox"
+      wl-draft-folder "%[Gmail]/Drafts"
+      wl-trash-folder "%[Gmail]/Trash"
+      wl-fcc          "%[Gmail]/Sent"
+      wl-fcc-force-as-read t
+      wl-default-spec "%")
+
+(setq wl-folder-check-async t)
+
+;; ==========
+;; Lastpass
+;; ==========
+
+(defun lastpass-logged-in-p ()
+  (if (equal nil (string-match-p "lpass \\[agent\\]" (shell-command-to-string "/bin/ps aux")))
+      nil
+    t))
+
+(defun lastpass-login (username)
+  (interactive "sEnter your username: ")
+  (if (string= "" username)
+      (error "You must enter a username"))
+  (if (lastpass-logged-in-p) 
+      t 
+    (let ((login-response (shell-command-to-string (format "lpass login %s" username))))
+      (if (string-match-p "Success" login-response)
+	  t
+	(error (format "lastpass failed to login: %s" login-response))))))
+
+(defun lastpass-logout ()
+  (interactive)
+  (shell-command "lpass logout -f"))
+
+(defun lastpass-show (url)
+  (interactive "sEnter URL to show: ")
+  (if (lastpass-logged-in-p)
+      (shell-command-to-string (format "lpass show %s" url))
+    (error "You are not logged in")))
+ 
+(defun lastpass-get-username (url)
+  (interactive "sEnter URL to show: ")
+  (if (lastpass-logged-in-p)
+      (let ((entry (lastpass-show url)))
+	(and (string-match "^Username: \\(.*\\)$" entry)
+	     (match-string 1 entry)))))
+
+(defun lastpass-get-password (url)
+  (interactive "sEnter URL to show: ")
+  (if (lastpass-logged-in-p)
+      (let ((entry (lastpass-show url)))
+	(and (string-match "^Password: \\(.*\\)$" entry)
+	     (match-string 1 entry)))))
+
+
+;; ===========
+;; ERC Config
+;; ===========
+
+(require 'erc)
+(setq erc-echo-notices-in-minibuffer-flag t)
+(setq erc-autojoin-channels-alist
+      '((".*\\.freenode.net" "#emacs" "#gaygeeks" "#bitcoin" "#ubuntu" "##linux" "#python" "#bash" "#electronics")
+	(".*\\.case.edu" "#cwru")))
+
+(erc-track-mode t)
+(setq erc-track-exclude-types '("JOIN" "NICK" "PART" "QUIT" "MODE"
+                                 "324" "329" "332" "333" "353" "477"))
+;; don't show any of this
+(setq erc-hide-list '("JOIN" "PART" "QUIT" "NICK"))
+
+(defun erc-start-or-switch ()
+  "Connect to ERC, or switch to last active buffer"
+  (interactive)
+  (if (get-buffer "irc.freenode.net:6667")
+      (erc-track-switch-buffer 1)
+    (when (y-or-n-p "Start ERC? ")
+      (erc :server "irc.freenode.net" :port 6667 :nick (lastpass-get-username "freenode.net") :password (lastpass-get-password "freenode.net"))
+      (erc :server "irc.case.edu" :port 6667 :nick "rhol"))))
+
+(global-set-key (kbd "<f9> e") 'erc-start-or-switch)
