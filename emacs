@@ -32,8 +32,11 @@ nil are ignored."
 ;; -------------------
 ;; Improvements used throughout all modes
 ;; ======================================
-(load "server")
-(unless (server-running-p) (server-start))
+(add-hook 'after-init-hook
+	  (lambda ()
+	    (require 'server)
+	    (unless (server-running-p)
+	                  (server-start))))
 
 ;; Set the web browser
 (setq browse-url-browser-function 'browse-url-generic
@@ -66,6 +69,14 @@ nil are ignored."
 (setq confirm-nonexistent-file-or-buffer nil)
 ;; remove splash screen and echo area message
 (setq inhibit-startup-message t inhibit-startup-echo-area-message t)
+
+;; ==========
+;; Help+ Mode
+;; ==========
+(unless (eq system-type 'darwin)
+  (progn
+    (require 'help+)
+    (require 'help-fns+)))
 
 ;; =================
 ;; Font Tweaks
@@ -429,6 +440,7 @@ nil are ignored."
 (global-set-key (kbd "<f9> l") 'org-toggle-link-display)
 (global-set-key (kbd "<f9> SPC") 'bh/clock-in-last-task)
 (global-set-key (kbd "<f9> w") 'plain-org-wiki-helm)
+(global-set-key (kbd "<f9> W") 'pow-search-files)
 (global-set-key (kbd "C-<f9>") 'previous-buffer)
 (global-set-key (kbd "M-<f9>") 'org-toggle-inline-images)
 (global-set-key (kbd "C-x n r") 'narrow-to-region)

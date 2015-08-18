@@ -82,4 +82,8 @@
 
 (provide 'plain-org-wiki)
 
+(defun pow-search-files ()
+  (interactive)
+  (helm-ag pow-directory))
+
 ;;; plain-org-wiki.el ends here
