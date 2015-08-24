@@ -36,7 +36,17 @@ nil are ignored."
 	  (lambda ()
 	    (require 'server)
 	    (unless (server-running-p)
-	                  (server-start))))
+	      (server-start))))
+
+(setq pidfile ".emacs-server.pid")
+(add-hook 'emacs-startup-hook
+	  (lambda ()
+	    (with-temp-file pidfile
+	      (insert (number-to-string (emacs-pid))))))
+(add-hook 'kill-emacs-hook
+	  (lambda ()
+	    (when (file-exists-p pidfile)
+	      (delete-file pidfile))))
 
 ;; Set the web browser
 (setq browse-url-browser-function 'browse-url-generic
@@ -73,10 +83,10 @@ nil are ignored."
 ;; ==========
 ;; Help+ Mode
 ;; ==========
-(unless (eq system-type 'darwin)
-  (progn
-    (require 'help+)
-    (require 'help-fns+)))
+;;(unless (eq system-type 'darwin)
+;;  (progn
+;;    (require 'help+)
+;;    (require 'help-fns+)))
 
 ;; =================
 ;; Font Tweaks
@@ -89,8 +99,8 @@ nil are ignored."
 (defun set-font (&optional frame)
   (if (font-exists-p "Inconsolata")
       (progn
-	(add-to-list 'default-frame-alist '(font . "Inconsolata:pixelsize=14"))
-	(set-face-attribute 'default t :font "Inconsolata:pixelsize=14"))))
+	(add-to-list 'default-frame-alist '(font . "Inconsolata:pixelsize=12"))
+	(set-face-attribute 'default t :font "Inconsolata:pixelsize=12"))))
     
 (add-hook 'after-make-frame-functions 'set-font)
   
@@ -1012,3 +1022,60 @@ nil are ignored."
       (erc :server "irc.case.edu" :port 6667 :nick "rhol"))))
 
 (global-set-key (kbd "<f9> e") 'erc-start-or-switch)
+
+
+;; =====
+;; GPG
+;; =====
+(require 'epa-file)
+(epa-file-enable)
+
+(require 'org-crypt)
+(org-crypt-use-before-save-magic)
+(setq org-tags-exclude-from-inheritance (quote ("crypt")))
+(setq org-crypt-disable-auto-save t)
+(setq org-crypt-key "digidevin@gmail.com")
+(global-set-key (kbd "<f9> d") 'org-decrypt-entry)
+(global-set-key (kbd "<f9> D") 'org-decrypt-entries)
+
+
+(define-minor-mode sensitive-mode
+  "For sensitive files like password lists.
+It disables backup creation and auto saving.
+
+With no argument, this command toggles the mode.
+Non-null prefix argument turns on the mode.
+Null prefix argument turns off the mode."
+  ;; The initial value.
+  nil
+  ;; The indicator for the mode line.
+  " Sensitive"
+  ;; The minor mode bindings.
+  nil
+  (if (symbol-value sensitive-mode)
+      (progn
+	;; disable backups
+	(set (make-local-variable 'backup-inhibited) t)	
+	;; disable auto-save
+	(if auto-save-default
+	    (auto-save-mode -1)))
+    ;resort to default value of backup-inhibited
+    (kill-local-variable 'backup-inhibited)
+    ;resort to default auto save setting
+    (if auto-save-default
+	(auto-save-mode 1))))  
+(setq auto-mode-alist
+ (append '(("\\.gpg$" . sensitive-mode))
+               auto-mode-alist))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(default ((t (:family "Inconsolata" :foundry "unknown" :slant normal :weight normal :height 98 :width normal)))))

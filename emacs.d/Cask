@@ -60,6 +60,7 @@
 (depends-on "smartparens")
 (depends-on "smex")
 (depends-on "swiper")
+(depends-on "systemd")
 (depends-on "use-package")
 (depends-on "wanderlust")
 (depends-on "web-mode")
