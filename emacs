@@ -215,16 +215,16 @@ nil are ignored."
 
 (setq magit-auto-revert-mode nil)
 
-(eval-after-load 'magit
-  '(progn
-     (defun magit-insert-unmerged-commits ()
-       (magit-git-insert-section (unmerged "Unmerged commits:")
-                                 (apply-partially 'magit-wash-log 'unique)
-                                 "log" "--format=format:%h %s" "master..HEAD"))
+;; (eval-after-load 'magit
+;;   '(progn
+;;      (defun magit-insert-unmerged-commits ()
+;;        (magit-git-insert-section (unmerged "Unmerged commits:")
+;;                                  (apply-partially 'magit-wash-log 'unique)
+;;                                  "log" "--format=format:%h %s" "master..HEAD"))
 
-     (magit-define-section-jumper unmerged  "Unmerged commits")
+;;      (magit-define-section-jumper unmerged  "Unmerged commits")
 
-     (add-hook 'magit-status-sections-hook 'magit-insert-unmerged-commits t)))
+;;      (add-hook 'magit-status-sections-hook 'magit-insert-unmerged-commits t)))
 (setq magit-auto-revert-mode nil)
 
 ;; ================
