@@ -917,40 +917,6 @@ nil are ignored."
     '(( "From" . "no.?reply\\|DAEMON\\|daemon\\|facebookmail\\|twitter")))
 
 
-;; ==========================
-;; Wanderlust - email client
-;; ==========================
-
-(autoload 'wl "wl" "Wanderlust" t)
-(autoload 'wl-other-frame "wl" "Wanderlust on new frame." t)
-(autoload 'wl-draft "wl-draft" "Write draft with Wanderlust." t)
-
-;; IMAP, gmail
-(setq elmo-imap4-default-server "imap.gmail.com"
-      elmo-imap4-default-user "digidevin@gmail.com"
-      elmo-imap4-default-authenticate-type 'clear
-      elmo-imap4-default-port '993
-      elmo-imap4-default-stream-type 'ssl
-      elmo-imap4-use-modified-utf7 t)
-
-;; SMTP
-(setq wl-smtp-connection-type 'starttls
-      wl-smtp-posting-port 587
-      wl-smtp-authenticate-type "plain"
-      wl-smtp-posting-user "digidevin@gmail.com"
-      wl-smtp-posting-server "smtp.gmail.com"
-      wl-local-domain "gmail.com"
-      wl-message-id-domain "smtp.gmail.com")
-
-(setq wl-default-folder "%inbox"
-      wl-draft-folder "%[Gmail]/Drafts"
-      wl-trash-folder "%[Gmail]/Trash"
-      wl-fcc          "%[Gmail]/Sent"
-      wl-fcc-force-as-read t
-      wl-default-spec "%")
-
-(setq wl-folder-check-async t)
-
 ;; ==========
 ;; Lastpass
 ;; ==========
