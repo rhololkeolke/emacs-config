@@ -386,6 +386,12 @@ nil are ignored."
 
 ; set asm-mode on .s file
 (add-to-list 'auto-mode-alist '("\\.s$" . asm-mode))
+(defun my-asm-mode-hook ()
+  ;; use 'comment-dwim' (M-;) for this
+  (local-unset-key (vector asm-comment-char))
+  ;; asm-mode sets it locally to nil
+  (setq tab-always-indent (default-value 'tab-always-indent)))
+(add-hook 'asm-mode-hook #'my-asm-mode-hook)
 
 ;; ========================================
 ;; yaml-mode
@@ -546,7 +552,7 @@ nil are ignored."
               ("n" "note" entry (file "~/Dropbox/org-mode/refile.org")
                "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
               ("j" "Journal" entry (file+datetree "~/Dropbox/org-mode/diary.org")
-               "* %?\n%U\n" :clock-in t :clock-resume t)
+               "* %? :crypt:\n%U\n" :clock-in t :clock-resume t)
               ("s" "org-protocol" entry (file "~/Dropbox/org-mode/refile.org")
                "* TODO Review %c\n%U\n" :immediate-finish t)
 	      ("e" "Event" entry (file "~/Dropbox/org-mode/calendar.org")
@@ -559,7 +565,7 @@ nil are ignored."
 	       "#+FILETAGS: WIKI\n* %^{Title}\n  :PROPERTIES:\n  :TAGS: %^{tags}\n  :END:\n%U\n\n%?" :clock-in t :clock-resume t)
 	      )))
 
-(add-hook 'org-clock-out-hook 'bh/remove-empty-drawer-on-clock-out 'append)
+;;(add-hook 'org-clock-out-hook 'bh/remove-empty-drawer-on-clock-out 'append)
 
 
 ; Targets include this file and any file contributing to the agenda - up to 9 levels deep
@@ -993,6 +999,8 @@ nil are ignored."
 ;; =====
 ;; GPG
 ;; =====
+(require 'pinentry)
+;(require 'epg)
 (require 'epa-file)
 (epa-file-enable)
 
@@ -1045,3 +1053,95 @@ Null prefix argument turns off the mode."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:family "Inconsolata" :foundry "unknown" :slant normal :weight normal :height 98 :width normal)))))
+
+
+;; ======
+;; mu4e
+;; ======
+(add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
+(require 'mu4e)
+
+(setq mu4e-maildir "~/mail")
+
+(setq mu4e-drafts-folder "/[Gmail].Drafts")
+(setq mu4e-sent-folder "/[Gmail].Sent Mail")
+(setq mu4e-trash-folder "/[Gmail].Trash")
+
+(setq mu4e-sent-messages-behavior 'delete)
+
+(setq mu4e-maildir-shortcuts
+      '( ("/INBOX" . ?i)
+	 ("/[Gmail].Sent Mail" . ?s)
+	 ("/[Gmail].Trash" . ?t)
+	 ("/[Gmail].All Mail" . ?a)))
+
+(setq mu4e-get-mail-command "offlineimap")
+
+(setq
+ user-mail-address "digidevin@gmail.com"
+ user-full-name "Devin Schwab"
+ mu4e-compose-signature
+ (concat
+  "--\n"
+  "Devin\n"))
+
+(require 'smtpmail)
+
+(setq message-send-mail-function 'smtpmail-send-it
+    smtpmail-stream-type 'starttls
+    smtpmail-default-smtp-server "smtp.gmail.com"
+    smtpmail-smtp-server "smtp.gmail.com"
+    smtpmail-smtp-service 587)
+
+;; don't keep message buffers around
+(setq message-kill-buffer-on-exit t)
+
+(setq mu4e-use-fancy-chars t)
+(setq mu4e-attachment-dir "~/Downloads")
+(setq mu4e-view-show-images t)
+
+(setq
+ mu4e-get-mail-command "offlineimap"
+ mu4e-update-interval 300)
+
+
+;; =========================================================================================================
+;; Go mode
+;; ---------
+;; Instructions from https://tleyden.github.io/blog/2014/05/22/configure-emacs-as-a-go-editor-from-scratch/
+;; =========================================================================================================
+(require 'go-mode)
+(defun my-go-mode-hook ()
+  ; Call Gofmt before saving
+  (add-hook 'before-save-hook 'gofmt-before-save)
+  ;Customize compile command to run go build
+  (if (not (string-match "go" compile-command))
+      (set (make-local-variable 'compile-command)
+	   "go generate && go build -v && go test -v && go vet"))
+  (local-set-key (kbd "C-c C-c") 'compile)
+  ; Godef jump key binding
+  (local-set-key (kbd "M-.") 'godef-jump))
+(add-hook 'go-mode-hook 'my-go-mode-hook)
+
+(defun set-exec-path-from-shell-PATH ()
+  (let ((path-from-shell (replace-regexp-in-string
+                          "[ \t\n]*$"
+                          ""
+                          (shell-command-to-string "/bin/bash -c 'source ~/.bashrc; echo $PATH'"))))
+    (setenv "PATH" path-from-shell)
+    (setq eshell-path-env path-from-shell) ; for eshell users
+    (setq exec-path (split-string path-from-shell path-separator))))
+
+(defun set-env-from-env-line (env-line)
+  (let ((env-parts (split-string env-line "=")))
+    (let ((env-var (nth 0 env-parts))
+	  (env-value (nth 1 env-parts)))
+      (setenv env-var env-value))))
+(defun set-env-from-shell ()
+  (let ((env-lines (split-string
+		    (shell-command-to-string "/bin/bash -c 'source ~/.bashrc; env'")
+		    "\n")))
+    (mapc 'set-env-from-env-line env-lines)))
+			  
+(when window-system (set-exec-path-from-shell-PATH))
+(when window-system (set-env-from-shell))
