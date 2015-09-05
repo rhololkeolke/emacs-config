@@ -215,17 +215,6 @@ nil are ignored."
 
 (setq magit-auto-revert-mode nil)
 
-(eval-after-load 'magit
-  '(progn
-     (defun magit-insert-unmerged-commits ()
-       (magit-git-insert-section (unmerged "Unmerged commits:")
-                                 (apply-partially 'magit-wash-log 'unique)
-                                 "log" "--format=format:%h %s" "master..HEAD"))
-
-     (magit-define-section-jumper unmerged  "Unmerged commits")
-
-     (add-hook 'magit-status-sections-hook 'magit-insert-unmerged-commits t)))
-(setq magit-auto-revert-mode nil)
 
 ;; ================
 ;; ANSI Color Mode
@@ -559,7 +548,10 @@ nil are ignored."
 	       "#+FILETAGS: WIKI\n* %^{Title}\n  :PROPERTIES:\n  :TAGS: %^{tags}\n  :END:\n%U\n\n%?" :clock-in t :clock-resume t)
 	      )))
 
-(add-hook 'org-clock-out-hook 'bh/remove-empty-drawer-on-clock-out 'append)
+;; This broke when I updated emacs
+;; I tried fixing it with code from https://stackoverflow.com/questions/21767471/org-capture-and-time-clocking-misbehaving
+;; but it didn't work
+;;(add-hook 'org-clock-out-hook 'bh/remove-empty-drawer-on-clock-out 'append)
 
 
 ; Targets include this file and any file contributing to the agenda - up to 9 levels deep
@@ -1079,3 +1071,8 @@ Null prefix argument turns off the mode."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:family "Inconsolata" :foundry "unknown" :slant normal :weight normal :height 98 :width normal)))))
+
+;; ==============
+;; Vagrant Mode
+;; ==============
+(require 'vagrant)

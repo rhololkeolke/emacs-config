@@ -62,6 +62,7 @@
 (depends-on "swiper")
 (depends-on "systemd")
 (depends-on "use-package")
+(depends-on "vagrant")
 (depends-on "wanderlust")
 (depends-on "web-mode")
 (depends-on "yaml-mode")
