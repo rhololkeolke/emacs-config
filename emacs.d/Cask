@@ -23,6 +23,7 @@
 (depends-on "f")
 (depends-on "flycheck")
 (depends-on "flycheck-cask")
+(depends-on "function-args")
 (depends-on "ggtags")
 (depends-on "go-mode")
 (depends-on "gradle-mode")

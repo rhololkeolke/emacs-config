@@ -1036,9 +1036,62 @@ Null prefix argument turns off the mode."
 (setq auto-mode-alist
  (append '(("\\.gpg$" . sensitive-mode))
                auto-mode-alist))
-;; (custom-set-faces
-;;  ;; custom-set-faces was added by Custom.
-;;  ;; If you edit it by hand, you could mess it up, so be careful.
-;;  ;; Your init file should contain only one such instance.
-;;  ;; If there is more than one, they won't work right.
-;;  '(default ((t (:family "Inconsolata" :foundry "unknown" :slant normal :weight normal :height 98 :width normal)))))
+
+;; ====================================
+;; The following sections are based on
+;; https://tuhdo.github.io/c-ide.html
+;; ====================================
+
+;; I'm using helm-gtags
+;; So this next part is just here for reference
+;; ;; ======
+;; ;; ggtags
+;; ;; ======
+;; (require 'ggtags)
+;; (add-hook 'c-mode-common-hook
+;; 	  (lambda ()
+;; 	    (when (derived-mode-p 'c-mode 'c++-mode 'java-mode 'asm-mode)
+;; 	      (ggtags-mode 1))))
+
+;; (define-key ggtags-mode-map (kbd "C-c g s") 'ggtags-find-other-symbol)
+;; (define-key ggtags-mode-map (kbd "C-c g h") 'ggtags-view-tag-history)
+;; (define-key ggtags-mode-map (kbd "C-c g r") 'ggtags-find-reference)
+;; (define-key ggtags-mode-map (kbd "C-c g f") 'ggtags-find-file)
+;; (define-key ggtags-mode-map (kbd "C-c g c") 'ggtags-create-tags)
+;; (define-key ggtags-mode-map (kbd "C-c g u") 'ggtags-update-tags)
+
+;; (define-key ggtags-mode-map (kbd "M-,") 'pop-tag-mark)
+
+;; ===========
+;; helm-gtags
+;; ===========
+
+(setq
+ helm-gtags-ignore-case t
+ helm-gtags-auto-update t
+ helm-gtags-use-input-at-cursor t
+ helm-gtags-pulse-at-cursor t
+ helm-gtags-prefix-key "\C-cg"
+ helm-gtags-suggested-key-mapping t
+ )
+
+(require 'helm-gtags)
+(add-hook 'dired-mode-hook 'helm-gtags-mode)
+(add-hook 'eshell-mode-hook 'helm-gtags-mode)
+(add-hook 'c-mode-hook 'helm-gtags-mode)
+(add-hook 'c++-mode-hook 'helm-gtags-mode)
+(add-hook 'asm-mode-hook 'helm-gtags-mode)
+
+(define-key helm-gtags-mode-map (kbd "C-c g a") 'helm-gtags-tags-in-this-function)
+(define-key helm-gtags-mode-map (kbd "C-j") 'helm-gtags-select)
+(define-key helm-gtags-mode-map (kbd "M-.") 'helm-gtags-dwim)
+(define-key helm-gtags-mode-map (kbd "M-,") 'helm-gtags-pop-stack)
+(define-key helm-gtags-mode-map (kbd "C-c <") 'helm-gtags-previous-history)
+(define-key helm-gtags-mode-map (kbd "C-c >") 'helm-gtags-next-history)
+
+(setq-local imenu-create-index-function #'ggtags-build-imenu-index)
+
+;; ======================
+;; function-args package
+;; ======================
+(require 'function-args)
