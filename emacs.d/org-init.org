@@ -1,0 +1,10 @@
+# -*- coding: utf-8 -*-
+#+TITLE: Emacs init file written in org-mode
+#+AUTHOR: Devin Schwab
+#+EMAIL: digidevin@gmail.com
+#+STARTUP: indent
+
+#+BEGIN_SRC emacs-lisp
+  (message "Tangling org-init.org file.")
+#+END_SRC
+

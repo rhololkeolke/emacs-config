@@ -165,4 +165,12 @@
 ;; Better customize behavior
 (use-package cus-edit+
   :ensure t)
+
+;; load org mode
+(use-package org
+  :ensure t)
+
+;; tangle the org init file
+(org-babel-load-file (concat user-emacs-directory "org-init.org"))
+
 ;;; init.el ends here

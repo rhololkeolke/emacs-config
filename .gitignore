@@ -56,6 +56,7 @@ emacs.d/elpa/*
 emacs.d/network-security.data
 emacs.d/preload-custom.el
 emacs.d/system-*-custom.el
+emacs.d/org-init.el
 
 #  _     _                  
 # | |   (_)_ __  _   ___  __
