@@ -108,4 +108,9 @@
   :ensure t
   :config
   (pallet-mode t))
+
+;; Setup cus-edit+
+;; Better customize behavior
+(use-package cus-edit+
+  :ensure t)
 ;;; init.el ends here
