@@ -3,6 +3,13 @@
 
 ;;; Code:
 
+;; Setup custom group
+(defgroup rhol-emacs nil
+  "Customizable options for rhol Emacs config."
+  :group 'emacs
+  :prefix "rhol-"
+  :tag "Rhol Emacs Configuration")
+
 ;; Setup Package archives
 (require 'package)
 
