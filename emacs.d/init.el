@@ -3,12 +3,64 @@
 
 ;;; Code:
 
+;; load the preload-custom.el
+(setq custom-file (format "%spreload-custom.el" user-emacs-directory))
+(load custom-file)
+
 ;; Setup custom group
 (defgroup rhol-emacs nil
   "Customizable options for rhol Emacs config."
   :group 'emacs
   :prefix "rhol-"
   :tag "Rhol Emacs Configuration")
+
+;; Setup customize file location
+(defcustom init--custom-file nil
+  "Location of `custom-file'."
+  :type 'file
+  :group 'rhol-emacs
+  :tag "Custom File Path")
+
+;; If preload-custom.el does not have the init--custom-file set prompt
+;; user for where they want to store customizations
+(if init--custom-file
+    nil
+  (customize-save-variable 'init--custom-file
+			   (format "%s%s" user-emacs-directory
+				   (let ((system-custom-file-name (format "system-%s-custom.el" (system-name))))
+					   (let ((choice (completing-read
+							  (format "Where do you want to store customizations? ((c)ustom.el (s)%s): "
+								  (substring system-custom-file-name 1))
+							  '(("c" 1)
+							    ("s" 2))
+							  nil t "s")))
+					     (cond
+					      ((string= choice "c")
+					       "custom-file.el")
+					      ((string= choice "s")
+					       (format "%s" system-custom-file-name))))))))
+
+;; now change the custom-file to specified custom file
+(setq custom-file init--custom-file)
+;; create default file if doesn't exist
+(if (not (file-exists-p custom-file))
+    (with-temp-buffer
+      (insert "(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+")
+(write-file custom-file)))
+;; reload the custom file
+(load custom-file)
 
 ;; Setup Package archives
 (require 'package)
@@ -109,7 +161,7 @@
   :config
   (pallet-mode t))
 
-;; Setup cus-edit+
+;; setup cus-edit+
 ;; Better customize behavior
 (use-package cus-edit+
   :ensure t)
