@@ -326,3 +326,56 @@ the user to press =C-x C-r= to reload the buffer with sudo privileges.
                  ("Magit" (name . "^\\*magit")))))
         (add-hook 'ibuffer-mode-hook (lambda () (ibuffer-switch-to-saved-filter-groups "Default")))))
 #+END_SRC
+** Direnv
+
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: direnv")
+  (defcustom rhol-use-direnv t
+    "Set true to enable direnv parsing."
+    :type 'boolean
+    :group 'rhol-third-party
+    :tag "Use direnv")
+
+  (defun rhol--find-envrc (path)
+    "Find path to .envrc.
+
+    PATH path to the buffer that you want to find .envrc for."
+    (locate-dominating-file path ".envrc"))
+
+  (defun rhol--get-direnv-str (envrc-path)
+    "Get the direnv environment vars.
+
+    ENVRC-PATH path to the .envrc to load."
+    (message "%s" envrc-path)
+    (make-local-variable 'process-environment)
+    (shell-command-to-string (format "pushd %s > /dev/null; source .envrc; /usr/bin/env" envrc-path)))
+
+  (defun rhol-unload-direnv ()
+    "Unload changed env from direnv."
+    (interactive)
+    (if (local-variable-p 'process-environment)
+        (kill-local-variable 'process-environment)))
+
+  (defun rhol-load-direnv-for-buffer ()
+    "Parse environment specified by direnv for a given buffer."
+    (interactive)
+    (cond
+     ;; Special handling of dired mode files
+     ((eq 'dired-mode major-mode)
+      (let ((envrc-path (rhol--find-envrc (expand-file-name default-directory))))
+        (message "%s" envrc-path)
+        (if envrc-path
+            (let ((env-str (rhol--get-direnv-str envrc-path)))
+              (message "%s" env-str)
+              (rhol--apply-env-string env-str)))))
+     ;; Other files can be handled normally
+     (t
+      (let ((envrc-path (rhol--find-envrc (buffer-file-name))))
+        (if envrc-path
+            (let ((env-str (rhol--get-direnv-str envrc-path)))
+              ;; (message "%s" env-str)
+              (rhol--apply-env-string env-str)))))))
+
+  (if rhol-use-direnv
+      (add-hook 'find-file-hook 'rhol-load-direnv-for-buffer))
+#+END_SRC
