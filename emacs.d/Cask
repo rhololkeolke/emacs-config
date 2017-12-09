@@ -29,4 +29,5 @@
 (depends-on "pallet")
 (depends-on "rg")
 (depends-on "smartparens")
+(depends-on "yaml-mode")
 (depends-on "yasnippet")

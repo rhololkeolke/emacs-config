@@ -735,3 +735,13 @@ Stop ediff from opening its interface in a new frame (aka window)
                (add-hook 'TeX-mode-hook '(lambda ()
                                            (setq TeX-command-default "LatexMk"))))
 #+END_SRC
+
+** YAML Mode
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: Yaml")
+  (use-package yaml-mode
+    :ensure t
+    :mode ("\\.yml$" "\\.yaml$")
+    :config
+    (add-hook 'yaml-mode '(lambda () (auto-fill-mode -1))))
+#+END_SRC
