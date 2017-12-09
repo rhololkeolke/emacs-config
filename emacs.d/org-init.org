@@ -912,3 +912,21 @@ Stop ediff from opening its interface in a new frame (aka window)
   (use-package flycheck-mypy
     :ensure t)
 #+END_SRC
+
+** Cmake Mode
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: Cmake mode")
+  (use-package cmake-mode
+    :ensure t
+    :config
+
+    ;; I have to do this because I already have .txt files set to org-mode
+    ;; in auto-mode-alist
+    (add-hook 'org-mode-hook '(lambda ()
+                                (let ((filename (buffer-file-name)))
+                                  (if (not (eq nil filename))
+                                      (let ((basename (car (last (split-string filename "/")))))
+                                        (if (string= "CMakeLists.txt" basename)
+                                            (cmake-mode))))))))
+
+#+END_SRC

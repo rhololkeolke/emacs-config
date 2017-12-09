@@ -6,6 +6,7 @@
 (depends-on "ace-window")
 (depends-on "auctex-latexmk")
 (depends-on "cask")
+(depends-on "cmake-mode")
 (depends-on "company")
 (depends-on "company-ansible")
 (depends-on "company-auctex")
