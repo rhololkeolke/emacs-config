@@ -838,3 +838,77 @@ Stop ediff from opening its interface in a new frame (aka window)
         (append '(("\\.gpg$" . sensitive-mode))
                 auto-mode-alist))
 #+END_SRC
+
+** Python
+*** Pyenv
+
+#+BEGIN_SRC emacs-lisp
+  (use-package pyenv-mode
+    :ensure t
+    :config (pyenv-mode))
+
+  (defun ssbb-pyenv-hook ()
+    "Automatically activates pyenv version if .python-version file exists."
+    (f-traverse-upwards
+     (lambda (path)
+       (let ((pyenv-version-path (f-expand ".python-version" path)))
+         (if (f-exists? pyenv-version-path)
+             (pyenv-mode-set (s-trim (f-read-text pyenv-version-path 'utf-8))))))))
+
+  (add-hook 'find-file-hook 'ssbb-pyenv-hook)
+#+END_SRC
+
+*** Elpy
+
+#+BEGIN_SRC emacs-lisp
+  (use-package elpy
+    :ensure t
+    :init (with-eval-after-load 'python
+            (progn              
+              (elpy-enable)
+              (if (executable-find "ipython")
+                  (progn 
+                    (elpy-use-ipython)
+                    (setq python-shell-interpreter-args (format "%s --simple-prompt" python-shell-interpreter-args))))
+              (setq elpy-rpc-backend "jedi")
+              (setq elpy-test-runner 'elpy-test-pytest-runner))))
+#+END_SRC
+
+*** Autofill comments
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'python-mode-hook (lambda () (auto-fill-mode 1)
+                                          (setq-local comment-auto-fill-only-comments t)))
+#+END_SRC
+
+*** HS Minor Mode
+
+#+BEGIN_SRC emacs-lisp
+  (defun rhol/hs-hide (x)
+    "Hide block. Or if C-u pressed then hide all"
+    (interactive "P")
+    (message "%s" x)
+    (if x
+        (hs-hide-all)
+      (hs-hide-block)))
+
+  (defun rhol/hs-show (x)
+    "Show block. Or if C-u pressed then show all"
+    (interactive "P")
+    (message "%s" x)
+    (if x
+        (hs-show-all)
+      (hs-show-block)))
+
+  (add-hook 'python-mode-hook (lambda ()
+                                (hs-minor-mode 1)
+                                (local-set-key (kbd "C-=") 'rhol/hs-hide)
+                                (local-set-key (kbd "C-+") 'rhol/hs-show)))
+#+END_SRC
+
+*** Mypy flycheck
+
+#+BEGIN_SRC emacs-lisp
+  (message "Loading flycheck-mypy")
+  (use-package flycheck-mypy
+    :ensure t)
+#+END_SRC
