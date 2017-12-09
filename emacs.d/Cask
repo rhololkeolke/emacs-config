@@ -20,6 +20,8 @@
 (depends-on "darkokai-theme")
 (depends-on "emojify")
 (depends-on "flycheck")
+(depends-on "helm")
+(depends-on "helm-swoop")
 (depends-on "pallet")
 (depends-on "rg")
 (depends-on "yasnippet")

@@ -485,3 +485,70 @@ Autocomplete module. See [[https://company-mode.github.io/][https://company-mode
         (add-to-list 'company-backends 'company-math-symbols-unicode)))
 
 #+END_SRC
+** Helm
+
+Auto-completion library
+[[https://emacs-helm.github.io/helm/][https://emacs-helm.github.io/helm/]]
+
+*** Basic Config
+
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: Helm")
+  (defun rhol/helm-config ()
+    ;; The default "C-x c" is quite close to "C-x C-c", which quits Emacs.
+    ;; Changed to "C-c h". Note: We must set "C-c h" globally, because we
+    ;; cannot change `helm-command-prefix-key' once `helm-config' is loaded.
+    (global-set-key (kbd "C-c h") 'helm-command-prefix)
+    (global-unset-key (kbd "C-x c"))
+
+    (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
+    (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action)
+    (define-key helm-map (kbd "C-z") 'helm-select-action)
+
+    (when (executable-find "curl")
+      (setq helm-google-suggest-use-curl-p t))
+
+    (setq helm-split-window-in-side-p           t ; open helm buffer inside current window
+          helm-move-to-line-cycle-in-source     t ; move to end or beginning of source when
+                                          ;      reaching top or bottom of source
+          helm-ff-search-library-in-sexp        t ; search for library in `require` and `declare-function` sexp
+          helm-scroll-amount                    8 ; scroll 8 lines
+          helm-ff-file-name-history-use-recentf t)
+
+    (helm-mode 1)
+
+    ;; Replace normal M-x
+    (global-set-key (kbd "M-x") 'helm-M-x)
+    (setq helm-M-x-fuzzy-match t)
+
+    ;; Replace normal kill-ring cycle
+    (global-set-key (kbd "M-y") 'helm-show-kill-ring)
+
+    ;; Replace normal find files
+    (global-set-key (kbd "C-x C-f") 'helm-find-files))
+
+  (use-package helm
+    :ensure t
+    :config
+    (use-package helm-config)
+    (rhol/helm-config))
+#+END_SRC
+
+*** Helm swoop
+
+Buffer search with Helm
+[[https://github.com/ShingoFukuyama/helm-swoop][https://github.com/ShingoFukuyama/helm-swoop]]
+
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: Helm Swoop")
+  (use-package helm-swoop
+    :ensure t
+    :config
+    (global-set-key (kbd "M-i") 'helm-swoop)
+    (global-set-key (kbd "M-I") 'helm-swoop-back-to-last-point)
+    (global-set-key (kbd "C-c M-i") 'helm-multi-swoop)
+    (global-set-key (kbd "C-x M-i") 'helm-multi-swoop-all)
+
+    (define-key isearch-mode-map (kbd "M-i") 'helm-swoop-from-isearch) ; when doing isearch, hand the word over to helm-swoop
+    (define-key helm-swoop-map (kbd "M-i") 'helm-multi-swoop-all-from-helm-swoop))
+#+END_SRC
