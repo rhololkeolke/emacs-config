@@ -147,3 +147,63 @@ the user to press =C-x C-r= to reload the buffer with sudo privileges.
 
   (rhol--config-spellchecker)
 #+END_SRC
+* Appearance
+** Customize Group
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: Creating customize group rhol-emacs/rhol-appearance")
+  (defgroup rhol-appearance nil
+    "Appearance customization settings."
+    :group 'rhol-emacs
+    :tag "Appearance")
+#+END_SRC
+** Font
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: Font")
+
+  (defcustom rhol-default-font nil
+    "Font name used in graphical mode."
+    :type 'string
+    :group 'rhol-appearance
+    :tag "Default Font")
+
+  (if rhol-default-font
+      nil
+    (customize-save-variable 'rhol-default-font
+                             (let ((choice (completing-read "What font do you want to use? ((D)efault, (I)nconsolata, (S)ource Code Pro, (O)ther): "
+                                                            '(("D" 1)
+                                                              ("I" 2)
+                                                              ("S" 3)
+                                                              ("O" 4))
+                                                            nil t "D")))
+                               (cond
+                                ((string= choice "D")
+                                 "DejaVu Sans Mono")
+                                ((string= choice "I")
+                                 "Inconsolata")
+                                ((string= choice "S")
+                                 "Source Code Pro")
+                                ((string= choice "O")
+                                 (read-string "Enter desired font-name: "))))))
+
+  (defcustom rhol-default-font-size nil
+    "Font size used in graphical mode."
+    :type 'integer
+    :group 'rhol-appearance
+    :tag "Font Size")
+
+  (if rhol-default-font-size
+      nil
+    (customize-save-variable 'rhol-default-font-size
+                             (read-number "Enter font size: " 9)))
+
+  (defun rhol--configure-font ()
+    "Refresh font configuration."
+    (if (member rhol-default-font (font-family-list))
+        (let ((font-name (format "%s-%d" rhol-default-font rhol-default-font-size)))
+        (add-to-list 'initial-frame-alist (cons 'font font-name))
+        (add-to-list 'default-frame-alist (cons 'font font-name)))
+      (user-error "Font %s does not exist" rhol-default-font)))
+
+  (rhol--configure-font)
+#+END_SRC
+
