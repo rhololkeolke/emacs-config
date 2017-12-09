@@ -379,3 +379,15 @@ the user to press =C-x C-r= to reload the buffer with sudo privileges.
   (if rhol-use-direnv
       (add-hook 'find-file-hook 'rhol-load-direnv-for-buffer))
 #+END_SRC
+** Ace Window
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: ace-window")
+  (defcustom rhol-use-ace-window t
+    "Set true to enable ace-window package."
+    :type 'boolean
+    :group 'rhol-third-party
+    :tag "Use ace-window")
+  (if rhol-use-ace-window
+      (use-package ace-window
+        :ensure t))
+#+END_SRC

@@ -3,6 +3,7 @@
 (source "marmalade" "http://marmalade-repo.org/packages/")
 (source melpa)
 
+(depends-on "ace-window")
 (depends-on "cask")
 (depends-on "cus-edit+")
 (depends-on "darkokai-theme")
