@@ -1122,3 +1122,14 @@ cmake-ide-build-dir as the -p argument.
   (add-hook 'cmake-mode-hook 'rhol/cmakelists-hook)
 #+END_SRC
 
+
+** Transpose Frame
+Package for rearranging window frames.
+
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: Transpose frame")
+  (use-package transpose-frame
+    :ensure t
+    :demand t
+    :config (global-set-key (kbd "C-c t") 'transpose-frame))
+#+END_SRC

@@ -37,5 +37,6 @@
 (depends-on "pyenv-mode")
 (depends-on "rg")
 (depends-on "smartparens")
+(depends-on "transpose-frame")
 (depends-on "yaml-mode")
 (depends-on "yasnippet")
