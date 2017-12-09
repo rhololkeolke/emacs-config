@@ -930,3 +930,195 @@ Stop ediff from opening its interface in a new frame (aka window)
                                             (cmake-mode))))))))
 
 #+END_SRC
+
+** C/C++ Mode
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: C/C++ Mode")
+  (add-to-list 'auto-mode-alist '("\\.h$" . c++-mode))
+
+  (add-hook 'c++-mode-hook 'eldoc-mode)
+  (add-hook 'c-mode-hook 'eldoc-mode)
+#+END_SRC
+
+*** Clang-format
+
+#+BEGIN_SRC emacs-lisp
+  (load "~/.emacs.d/lisp/third-party/clang-format.el")
+  (add-hook 'c++-mode-hook '(lambda()
+                              (local-set-key (kbd "C-c C-r f") 'clang-format-region)
+                              (local-set-key (kbd "C-c C-r b") 'clang-format-buffer)))
+#+END_SRC
+
+*** Clang-rename
+
+#+BEGIN_SRC emacs-lisp
+  (load "~/.emacs.d/lisp/third-party/clang-rename.el")
+  (add-hook 'c++-mode-hook '(lambda() (local-set-key (kbd "C-c C-r r") 'clang-rename)))
+#+END_SRC
+
+*** Clang-include-fixer
+
+#+BEGIN_SRC emacs-lisp
+  (load "~/.emacs.d/lisp/third-party/clang-include-fixer.el")
+#+END_SRC
+
+*** Rtags
+
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: Rtags")
+  (use-package rtags 
+    :ensure t
+    :if (executable-find "rdm")
+    :config
+    (defun rhol/rtags-hook ()
+      (message "rhol/rtags-hook on %s" (buffer-name))
+      (rtags-start-process-unless-running)
+      (local-set-key (kbd "M-.") 'rtags-find-symbol-at-point)
+      (local-set-key (kbd "M-,") 'rtags-find-references-at-point)
+      (local-set-key (kbd "C-M-;") 'rtags-find-file)
+      (local-set-key (kbd "C-.") 'rtags-find-symbol)
+      (local-set-key (kbd "C-,") 'rtags-find-references)
+      (local-set-key (kbd "C-<") 'rtags-find-virtuals-at-point)
+      (local-set-key (kbd "M-i") 'rtags-imenu)
+      (local-set-key (kbd "C-M-,") 'rtags-location-stack-back)
+      (local-set-key (kbd "C-M-.") 'rtags-location-stack-forward)
+      )
+    (add-hook 'c-mode-hook 'rhol/rtags-hook)
+    (add-hook 'c++-mode-hook 'rhol/rtags-hook))
+
+#+END_SRC
+
+*** Irony Mode
+
+Eldoc integration
+
+#+BEGIN_SRC emacs-lisp
+  (use-package irony-eldoc
+    :ensure t
+    :config
+    (add-hook 'irony-mode-hook 'irony-eldoc))
+#+END_SRC
+
+*** hs-mode (code folding)
+#+BEGIN_SRC emacs-lisp
+  (defun rhol/hs-hook ()
+    (hs-minor-mode 1)
+    (local-set-key (kbd "C-=") 'hs-hide-block)
+    (local-set-key (kbd "C-+") 'hs-show-block)
+    )
+
+  (add-hook 'c++-mode-hook 'rhol/hs-hook)
+#+END_SRC
+
+*** Compilation Mode improvements
+
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: Compilation mode")
+  (setq compilation-scroll-output t)
+  (add-hook 'c-mode-common-hook '(lambda () (local-set-key (kbd "<f5>") 'compile)))
+#+END_SRC
+
+*** CMake IDE
+
+#+BEGIN_SRC emacs-lisp
+  (use-package rtags
+    :ensure t
+    :defer nil)
+  (use-package cmake-ide
+    :ensure t
+    :config
+    (cmake-ide-setup))
+#+END_SRC
+
+*** Open header files in C++ Mode by default
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'auto-mode-alist '("\\.h$" . c++-mode))
+#+END_SRC
+
+*** CMake IDE Test Funcs
+
+#+BEGIN_SRC emacs-lisp
+  (fset 'original-cmake-ide--get-compile-command (symbol-function 'cmake-ide--get-compile-command))
+
+  (defun rhol/default-cmake-ide-test-func (dir)
+    (format "%s test" (original-cmake-ide--get-compile-command dir)))
+
+  (defvar rhol/cmake-ide-test-func
+    (symbol-function 'rhol/default-cmake-ide-test-func)
+    "Function that receives a directory and returns the test command.")
+
+  (defun cmake-ide--get-compile-command (dir)
+    "Return the compile command or the compile and test command.
+
+  DIR: The path to the build folder used by cmake-ide"
+
+    (let ((cmake-compile-command (original-cmake-ide--get-compile-command dir))
+          (cmake-test-command (funcall rhol/cmake-ide-test-func dir)))
+      (cond ((and (boundp 'rhol/is-test-run) rhol/is-test-run) (format "%s && %s" cmake-compile-command cmake-test-command))
+            ((and (boundp 'rhol/is-clean-run) rhol/is-clean-run) (format "%s clean" cmake-compile-command))
+            (t cmake-compile-command))))
+
+  (defun cmake-ide-run-tests ()
+    "Compile and run test."
+    (interactive)
+    (let ((rhol/is-test-run t))
+      (cmake-ide-compile)))
+
+  (defun cmake-ide-run-clean ()
+    "Clean the build directory."
+    (interactive)
+    (let ((rhol/is-clean-run t))
+      (cmake-ide-compile)))
+#+END_SRC
+
+*** CMake IDE Clang Include Fixer
+
+clang-include-fixer has a command line arg =-p= that lets you specify
+a build directory containing the compile commands and the symbol
+database. But the emacs functions don't expose this
+argument. Generally would like clang-include-fixer to run using the
+cmake-ide-build-dir as the -p argument.
+
+#+BEGIN_SRC emacs-lisp
+  (defun cmake-ide-clang-include-fixer ()
+    "Invoke the Include Fixer to insert missing C++ headers."
+    (interactive)
+    (message (concat "Calling the include fixer using cmake-ide-build-dir. "
+                     "This might take some seconds. Please wait."))
+    (let ((default-directory cmake-ide-build-dir))
+      (clang-include-fixer--start #'clang-include-fixer--add-header
+                                  "-output-headers")))
+
+  (add-hook 'c++-mode-hook '(lambda() (local-set-key (kbd "C-c C-r i") 'cmake-ide-clang-include-fixer)))
+#+END_SRC
+
+*** C++ Mode Hooks
+
+#+BEGIN_SRC emacs-lisp
+  (defun rhol/cmakelists-hook ()
+    (message "rhol/cmakelists-hook %s" (buffer-name))
+    (condition-case ex
+        (if (string-equal (buffer-name) "CMakeLists.txt")
+            (progn
+              (message "buffer is main cmake file")
+              (local-set-key (kbd "<f5>") (lambda () cmake-ide-compile))
+              (local-set-key (kbd "C-<f5>") 'cmake-ide-run-cmake)
+              (local-set-key (kbd "<f6>") 'cmake-ide-run-tests)
+              (local-set-key (kbd "C-<f6>") 'cmake-ide-run-clean))
+          (message "buffer is not main cmake file"))
+      ('error (message "Failed to run rhol/cmakelists-hook on buffer %s. [%s]" (buffer-name) ex))))
+
+  (defun rhol/c++-hook ()
+    (message "rhol/c++-hook %s" (buffer-name))
+    (condition-case ex
+        (progn
+          (local-set-key (kbd "<f5>") 'cmake-ide-compile)
+          (local-set-key (kbd "C-<f5>") 'cmake-ide-run-cmake)
+          (local-set-key (kbd "<f6>") 'cmake-ide-run-tests)
+          (local-set-key (kbd "C-<f6>") 'cmake-ide-run-clean))
+      ('error (message "Failed to run rhol/c++-hook on buffer %s. [%s]" (buffer-name) ex))))
+
+  (add-hook 'c++-mode-hook 'rhol/c++-hook)
+  (add-hook 'cmake-mode-hook 'rhol/cmakelists-hook)
+#+END_SRC
+
