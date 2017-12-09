@@ -1122,7 +1122,6 @@ cmake-ide-build-dir as the -p argument.
   (add-hook 'cmake-mode-hook 'rhol/cmakelists-hook)
 #+END_SRC
 
-
 ** Transpose Frame
 Package for rearranging window frames.
 
@@ -1463,8 +1462,77 @@ Make Launch files and xacro use xml-mode
     :mode ("\\.fbs\\'" . flatbuffers-mode))
 #+END_SRC
 ** Shellcheck
+
 Shell script linter
 
 #+BEGIN_SRC emacs-lisp
    (setq flycheck-shellcheck-follow-sources nil)
+#+END_SRC
+
+** Lua
+#+BEGIN_SRC emacs-lisp
+  (use-package lua-mode
+    :ensure t)
+#+END_SRC
+** CMDragons
+
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'auto-mode-alist '("\\.cfg\\'" . lua-mode))
+#+END_SRC
+* Global Keymap
+** Detect git/mercurial repo
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: determine repo type")
+  (defun rhol/get-repo-type (&optional filepath)
+    "Returns the type of the repository for a given directory or file
+     Will return \"git\", \"hg\", or nil if not a repo
+    "
+    (interactive)
+    (let ((filepath (if (eq filepath nil)
+			(if (boundp 'default-directory)
+			    (expand-file-name default-directory)
+			  (buffer-file-name))
+		      filepath)))
+      (if (locate-dominating-file filepath ".git")
+	  "git" 
+	(if (locate-dominating-file filepath ".hg")
+	    "hg"
+	  nil))))
+
+  (defun rhol/get-repo-path (&optional filepath)
+    "Returns the type of the repository for a given directory or file
+     Will return \"git\", \"hg\", or nil if not a repo
+    "
+    (interactive)
+    (let ((filepath (if (eq filepath nil)
+			(if (boundp 'default-directory)
+			    (expand-file-name default-directory)
+			  (buffer-file-name))
+		      filepath)))
+      (let ((git-repo-dir (locate-dominating-file filepath ".git")))
+	(if git-repo-dir
+	    git-repo-dir
+	  (let ((hg-repo-dir (locate-dominating-file filepath ".hg")))
+	    (if hg-repo-dir
+		hg-repo-dir
+	      nil))))))
+
+  (defun rhol/repo-status (&optional filepath)
+    (interactive)
+    (let ((filepath (if (eq filepath nil)
+			(if (boundp 'default-directory)
+			    (expand-file-name default-directory)
+			  (buffer-file-name))
+		      filepath)))
+      (let ((repo-type (rhol/get-repo-type filepath))
+	    (repo-dir (rhol/get-repo-path filepath)))
+	(cond ((string= repo-type "git")
+      	       (magit-status repo-dir))
+      	      ((string= repo-type "hg")
+	       (monky-status repo-dir))
+      	      (t (message "%s is not a git or mercurial repo." filepath))))))
+#+END_SRC
+** Configure keybindings
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "<f9> g") 'rhol/repo-status)
 #+END_SRC
