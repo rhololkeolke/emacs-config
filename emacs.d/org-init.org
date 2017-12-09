@@ -609,3 +609,25 @@ info can be found at [[https://github.com/Fuco1/smartparens][https://github.com/
      ("C-x C-t" . sp-transpose-hybrid-sexp)))
 #+END_SRC
 
+** Magit
+
+Git Frontend. [[https://github.com/magit/magit][https://github.com/magit/magit]]
+
+Cheatsheet: [[http://magit.vc/manual/magit-refcard.pdf][http://magit.vc/manual/magit-refcard.pdf]]
+
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: Magit")
+  (use-package magit
+               :ensure t
+               :config
+               (setq magit-auto-revert-mode t))
+#+END_SRC
+
+
+*** Ediff
+
+Stop ediff from opening its interface in a new frame (aka window)
+
+#+BEGIN_SRC emacs-lisp
+  (setq ediff-window-setup-function 'ediff-setup-windows-plain)
+#+END_SRC
