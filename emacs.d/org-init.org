@@ -1438,3 +1438,19 @@ Make Launch files and xacro use xml-mode
     :config
     (winner-mode 1))
 #+END_SRC
+
+** Undo-tree
+
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: undo-tree")
+  (use-package undo-tree
+    :ensure t
+    :config
+    (global-undo-tree-mode 1)
+    ;; Windows Style undo
+    (global-set-key (kbd "s-z") 'undo-tree-visualize)
+    (global-set-key (kbd "C-x u") 'undo-tree-visualize)
+    (add-hook 'python-mode-hook (lambda ()
+                                  (undo-tree-mode 1)))
+    (add-hook 'c++-mode-hook (lambda () (undo-tree-mode 1))))
+#+END_SRC
