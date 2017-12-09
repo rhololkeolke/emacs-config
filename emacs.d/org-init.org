@@ -15,7 +15,7 @@
   (defgroup rhol-general nil
     "General customization settings."
     :group 'rhol-emacs
-    :tag "General Settings")
+    :tag "General")
 #+END_SRC
 ** Emacs Server
 
