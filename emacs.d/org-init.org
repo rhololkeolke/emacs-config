@@ -1203,3 +1203,224 @@ Make Launch files and xacro use xml-mode
                                                                                     (interactive)
                                                                                     (compile cargo-test-command))))))))
 #+END_SRC
+
+** Hydra
+
+#+BEGIN_SRC emacs-lisp
+  (use-package hydra
+    :ensure t
+    :config
+    (require 'hydra-examples)
+
+
+    (global-set-key
+     (kbd "C-n")
+     (defhydra hydra-move
+       (:pre (progn 
+	       (linum-mode 1))
+	     :post (linum-mode -1))
+       "
+     Movement
+     ---------
+     _n_ next line          _p_ previous line
+     _f_ forward char       _b_ backward char
+     _a_ beginning of line  _e_ end of line
+     _v_ scroll up          _V_ scroll down
+     _l_ recenter
+
+     Resize
+     ------
+     _+_ Zoom In
+     _-_ Zoom Out
+     _r_ Reset Zoom
+
+     Goto
+     ----
+     _g_ goto line
+     _m_ mark
+
+     _q_ quit
+     "
+       ("n" next-line)
+       ("p" previous-line)
+       ("f" forward-char)
+       ("b" backward-char)
+       ("a" beginning-of-line)
+       ("e" move-end-of-line)
+       ("v" scroll-up-command)
+       ;; Converting M-v to V here by analogy.
+       ("V" scroll-down-command)
+       ("l" recenter-top-bottom)
+
+       ("+" text-scale-increase "in")
+       ("-" text-scale-decrease "out")
+       ("r" (text-scale-adjust 0) "reset")
+
+       ("g" goto-line "go")
+       ("m" set-mark-command "mark" :bind nil)
+       ("q" nil "quit")))
+
+    (defun hydra-move-splitter-left (arg)
+      "Move window splitter left."
+      (interactive "p")
+      (if (let ((windmove-wrap-around))
+	    (windmove-find-other-window 'right))
+	  (shrink-window-horizontally arg)
+	(enlarge-window-horizontally arg)))
+
+    (defun hydra-move-splitter-right (arg)
+      "Move window splitter right."
+      (interactive "p")
+      (if (let ((windmove-wrap-around))
+	    (windmove-find-other-window 'right))
+	  (enlarge-window-horizontally arg)
+	(shrink-window-horizontally arg)))
+
+    (defun hydra-move-splitter-up (arg)
+      "Move window splitter up."
+      (interactive "p")
+      (if (let ((windmove-wrap-around))
+	    (windmove-find-other-window 'up))
+	  (enlarge-window arg)
+	(shrink-window arg)))
+
+    (defun hydra-move-splitter-down (arg)
+      "Move window splitter down."
+      (interactive "p")
+      (if (let ((windmove-wrap-around))
+	    (windmove-find-other-window 'up))
+	  (shrink-window arg)
+	(enlarge-window arg)))
+
+    (global-set-key
+     (kbd "C-x w")
+     (defhydra hydra-window ()
+       "
+  Movement^^        ^Split^         ^Switch^      ^Resize^
+  ----------------------------------------------------------------
+  _j_ left       _|_    vertical      _b_uffer        _J_ left
+  _k_ down       _\__   horizontal    _f_ind files    _K_ down
+  _i_ up         _z_    undo          _a_ce 1         _I_ up
+  _l_ right      _Z_    reset         _s_wap          _L_ right
+  _F_ollow      _D_lt   Other        _S_ave          _m_aximize
+  _q_ quit      _o_nly  this         _d_elete        _+_   balance
+                                     _t_ranspose  
+  "
+       ("+" balance-windows)
+       ("j" windmove-left )
+       ("k" windmove-down )
+       ("i" windmove-up )
+       ("l" windmove-right )
+       ("J" hydra-move-splitter-left)
+       ("K" hydra-move-splitter-down)
+       ("I" hydra-move-splitter-up)
+       ("L" hydra-move-splitter-right)
+       ("b" helm-mini)
+       ("f" helm-find-files)
+       ("F" follow-mode)
+       ("a" (lambda ()
+	      (interactive)
+	      (ace-window 1)
+	      (add-hook 'ace-window-end-once-hook
+			'hydra-window/body))
+	)
+       ("|" (lambda ()
+	      (interactive)
+	      (split-window-right)
+	      (windmove-right))
+	)
+       ("_" (lambda ()
+	      (interactive)
+	      (split-window-below)
+	      (windmove-down))
+	)
+       ("s" (lambda ()
+	      (interactive)
+	      (ace-window 4)
+	      (add-hook 'ace-window-end-once-hook
+			'hydra-window/body)))
+       ("S" save-buffer)
+       ("d" delete-window)
+       ("D" (lambda ()
+	      (interactive)
+	      (ace-window 16)
+	      (add-hook 'ace-window-end-once-hook
+			'hydra-window/body))
+	)
+       ("o" delete-other-windows)
+       ("m" ace-maximize-window)
+       ("t" transpose-frame)
+       ("z" (progn
+	      (winner-undo)
+	      (setq this-command 'winner-undo))
+	)
+       ("Z" winner-redo)
+       ("q" nil)))
+
+    (global-set-key
+     (kbd "C-x p")
+     (defhydra hydra-projectile (:color teal
+					:hint nil)
+       "
+       PROJECTILE: %(projectile-project-root)
+
+       Find File            Search/Tags          Buffers                Cache
+  ------------------------------------------------------------------------------------------
+    _f_: file            _a_: ag               _i_: Ibuffer           _c_: cache clear
+    _F_: file dwim       _s_: ripgrep          _b_: switch to buffer  _x_: remove known project
+  _M-f_: file curr dir   _o_: multi-occur      _K_: Kill all buffers  _X_: cleanup non-existing
+    _r_: recent file                                                  _z_: cache current
+
+    _q_: quit
+  "
+       ("a"    projectile-ag)
+       ("b"    projectile-switch-to-buffer)
+       ("c"    projectile-invalidate-cache)
+       ("f"    projectile-find-file)
+       ("F"    projectile-find-file-dwim)
+       ("M-f"  projectile-find-file-in-directory)
+       ;; ("g"   ggtags-update-tags)
+       ;; ("s-g" ggtags-update-tags)
+       ("i"   projectile-ibuffer)
+       ("K"   projectile-kill-buffers)
+       ("o"   projectile-multi-occur)
+       ("p"   projectile-switch-project)
+       ("r"   projectile-recentf)
+       ("s"   projectile-ripgrep)
+       ("x"   projectile-remove-known-project)
+       ("X"   projectile-cleanup-known-projects)
+       ("z"   projectile-cache-current-file)
+       ("`"   hydra-projectile-other-window/body "other window")
+       ("q"   nil "cancel" :color blue)))
+
+
+    (global-set-key
+     (kbd "C-x SPC")
+     (defhydra hydra-rectangle (:body-pre (rectangle-mark-mode 1)
+					  :color pink
+					  :hint nil
+					  :post (deactivate-mark))
+       "
+    ^_k_^       _w_ copy      _o_pen       _N_umber-lines            |\\     -,,,--,,_
+  _h_   _l_     _y_ank        _t_ype       _e_xchange-point          /,`.-'`'   ..  \-;;,_
+    ^_j_^       _d_ kill      _c_lear      _r_eset-region-mark      |,4-  ) )_   .;.(  `'-'
+  ^^^^          _u_ndo        _g_ quit     ^ ^                     '---''(./..)-'(_\_)
+  "
+       ("k" previous-line)
+       ("j" next-line)
+       ("h" left-char)
+       ("l" right-char)
+       ("d" kill-rectangle)                    ;; C-x r k
+       ("y" yank-rectangle)                    ;; C-x r y
+       ("w" copy-rectangle-as-kill)            ;; C-x r M-w
+       ("o" open-rectangle)                    ;; C-x r o
+       ("t" string-rectangle)                  ;; C-x r t
+       ("c" clear-rectangle)                   ;; C-x r c
+       ("e" rectangle-exchange-point-and-mark) ;; C-x C-x
+       ("N" rectangle-number-lines)            ;; C-x r N
+       ("r" (if (region-active-p)
+		(deactivate-mark)
+	      (rectangle-mark-mode 1)))
+       ("u" undo nil)
+       ("g" nil))))
+#+END_SRC
