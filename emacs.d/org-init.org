@@ -1462,3 +1462,9 @@ Make Launch files and xacro use xml-mode
     :load-path "~/.emacs.d/lisp"
     :mode ("\\.fbs\\'" . flatbuffers-mode))
 #+END_SRC
+** Shellcheck
+Shell script linter
+
+#+BEGIN_SRC emacs-lisp
+   (setq flycheck-shellcheck-follow-sources nil)
+#+END_SRC
