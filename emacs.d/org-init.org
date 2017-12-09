@@ -641,3 +641,13 @@ Stop ediff from opening its interface in a new frame (aka window)
     (setq monky-process-type 'cmdserver))
 #+END_SRC
 
+** Nyan Mode
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: Nyan-mode")
+  (use-package nyan-mode
+    :ensure t
+    :config
+    (define-globalized-minor-mode rhol/nyan-mode nyan-mode
+      (lambda () (nyan-mode)))
+    (rhol/nyan-mode 1))
+#+END_SRC
