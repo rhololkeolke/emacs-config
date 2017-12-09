@@ -631,3 +631,13 @@ Stop ediff from opening its interface in a new frame (aka window)
 #+BEGIN_SRC emacs-lisp
   (setq ediff-window-setup-function 'ediff-setup-windows-plain)
 #+END_SRC
+
+** Monky (Magit for Hg)
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: Monky")
+  (use-package monky
+    :ensure t
+    :config
+    (setq monky-process-type 'cmdserver))
+#+END_SRC
+

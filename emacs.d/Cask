@@ -23,6 +23,7 @@
 (depends-on "helm")
 (depends-on "helm-swoop")
 (depends-on "magit")
+(depends-on "monky")
 (depends-on "pallet")
 (depends-on "rg")
 (depends-on "smartparens")
