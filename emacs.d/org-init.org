@@ -217,3 +217,13 @@ the user to press =C-x C-r= to reload the buffer with sudo privileges.
     (add-to-list 'custom-safe-themes "196cc00960232cfc7e74f4e95a94a5977cb16fd28ba7282195338f68c84058ec")
     (load-theme 'darkokai-custom t))
 #+END_SRC
+** Emojis
+
+#+BEGIN_SRC emacs-lisp
+  (message "loading emojify")
+  (use-package emojify
+    :ensure t
+    :config
+    (emojify-download-emoji-maybe)
+    (add-hook 'after-init-hook #'global-emojify-mode))
+#+END_SRC
