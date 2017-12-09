@@ -207,3 +207,13 @@ the user to press =C-x C-r= to reload the buffer with sudo privileges.
   (rhol--configure-font)
 #+END_SRC
 
+** Theme
+
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: Theme")
+  (use-package darkokai-theme
+    :ensure t
+    :config
+    (add-to-list 'custom-safe-themes "196cc00960232cfc7e74f4e95a94a5977cb16fd28ba7282195338f68c84058ec")
+    (load-theme 'darkokai-custom t))
+#+END_SRC

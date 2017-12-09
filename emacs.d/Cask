@@ -5,4 +5,5 @@
 
 (depends-on "cask")
 (depends-on "cus-edit+")
+(depends-on "darkokai-theme")
 (depends-on "pallet")
