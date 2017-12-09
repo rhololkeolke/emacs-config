@@ -8,3 +8,142 @@
   (message "Tangling org-init.org file.")
 #+END_SRC
 
+* Global Improvements
+** Customize Group
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: Creating customize group rhol-emacs/rhol-general")
+  (defgroup rhol-general nil
+    "General customization settings."
+    :group 'rhol-emacs
+    :tag "General Settings")
+#+END_SRC
+** Emacs Server
+
+Start Emacs server if not already running.
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: Emacs Server")
+  (add-hook 'after-init-hook
+            (lambda ()
+              "Start Emacs server if not already running."
+              (use-package server
+                :config
+                (unless (server-running-p)
+                  (server-start)))))
+#+END_SRC
+
+** Open Default Directory
+
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: Open Default Directory")
+
+  (defun rhol-open-default-directory ()
+    "Open the directory of the current buffer.
+
+    Useful for quickly opening a dired buffer for the containing
+    folder of the current buffer."
+    (interactive)
+    (find-file (file-name-directory buffer-file-name)))
+
+  (global-set-key (kbd "C-x C-j") 'rhol-open-default-directory)
+#+END_SRC
+** General Keybindings
+
+Useful key bindings. Deals with clipboard integration and
+disabling C-z.
+
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: General Keybindings")
+  ;; unbind the sleep button
+  (global-unset-key [(control z)])
+  (global-unset-key [(control x)(control z)])
+
+  ;; Windows Style undo
+  (global-set-key (kbd "s-z") 'undo)
+
+  ;; Windows Style cut, copy and paste
+  (global-set-key (kbd "s-c") 'clipboard-kill-ring-save)
+  (global-set-key (kbd "s-x") 'clipboard-kill-region)
+  (global-set-key (kbd "s-v") 'clipboard-yank)
+
+  ;; quickly enable and disable auto-fill-mode
+  (global-set-key (kbd "C-c q") 'auto-fill-mode)
+#+END_SRC
+
+** Common Lisp Package
+
+Required library for a lot of the packages in the following sections.
+
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: Common Lisp package")
+  (use-package cl
+    :ensure t)
+#+END_SRC
+** General Tweaks
+
+Lots of handy little quality of life improvements.
+
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: General Tweaks")
+  ;; enable line highlighting
+  (global-hl-line-mode t)
+
+  ;; get rid of yes or no prompt
+  (fset 'yes-or-no-p 'y-or-n-p)
+  ;; remove confirmation if file or buffer does not exist
+  (setq confirm-nonexistent-file-or-buffer nil)
+  ;; remove splash screen and echo area message
+  (setq inhibit-startup-message t inhibit-startup-echo-area-message t)
+
+  ;; Add autofill for all text mode buffers
+  (add-hook 'text-mode-hook 'turn-on-auto-fill)
+#+END_SRC
+** Sudo Edit
+
+When a buffer requires sudo privileges to edit, this function allows
+the user to press =C-x C-r= to reload the buffer with sudo privileges.
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: Sudo Edit")
+  ;; Allow editing of a buffer that requires sudo privileges
+  (defun sudo-edit (&optional arg)
+    "Edit currently visited file as root.
+
+  With a prefix ARG prompt for a file to visit.
+  Will also prompt for a file to visit if current
+  buffer is not visiting a file."
+    (interactive "P")
+    (if (or arg (not buffer-file-name))
+        (find-file (concat "/sudo:root@localhost:"
+                           (ido-read-file-name "Find file(as root): ")))
+      (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
+  (global-set-key (kbd "C-x C-r") 'sudo-edit)
+#+END_SRC
+** Spellcheck
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: Spellcheck")
+
+  (defcustom rhol-default-spellchecker "hunspell"
+    "Executable name for default spellchecker."
+    :type '(choice (string :tag "hunspell" :value "hunspell")
+                   (string :tag "aspell" :value "aspell")
+                   (string :tag "Custom"))
+    :group 'rhol-general
+    :tag "Default spellchecker")
+
+  (defcustom rhol-default-spellchecker-args '("-d en_US")
+    "List of extra args to provide to spellchecker."
+    :type 'list
+    :group 'rhol-general
+    :tag "Default spellchecker args")
+
+  (defun rhol--config-spellchecker ()
+    "Configure spellchecker using saved config."
+    (if (executable-find rhol-default-spellchecker)
+        (progn
+          (setq ispell-program-name rhol-default-spellchecker)
+          (setq ispell-extra-args rhol-default-spellchecker-args)
+          (if (string= "aspell" rhol-default-spellchecker)
+              (setq ispell-list-command "--list")))
+      (user-error "Default spellchecker %s not found" rhol-default-spellchecker)))
+
+  (rhol--config-spellchecker)
+#+END_SRC
