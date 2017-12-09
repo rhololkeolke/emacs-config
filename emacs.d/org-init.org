@@ -409,3 +409,16 @@ the user to press =C-x C-r= to reload the buffer with sudo privileges.
             :config (rg-enable-default-bindings))
         (message "cargo not installed. Skipping rg package.")))
 #+END_SRC
+** Flyspell
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: flyspell")
+  (defcustom rhol-use-flyspell t
+    "Set true to enable flyspell package."
+    :type 'boolean
+    :group 'rhol-third-party
+    :tag "Use flyspell")
+  (if rhol-use-flyspell
+      (use-package flyspell
+        :ensure t
+        :config (add-hook 'org-mode-hook '(lambda () (flyspell-mode)))))
+#+END_SRC
