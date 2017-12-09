@@ -1430,3 +1430,11 @@ Make Launch files and xacro use xml-mode
   (use-package protobuf-mode
     :ensure t)
 #+END_SRC
+** Winner Mode
+#+BEGIN_SRC emacs-lisp
+  (use-package winner
+    :ensure t
+    :demand
+    :config
+    (winner-mode 1))
+#+END_SRC
