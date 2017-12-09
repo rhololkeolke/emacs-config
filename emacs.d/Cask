@@ -24,4 +24,5 @@
 (depends-on "helm-swoop")
 (depends-on "pallet")
 (depends-on "rg")
+(depends-on "smartparens")
 (depends-on "yasnippet")
