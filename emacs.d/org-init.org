@@ -459,3 +459,29 @@ Autofill snippets for various modes.
         (yas-global-mode 1)
         (add-to-list 'yas-snippet-dirs "~/.emacs.d/snippets")))
 #+END_SRC
+
+** Company
+
+Autocomplete module. See [[https://company-mode.github.io/][https://company-mode.github.io/]]
+
+
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: Company")
+
+  (defcustom rhol-use-company t
+    "Enable use of company package."
+    :type 'boolean
+    :group 'rhol-third-party
+    :tag "Enable company")
+
+  (if rhol-use-company
+      (use-package company
+        :ensure t
+        :config
+        (setq company-idle-delay 0.5)
+        (add-hook 'after-init-hook 'global-company-mode)
+        (global-set-key (kbd "C-<tab>") 'company-complete-common)
+        (company-auctex-init)
+        (add-to-list 'company-backends 'company-math-symbols-unicode)))
+
+#+END_SRC
