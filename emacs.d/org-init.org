@@ -1141,3 +1141,17 @@ Package for rearranging window frames.
     :config
     (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
 #+END_SRC
+** Projectile
+Emacs project management.
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: Projectile")
+  (use-package helm-projectile
+    :ensure t)
+  (use-package projectile
+    :ensure t
+    :demand
+    :config
+    (projectile-global-mode)
+    (setq projectile-completion-system 'helm)
+    (helm-projectile-on))
+#+END_SRC
