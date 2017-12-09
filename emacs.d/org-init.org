@@ -1155,3 +1155,13 @@ Emacs project management.
     (setq projectile-completion-system 'helm)
     (helm-projectile-on))
 #+END_SRC
+
+** ROS
+Make Launch files and xacro use xml-mode
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'auto-mode-alist '("\\.launch$" . xml-mode))
+  (add-to-list 'auto-mode-alist '("\\.xacro$" . xml-mode))
+  (add-to-list 'auto-mode-alist '("\\.sdf$" . xml-mode))
+  (add-to-list 'auto-mode-alist '("^model\\.config$" . xml-mode))
+  (add-to-list 'auto-mode-alist '("\\.world$" . xml-mode))
+#+END_SRC
