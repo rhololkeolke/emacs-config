@@ -227,3 +227,10 @@ the user to press =C-x C-r= to reload the buffer with sudo privileges.
     (emojify-download-emoji-maybe)
     (add-hook 'after-init-hook #'global-emojify-mode))
 #+END_SRC
+** Disable Toolbars
+
+#+BEGIN_SRC emacs-lisp
+  (menu-bar-mode -1)
+  (toggle-scroll-bar -1)
+  (tool-bar-mode -1)
+#+END_SRC
