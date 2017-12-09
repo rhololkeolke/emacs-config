@@ -438,3 +438,24 @@ the user to press =C-x C-r= to reload the buffer with sudo privileges.
         :config
         (add-hook 'after-init-hook #'global-flycheck-mode)))
 #+END_SRC
+
+** YASnippets
+
+Autofill snippets for various modes.
+[[https://capitaomorte.github.io/yasnippet/][https://capitaomorte.github.io/yasnippet/]]
+
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: YASnippets")
+    (defcustom rhol-use-yasnippet t
+      "Set true to enable yasnippet package."
+      :type 'boolean
+      :group 'rhol-third-party
+      :tag "Use yasnippet")
+
+  (if rhol-use-yasnippet
+      (use-package yasnippet
+        :ensure t
+        :config
+        (yas-global-mode 1)
+        (add-to-list 'yas-snippet-dirs "~/.emacs.d/snippets")))
+#+END_SRC

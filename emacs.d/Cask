@@ -11,3 +11,4 @@
 (depends-on "flycheck")
 (depends-on "pallet")
 (depends-on "rg")
+(depends-on "yasnippet")
