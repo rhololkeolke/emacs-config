@@ -1133,3 +1133,11 @@ Package for rearranging window frames.
     :demand t
     :config (global-set-key (kbd "C-c t") 'transpose-frame))
 #+END_SRC
+
+** Rainbow Delimiters
+#+BEGIN_SRC emacs-lisp
+  (use-package rainbow-delimiters
+    :ensure t
+    :config
+    (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
+#+END_SRC

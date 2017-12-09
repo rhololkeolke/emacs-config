@@ -35,6 +35,7 @@
 (depends-on "nyan-mode")
 (depends-on "pallet")
 (depends-on "pyenv-mode")
+(depends-on "rainbow-delimiters")
 (depends-on "rg")
 (depends-on "smartparens")
 (depends-on "transpose-frame")
