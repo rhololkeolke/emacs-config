@@ -8,5 +8,6 @@
 (depends-on "cus-edit+")
 (depends-on "darkokai-theme")
 (depends-on "emojify")
+(depends-on "flycheck")
 (depends-on "pallet")
 (depends-on "rg")

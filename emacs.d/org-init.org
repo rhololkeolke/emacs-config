@@ -422,3 +422,19 @@ the user to press =C-x C-r= to reload the buffer with sudo privileges.
         :ensure t
         :config (add-hook 'org-mode-hook '(lambda () (flyspell-mode)))))
 #+END_SRC
+** Flycheck
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: Flycheck")
+
+  (defcustom rhol-use-flycheck t
+    "Set true to enable flycheck package."
+    :type 'boolean
+    :group 'rhol-third-party
+    :tag "Use flycheck")
+
+  (if rhol-use-flycheck
+      (use-package flycheck
+        :ensure t
+        :config
+        (add-hook 'after-init-hook #'global-flycheck-mode)))
+#+END_SRC
