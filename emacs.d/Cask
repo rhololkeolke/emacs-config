@@ -9,3 +9,4 @@
 (depends-on "darkokai-theme")
 (depends-on "emojify")
 (depends-on "pallet")
+(depends-on "rg")

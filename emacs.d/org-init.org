@@ -391,3 +391,21 @@ the user to press =C-x C-r= to reload the buffer with sudo privileges.
       (use-package ace-window
         :ensure t))
 #+END_SRC
+** Ripgrep
+
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: ripgrep")
+  (defcustom rhol-use-ripgrep t
+    "Set true to enable ripgrep package if rg installed on system."
+    :type 'boolean
+    :group 'rhol-third-party
+    :tag "Use ripgrep")
+  (if rhol-use-ripgrep
+      (if (executable-find "cargo")
+          (use-package rg
+            :ensure t
+            :ensure-system-package 
+            (rg . "cargo install --force ripgrep")
+            :config (rg-enable-default-bindings))
+        (message "cargo not installed. Skipping rg package.")))
+#+END_SRC
