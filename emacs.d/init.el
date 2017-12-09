@@ -103,6 +103,8 @@
 
 ;; Load use-package
 (require 'use-package)
+(use-package use-package-ensure-system-package
+  :ensure t)
 
 ;; setup cask
 (defvar init--cask-folder
