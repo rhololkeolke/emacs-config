@@ -265,3 +265,59 @@ the user to press =C-x C-r= to reload the buffer with sudo privileges.
   (toggle-scroll-bar -1)
   (tool-bar-mode -1)
 #+END_SRC
+* Third-Party Packages
+** Customize Group
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: Creating customize group rhol-emacs/rhol-appearance")
+  (defgroup rhol-third-party nil
+    "Enable and disable third-party packages."
+    :group 'rhol-emacs
+    :tag "Third-Party Packages")
+#+END_SRC
+** ibuffer
+
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: ibuffer")
+  (defcustom rhol-use-ibuffer t
+    "Set true to enable ibuffer package."
+    :type 'boolean
+    :group 'rhol-third-party
+    :tag "Use ibuffer")
+
+  (if rhol-use-ibuffer
+      (use-package ibuffer
+        :ensure t
+        :config
+        (global-set-key (kbd "C-x C-b") 'ibuffer)
+        (setq ibuffer-saved-filters
+              '(("C/C++" ((or (mode . c++-mode)
+                              (mode . c-mode)
+                              (mode . cmake-mode))))
+                ("Python" ((mode . python-mode)))
+                ("Emacs" ((or
+                           (name . "^\\*scratch\\*$")
+                           (name . "^\\*Messages\\*$"))))
+                ("Org" ((or
+                         (name . "^\\*Org Agenda\\*$")
+                         (mode . org-mode))))
+                ("Dired" ((mode . dired-mode)))
+                ("Helm" ((name . "^\\*helm")))
+                ("Magit" ((name . "^\\*magit")))))
+        (setq ibuffer-saved-filter-groups
+              '(("Default"
+                 ("Dired" (mode . dired-mode))
+                 ("Python" (mode . python-mode))
+                 ("Org" (or
+                         (name . "^\\*Org Agenda\\*$")
+                         (mode . org-mode)))
+                 ("C/C++" (or
+                           (mode . c++-mode)
+                           (mode . c-mode)
+                           (mode . cmake-mode)))
+                 ("Emacs" (or
+                           (name . "^\\*scratch\\*$")
+                           (name . "^\\*Messages\\*$")))
+                 ("Helm" (name . "^\\*helm"))
+                 ("Magit" (name . "^\\*magit")))))
+        (add-hook 'ibuffer-mode-hook (lambda () (ibuffer-switch-to-saved-filter-groups "Default")))))
+#+END_SRC
