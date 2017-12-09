@@ -30,6 +30,37 @@ Start Emacs server if not already running.
                 (unless (server-running-p)
                   (server-start)))))
 #+END_SRC
+** Bash Environment
+Set Emacs environment variables to the same values that a user would
+have after sourcing .bash_profile.
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: Bash Environment")
+  (defun rhol--get-bash-env ()
+    "Returns the environment variable string set by .bash_profile"
+    (shell-command-to-string "/bin/bash -c \"source ~/.bash_profile; env\""))
+
+  (defun rhol--apply-env-string (raw-env-str)
+    (let ((env-strings (split-string raw-env-str "\n")))
+      (setq process-environment env-strings)))
+
+  (defun rhol-eval-bash-env ()
+    "Overwrites process-environment with the environment variables set by .bash_profile"
+    (interactive)
+    (rhol/apply-env-string (rhol/get-bash-env)))
+
+  (defun rhol--get-bash-path ()
+    "Returns PATH variable after evaluating bash profile"
+    (replace-regexp-in-string "\n" "" (shell-command-to-string "/bin/bash -c \"source ~/.bash_profile >/dev/null 2>&1; echo $PATH\"")))
+
+  (defun rhol-eval-bash-path ()
+    "Sets exec path based on bash path variable"
+    (interactive)
+    (let ((env-strings (split-string (rhol/get-bash-path) ":")))
+      (setq exec-path env-strings)))
+
+  (rhol--eval-bash-env)
+  (rhol--eval-bash-path)
+#+END_SRC
 
 ** Open Default Directory
 
