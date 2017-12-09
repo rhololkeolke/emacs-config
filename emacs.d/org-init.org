@@ -1165,3 +1165,41 @@ Make Launch files and xacro use xml-mode
   (add-to-list 'auto-mode-alist '("^model\\.config$" . xml-mode))
   (add-to-list 'auto-mode-alist '("\\.world$" . xml-mode))
 #+END_SRC
+
+** Rust
+
+#+BEGIN_SRC emacs-lisp
+  (use-package rust-mode
+    :ensure t
+    :mode "\\.rs$"
+    :config
+    (add-hook 'rust-mode-hook '(lambda ()
+                                 (setq-local cargo-compile-command "cargo build")
+                                 (setq-local cargo-test-command "cargo test")
+                                 (setq-local compilation-read-command nil)
+                                 (local-set-key (kbd "<f5>") '(lambda () (interactive) (compile cargo-compile-command)))
+                                 (local-set-key (kbd "<f6>") '(lambda () (interactive) (compile cargo-test-command)))))
+    (add-hook 'rust-mode-hook #'racer-mode)
+    (add-hook 'racer-mode-hook #'eldoc-mode)
+
+    (add-hook 'racer-mode-hook #'company-mode)
+
+    (define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)
+    (setq company-tooltip-align-annotations t))
+
+  (use-package cargo
+    :ensure t
+    :config
+    (add-to-list 'auto-mode-alist '("\\.toml$" . conf-mode))
+    (add-hook 'conf-mode-hook '(lambda () (if (eq "toml" (file-name-extension (buffer-name)))
+                                              (progn (cargo-minor-mode 1)                                                   
+                                                     (setq-local cargo-compile-command "cargo build")
+                                                     (setq-local cargo-test-command "cargo test")
+                                                     (setq-local compilation-read-command nil)
+                                                     (local-set-key (kbd "<f5>") '(lambda ()
+                                                                                    (interactive)
+                                                                                    (compile cargo-compile-command)))
+                                                     (local-set-key (kbd "<f6>") '(lambda ()
+                                                                                    (interactive)
+                                                                                    (compile cargo-test-command))))))))
+#+END_SRC

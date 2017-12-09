@@ -5,6 +5,7 @@
 
 (depends-on "ace-window")
 (depends-on "auctex-latexmk")
+(depends-on "cargo")
 (depends-on "cask")
 (depends-on "cmake-ide")
 (depends-on "cmake-mode")
@@ -39,6 +40,7 @@
 (depends-on "pyenv-mode")
 (depends-on "rainbow-delimiters")
 (depends-on "rg")
+(depends-on "rust-mode")
 (depends-on "smartparens")
 (depends-on "transpose-frame")
 (depends-on "yaml-mode")
