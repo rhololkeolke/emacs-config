@@ -4,6 +4,7 @@
 (source melpa)
 
 (depends-on "ace-window")
+(depends-on "auctex-latexmk")
 (depends-on "cask")
 (depends-on "company")
 (depends-on "company-ansible")

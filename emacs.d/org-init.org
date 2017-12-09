@@ -651,3 +651,87 @@ Stop ediff from opening its interface in a new frame (aka window)
       (lambda () (nyan-mode)))
     (rhol/nyan-mode 1))
 #+END_SRC
+
+** Auctex
+
+#+BEGIN_SRC emacs-lisp
+  (setq zathura-procs ())
+  (defun zathura-forward-search ()
+    ;; Open the compiled pdf in Zathura with synctex. This is complicated since
+    ;; 1) Zathura refuses to acknowledge Synctex directive if the pdf is not
+    ;; already opened
+    ;; 2) This means we have to bookkeep open Zathura processes ourselves: first
+    ;; open a new pdf from the beginning, if it is not already open. Then call
+    (interactive)
+    (let* ((zathura-launch-buf (get-buffer-create "*Zathura Output*"))
+           (pdfname (TeX-master-file "pdf"))
+           (zatentry (assoc pdfname zathura-procs))
+           (zatproc (if (and zatentry (process-live-p (cdr zatentry)))
+                        (cdr zatentry)
+                      (progn
+                        (let ((proc (progn (message "Launching Zathura")
+                                           (start-process "zathura-launch"
+                                                          zathura-launch-buf "zathura"
+                                                          "-x" "emacsclient +%{line} %{input}" pdfname))))
+                          (when zatentry
+                            (setq zathura-procs (delq zatentry zathura-procs)))
+                          (add-to-list 'zathura-procs (cons pdfname proc))
+                          (set-process-query-on-exist-flag proc nil)
+                          proc))))
+           (synctex (format "%s:0:%s"
+                            (TeX-current-line)
+                            (TeX-current-file-name-master-relative)))
+           )
+      (start-process "zathura-synctex" zathura-launch-buf "zathura" "--synctex-forward" synctex pdfname)
+      (start-process "raise-zathura-wmctrl" zathura-launch-buf "wmctrl" "-a" pdfname)))
+#+END_SRC
+
+
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: Auctex")
+  (defun rhol/latex-setup ()
+    (setq TeX-parse-self t)
+    (setq TeX-save-query nil)
+    (setq TeX-PDF-mode t)
+
+    (add-hook 'LaTeX-mode-hook 'visual-line-mode)
+    (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
+    (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+
+    (setq reftex-plug-into-AUCTeX t)
+
+    ;; setup the viewer
+    (if (eq system-type 'darwin)
+        (progn
+          (setq TeX-view-program-list '())
+          (setq TeX-view-program-selection '())
+          (add-to-list 'TeX-view-program-list '("skim" "/Applications/Skim.app/Contents/SharedSupport/displayline -b -g %n %o %b"))
+          (add-to-list 'TeX-view-program-selection '(output-pdf "skim")))
+      (progn
+        (setq TeX-view-program-selection '())
+        (setq TeX-view-program-list '())
+        (add-to-list 'TeX-view-program-list '("zathura-custom" zathura-forward-search))
+        (add-to-list 'TeX-view-program-selection '(output-pdf "zathura-custom"))))
+
+    ;; Shortcut to jump to line in PDF Viewer
+    (add-hook 'LaTeX-mode-hook (lambda () (local-set-key (kbd "<S-s-mouse-1>") #'TeX-view))))
+
+  (use-package latex
+    :defer nil
+    :config (rhol/latex-setup))
+
+#+END_SRC
+
+
+*** LatexMk
+
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: Latexmk")
+  (use-package auctex-latexmk
+               :ensure t
+               :ensure-system-package latexmk
+               :config
+               (auctex-latexmk-setup)
+               (add-hook 'TeX-mode-hook '(lambda ()
+                                           (setq TeX-command-default "LatexMk"))))
+#+END_SRC
