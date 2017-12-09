@@ -1454,3 +1454,11 @@ Make Launch files and xacro use xml-mode
                                   (undo-tree-mode 1)))
     (add-hook 'c++-mode-hook (lambda () (undo-tree-mode 1))))
 #+END_SRC
+** Flatbuffers
+
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: flatbuffers")
+  (use-package flatbuffers
+    :load-path "~/.emacs.d/lisp"
+    :mode ("\\.fbs\\'" . flatbuffers-mode))
+#+END_SRC
