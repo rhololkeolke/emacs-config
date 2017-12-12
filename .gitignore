@@ -80,3 +80,4 @@ emacs.d/org-init.el
 .nfs*
 emacs.d/emojis
 /emacs.d/projectile-bookmarks.eld
+emacs.d/irony
