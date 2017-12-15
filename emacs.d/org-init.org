@@ -1014,6 +1014,18 @@ Eldoc integration
   (add-hook 'c++-mode-hook 'rhol/hs-hook)
 #+END_SRC
 
+*** Colorize compilation buffer
+
+#+BEGIN_SRC emacs-lisp
+  (defun colorize-compilation-buffer ()
+    (toggle-read-only)
+    (ansi-color-apply-on-region compilation-filter-start (point))
+    (toggle-read-only))
+
+  (use-package ansi-color
+    :config
+    (add-hook 'compilation-filter-hook 'colorize-compilation-buffer))
+#+END_SRC
 *** Compilation Mode improvements
 
 #+BEGIN_SRC emacs-lisp
