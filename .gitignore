@@ -82,3 +82,5 @@ emacs.d/emojis
 /emacs.d/projectile-bookmarks.eld
 emacs.d/irony
 /emacs.d/org-clock-save.el
+/emacs.d/projectile.cache
+/emacs.d/bookmarks
