@@ -183,6 +183,12 @@ the user to press =C-x C-r= to reload the buffer with sudo privileges.
 
   (rhol--config-spellchecker)
 #+END_SRC
+** Web Browser
+
+#+BEGIN_SRC emacs-lisp
+  (setq browse-url-browser-function 'browse-url-generic
+        browse-url-generic-program "firefox-trunk")
+#+END_SRC
 * Appearance
 ** Customize Group
 #+BEGIN_SRC emacs-lisp
@@ -2130,6 +2136,107 @@ Deft for my org-mode wiki
 	  deft-use-filter-string-for-filename t))
 #+END_SRC
 
+* Mail
+
+#+BEGIN_SRC emacs-lisp
+  (message "Loading mu4e")
+
+  (use-package mu4e)
+  (use-package smtpmail)
+
+  (setq
+   ;; basic mu4e config
+   mu4e-sent-messages-behavior 'delete
+   mu4e-maildir "~/mail"
+   mu4e-trash-folder "/digidevin/trash"
+   mu4e-refile-folder "/digidevin/allmail"
+   mu4e-sent-folder "/digidevin/sent"
+   mu4e-drafts-folder "/digidevin/drafts"
+
+   mu4e-view-show-images t
+   mu4e-view-show-addresses t
+   mu4e-attachment-dir "~/Downloads"
+   mu4e-use-fancy-chars t 
+
+   user-mail-address "digidevin@gmail.com"
+   mu4e-reply-to-address "digidevin@gmail.com"
+   user-full-name "Devin Schwab"
+
+   mu4e-compose-siganture (concat "--\n" "Devin\n")
+   mu4e-compose-signature-auto-include nil 
+
+   ;; smtp config
+   message-send-mail-function 'smtpmail-send-it
+   starttls-use-gnutls t
+   smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil))
+   smtpmail-auth-credentials
+   '(("smtp.gmail.com" 587 "digidevin@gmail.com" nil))
+   smtpmail-default-smtp-server "smtp.gmail.com"
+   smtpmail-smtp-server "smtp.gmail.com"
+   smtpmail-smtp-service 587
+
+   message-kill-buffer-on-exit t
+
+   ;; html renderer
+   mu4e-html2text-command "w3m -T text/html"
+
+   mu4e-update-interval 120
+   mu4e-headers-auto-update t
+
+   ;; fix uid errors with mbsync
+   mu4e-change-filenames-when-moving t
+
+   mu4e-headers-draft-mark     '("D" . "⚒")
+   mu4e-headers-flagged-mark   '("F" . "✚")
+   mu4e-headers-new-mark       '("N" . "✱")
+   mu4e-headers-passed-mark    '("P" . "❯")
+   mu4e-headers-replied-mark   '("R" . "❮")
+   mu4e-headers-seen-mark      '("S" . "✔")
+   mu4e-headers-trashed-mark   '("T" . "✀")
+   mu4e-headers-attach-mark    '("a" . "⚓")
+   mu4e-headers-encrypted-mark '("x" . "⚴")
+   mu4e-headers-signed-mark    '("s" . "☡")
+   mu4e-headers-unread-mark    '("u" . "🖂")
+   mu4e-headers-has-child-prefix    '("+"  . "◼")
+   mu4e-headers-empty-parent-prefix '("-"  . "◽")
+   mu4e-headers-first-child-prefix  '("\\" . "┗▶")
+   mu4e-headers-duplicate-prefix    '("="  . "≡")
+   mu4e-headers-default-prefix      '("|"  . "│"))
+
+  (when (fboundp 'imagemagick-register-types)
+    (imagemagick-register-types))
+
+  (setq mu4e-maildir-shortcuts
+        '(("/digidevin/INBOX" . ?i)
+          ("/digidevin/sent" . ?s)
+          ("/digidevin/drafts" . ?d)
+          ("/digidevin/trash" . ?t)
+          ("/digidevin/allmail" . ?a)))
+
+  (setq mu4e-get-mail-command "mbsync gmail")
+
+  (add-to-list 'mu4e-view-actions '("ViewInBrowser" . mu4e-action-view-in-browser) t)
+
+  (use-package org-mu4e)
+  (setq org-mu4e-convert-to-html t)
+
+  (use-package mu4e-alert
+    :ensure t)
+
+
+  (mu4e-alert-set-default-style 'libnotify)
+  (add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
+  (add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display)
+
+  (use-package subr-x)
+#+END_SRC
+
+** GPG Default Encrypt
+
+#+BEGIN_SRC emacs-lisp
+  (use-package jl-encrypt
+    :load-path "~/.emacs.d/lisp/third-party")
+#+END_SRC
 * Global Keymap
 ** Detect git/mercurial repo
 #+BEGIN_SRC emacs-lisp
@@ -2196,6 +2303,7 @@ Deft for my org-mode wiki
   (global-set-key (kbd "<f9> B") (lambda () (interactive) (helm-bibtex (universal-argument))))
   (global-set-key (kbd "<f9> f") 'boxquote-insert-file)
   (global-set-key (kbd "<f9> h") 'bh/hide-other)
+  (global-set-key (kbd "<f9> m") 'mu4e)
   (global-set-key (kbd "<f9> n") 'bh/toggle-next-task-display)
   (global-set-key (kbd "<f9> I") 'bh/punch-in)
   (global-set-key (kbd "<f9> O") 'bh/punch-out)
