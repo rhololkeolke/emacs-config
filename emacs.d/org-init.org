@@ -1505,6 +1505,14 @@ Shell script linter
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'auto-mode-alist '("\\.cfg\\'" . lua-mode))
 #+END_SRC
+** Kerboscript
+#+BEGIN_SRC emacs-lisp
+  (use-package ks
+    :load-path "~/.emacs.d/lisp/third-party")
+#+END_SRC
+
+#+results:
+
 * Org-mode
 ** Basic Setup
 #+BEGIN_SRC emacs-lisp
