@@ -463,7 +463,11 @@ Autofill snippets for various modes.
         :ensure t
         :config
         (yas-global-mode 1)
-        (add-to-list 'yas-snippet-dirs "~/.emacs.d/snippets")))
+        (add-to-list 'yas-snippet-dirs (expand-file-name "~/.emacs.d/snippets"))
+        (let ((yasnippet-lib-dir (f-dirname (buffer-file-name (find-library "yasnippet")))))
+          (kill-buffer)
+          (add-to-list 'yas-snippet-dirs (format "%s/snippets" yasnippet-lib-dir)))
+        (yas-reload-all)))
 #+END_SRC
 
 ** Company
