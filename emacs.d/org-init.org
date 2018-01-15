@@ -1067,7 +1067,9 @@ Eldoc integration
   (fset 'original-cmake-ide--get-compile-command (symbol-function 'cmake-ide--get-compile-command))
 
   (defun rhol/default-cmake-ide-test-func (dir)
-    (format "%s test" (original-cmake-ide--get-compile-command dir)))
+    (format "%s && CTEST_OUTPUT_ON_FAILURE=1 %s test"
+            (original-cmake-ide--get-compile-command dir)
+            (original-cmake-ide--get-compile-command dir)))
 
   (defvar rhol/cmake-ide-test-func
     (symbol-function 'rhol/default-cmake-ide-test-func)
@@ -1080,7 +1082,7 @@ Eldoc integration
 
     (let ((cmake-compile-command (original-cmake-ide--get-compile-command dir))
           (cmake-test-command (funcall rhol/cmake-ide-test-func dir)))
-      (cond ((and (boundp 'rhol/is-test-run) rhol/is-test-run) (format "%s && %s" cmake-compile-command cmake-test-command))
+      (cond ((and (boundp 'rhol/is-test-run) rhol/is-test-run) cmake-test-command)
             ((and (boundp 'rhol/is-clean-run) rhol/is-clean-run) (format "%s clean" cmake-compile-command))
             (t cmake-compile-command))))
 
@@ -1095,6 +1097,20 @@ Eldoc integration
     (interactive)
     (let ((rhol/is-clean-run t))
       (cmake-ide-compile)))
+
+  (defvar rhol/cmake-compile-test-target-name
+    ""
+    "Name of the test target.")
+
+  (defun rhol/cmake-ide-run-test-target (dir)
+    "Compile and run specified test target.
+
+  DIR: Path to build folder"
+    (format "%s %s && cd %s && ./bin/%s"
+            (original-cmake-ide--get-compile-command dir)
+            rhol/cmake-compile-test-target-name
+            dir
+            rhol/cmake-compile-test-target-name))
 #+END_SRC
 
 *** CMake IDE Clang Include Fixer
