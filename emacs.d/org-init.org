@@ -1658,9 +1658,7 @@ Shell script linter
   (setq org-capture-templates
         '(("t" "todo" entry (file (lambda () (expand-file-name (format "%s/refile.org" rhol-org-directory))))
            "* TODO %?\n%U\n" :clock-in t :clock-resume t)
-          ("r" "respond" entry (file (lambda () (expand-file-name (format "%s/refile.org" rhol-org-directory))))
-           "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n" :clock-in t :clock-resume t :immediate-finish t)
-          ("n" "note" entry (file (lambda ()(expand-file-name (format "%s/refile.org" rhol-org-directory))))
+          ("n" "note" entry (file (lambda ()(expand-file-name (format "%s/notes.org" rhol-org-directory))))
            "* %? :NOTE:\n%U\n" :clock-in t :clock-resume t)
           ("j" "Journal" entry (file+datetree (lambda () (expand-file-name (format "~/%s/diary.org" rhol-org-directory))))
            "* %? :crypt:\n%U\n" :clock-in t :clock-resume t)
@@ -1672,9 +1670,6 @@ Shell script linter
            "* %^{Name} \n:PROPERTIES:\n:EMAIL: %^{Email}\n:PHONE:\n:NICKNAME:\n:IGNORE:\n:ICON:\n:NOTE:\n:ADDRESS:\n:BIRTHDAY:\n:END:\n%?")
           ("i" "Ideas" entry (file (lambda () (expand-file-name (format "%s/ideas.org" rhol-org-directory))))
            "* %?\n%U\n" :clock-in t :clock-resume t)
-          ;; wait for an e-mail reply
-          ("W" "wait-for-reply" entry (file+headline (lambda() (expand-file-name (format "%s/refile.org" rhol-org-directory))) "Waiting")
-           "* WAIT %u %a %?\n")
           ))
 #+END_SRC
 
