@@ -2232,7 +2232,7 @@ Deft for my org-mode wiki
               (calendar-file (read-string "calendar file: ")))
           (customize-save-variable
            'org-gcal-file-alist
-           (list (cons calendar-name (concat "%s/%s" rhol-org-directory calendar-file))))))))
+           (list (cons calendar-name (concat rhol-org-directory calendar-file))))))))
 
   (use-package org-gcal
     :ensure t
