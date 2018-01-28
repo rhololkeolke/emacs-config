@@ -46,6 +46,7 @@
 (depends-on "monky")
 (depends-on "mu4e-alert")
 (depends-on "nyan-mode")
+(depends-on "org-gcal")
 (depends-on "org-plus-contrib")
 (depends-on "org-ref")
 (depends-on "org-super-agenda")

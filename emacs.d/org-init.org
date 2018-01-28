@@ -1067,7 +1067,9 @@ Eldoc integration
   (fset 'original-cmake-ide--get-compile-command (symbol-function 'cmake-ide--get-compile-command))
 
   (defun rhol/default-cmake-ide-test-func (dir)
-    (format "%s test" (original-cmake-ide--get-compile-command dir)))
+    (format "%s && CTEST_OUTPUT_ON_FAILURE=1 %s test"
+            (original-cmake-ide--get-compile-command dir)
+            (original-cmake-ide--get-compile-command dir)))
 
   (defvar rhol/cmake-ide-test-func
     (symbol-function 'rhol/default-cmake-ide-test-func)
@@ -1080,7 +1082,7 @@ Eldoc integration
 
     (let ((cmake-compile-command (original-cmake-ide--get-compile-command dir))
           (cmake-test-command (funcall rhol/cmake-ide-test-func dir)))
-      (cond ((and (boundp 'rhol/is-test-run) rhol/is-test-run) (format "%s && %s" cmake-compile-command cmake-test-command))
+      (cond ((and (boundp 'rhol/is-test-run) rhol/is-test-run) cmake-test-command)
             ((and (boundp 'rhol/is-clean-run) rhol/is-clean-run) (format "%s clean" cmake-compile-command))
             (t cmake-compile-command))))
 
@@ -1095,6 +1097,20 @@ Eldoc integration
     (interactive)
     (let ((rhol/is-clean-run t))
       (cmake-ide-compile)))
+
+  (defvar rhol/cmake-compile-test-target-name
+    ""
+    "Name of the test target.")
+
+  (defun rhol/cmake-ide-run-test-target (dir)
+    "Compile and run specified test target.
+
+  DIR: Path to build folder"
+    (format "%s %s && cd %s && ./bin/%s"
+            (original-cmake-ide--get-compile-command dir)
+            rhol/cmake-compile-test-target-name
+            dir
+            rhol/cmake-compile-test-target-name))
 #+END_SRC
 
 *** CMake IDE Clang Include Fixer
@@ -1514,6 +1530,53 @@ Shell script linter
 #+results:
 
 * Org-mode
+** Customize Group
+
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: Creating a customize group rhol-emacs/rhol-org-mode")
+  (defgroup rhol-org-mode nil
+    "Org-mode customization settings."
+    :group 'rhol-emacs
+    :tag "Org-mode")
+#+END_SRC
+
+
+** Basic Config Vars
+
+#+BEGIN_SRC emacs-lisp
+  (defcustom rhol-org-directory nil
+    "Folder where org-mode files are stored."
+    :type 'directory
+    :group 'rhol-org-mode
+    :tag "Org Directory")
+
+  (defcustom rhol-org-agenda-files rhol-org-directory
+    "List of directories that should be included in agenda."
+    :type '(repeat 'file)
+    :tag "Org Agenda Files")
+
+  (if rhol-org-directory nil
+    (progn (customize-save-variable
+     'rhol-org-directory
+     (expand-file-name (read-directory-name "Org-mode Directory: "
+                                            "~/Dropbox/org-mode"
+                                            nil
+                                            t)))
+           (customize-save-variable 'rhol-org-agenda-files (list rhol-org-directory))))
+
+  (defcustom rhol-org-default-notes-file nil
+    "Default capture file."
+    :type 'file
+    :group 'rhol-org-mode
+    :tag "Org Default Notes File")
+
+  (if rhol-org-default-notes-file nil
+    (customize-save-variable
+     'rhol-org-default-notes-file
+     (expand-file-name
+      (read-file-name "Org default notes file: " rhol-org-directory "refile.org" nil "refile.org"))))
+#+END_SRC
+
 ** Basic Setup
 #+BEGIN_SRC emacs-lisp
   (message "org-init.org: Org basic setup")
@@ -1533,20 +1596,10 @@ Shell script linter
   (global-set-key (kbd "C-c b") 'org-iswitchb)
 
                                           ; TODO: Check if the files exist before choosing this dir
-  (cond
-   ((string= system-name "dschwab.lon.corp.google.com")
-    (progn
-      (setq org-directory (expand-file-name "~/gdrive/org-mode"))
-      (setq org-agenda-files '("~/gdrive/org-mode"))))
-   ((string= system-name "dschwab-macbookpro.roam.corp.google.com")
-      (progn
-        (setq org-directory (expand-file-name "~/Google Drive/org-mode/"))
-        (setq org-agenda-files '("~/Google Drive/org-mode/"))))
-   (t
-    (progn
-      (setq org-directory (expand-file-name "~/Dropbox/org-mode/"))
-      (setq org-agenda-files '("~/Dropbox/org-mode")))))
-  (setq org-default-notes-file (concat org-directory "refile.org"))
+
+  (setq org-default-notes-file rhol-org-default-notes-file
+        org-directory rhol-org-directory
+        org-agenda-files rhol-org-agenda-files)
 
   (setq org-support-shift-select t)
 
@@ -1603,25 +1656,20 @@ Shell script linter
 #+BEGIN_SRC emacs-lisp
   (message "org-init.org: Org capture templates")
   (setq org-capture-templates
-        '(("t" "todo" entry (file (lambda () (expand-file-name (format "%s/refile.org" org-directory))))
+        '(("t" "todo" entry (file (lambda () (expand-file-name (format "%s/refile.org" rhol-org-directory))))
            "* TODO %?\n%U\n" :clock-in t :clock-resume t)
-          ("r" "respond" entry (file (lambda () (expand-file-name (format "%s/refile.org" org-directory))))
-           "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n" :clock-in t :clock-resume t :immediate-finish t)
-          ("n" "note" entry (file (lambda ()(expand-file-name (format "%s/refile.org" org-directory))))
+          ("n" "note" entry (file (lambda ()(expand-file-name (format "%s/notes.org" rhol-org-directory))))
            "* %? :NOTE:\n%U\n" :clock-in t :clock-resume t)
-          ("j" "Journal" entry (file+datetree (lambda () (expand-file-name (format "~/%s/diary.org" org-directory))))
+          ("j" "Journal" entry (file+datetree (lambda () (expand-file-name (format "~/%s/diary.org" rhol-org-directory))))
            "* %? :crypt:\n%U\n" :clock-in t :clock-resume t)
-          ("e" "Event" entry (file (lambda () (expand-file-name (format "%s/calendar.org" org-directory))))
+          ("e" "Event" entry (file (lambda () (expand-file-name (format "%s/calendar.org" rhol-org-directory))))
            "* %^{Name} \n%U\n:PROPERTIES:\n:CATEGORY: Event\n:LOCATION: %^{Location}\n:END:\n%^T\n\n%?")
-          ("h" "Habit" entry (file (lambda () (expand-file-name (format "%s/refile.org" org-directory))))
+          ("h" "Habit" entry (file (lambda () (expand-file-name (format "%s/refile.org" rhol-org-directory))))
            "* NEXT %?\n%U\nSCHEDULED: %(format-time-string \"<%Y-%m-%d %a .+1d/3d>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n")
-          ("c" "Contacts" entry (file (lambda () (expand-file-name (format "%s/contacts.org" org-directory))))
+          ("c" "Contacts" entry (file (lambda () (expand-file-name (format "%s/contacts.org" rhol-org-directory))))
            "* %^{Name} \n:PROPERTIES:\n:EMAIL: %^{Email}\n:PHONE:\n:NICKNAME:\n:IGNORE:\n:ICON:\n:NOTE:\n:ADDRESS:\n:BIRTHDAY:\n:END:\n%?")
-          ("i" "Ideas" entry (file (lambda () (expand-file-name (format "%s/ideas.org" org-directory))))
+          ("i" "Ideas" entry (file (lambda () (expand-file-name (format "%s/ideas.org" rhol-org-directory))))
            "* %?\n%U\n" :clock-in t :clock-resume t)
-          ;; wait for an e-mail reply
-          ("W" "wait-for-reply" entry (file+headline (lambda() (expand-file-name (format "%s/refile.org" org-directory))) "Waiting")
-           "* WAIT %u %a %?\n")
           ))
 #+END_SRC
 
@@ -1987,14 +2035,14 @@ Enables a nice calendar display
   (use-package org-ref
     :config
     ;; org-ref settings
-    (setq org-ref-notes-directory (format "%s/bibliography/notes" org-directory)
-          org-ref-bibliography-notes (format "%s/bibliography/articles.org" org-directory)
-          org-ref-default-bibliography '(lambda (_ _ _) (format "%s/bibliography/references.bib" org-directory))
-          org-ref-pdf-directory (format "%s/bibliography/bibtex-pdfs" org-directory))
+    (setq org-ref-notes-directory (format "%s/bibliography/notes" rhol-org-directory)
+          org-ref-bibliography-notes (format "%s/bibliography/articles.org" rhol-org-directory)
+          org-ref-default-bibliography '(lambda (_ _ _) (format "%s/bibliography/references.bib" rhol-org-directory))
+          org-ref-pdf-directory (format "%s/bibliography/bibtex-pdfs" rhol-org-directory))
     ;; helm-bibtex settings
-    (setq bibtex-completion-bibliography (format "%s/bibliography/references.bib" org-directory)
-          bibtex-completion-library-path (format "%s/bibliography/bibtex-pdfs" org-directory)
-          bibtex-completion-notes-path (format "%s/bibliography/articles.org" org-directory))
+    (setq bibtex-completion-bibliography (format "%s/bibliography/references.bib" rhol-org-directory)
+          bibtex-completion-library-path (format "%s/bibliography/bibtex-pdfs" rhol-org-directory)
+          bibtex-completion-notes-path (format "%s/bibliography/articles.org" rhol-org-directory))
     ;; pdf opener
     (setq bibtex-completion-pdf-open-function 'find-file)
 
@@ -2146,6 +2194,52 @@ Deft for my org-mode wiki
 	  deft-extensions '("org" "md")
 	  deft-default-extension "org"
 	  deft-use-filter-string-for-filename t))
+#+END_SRC
+
+** org-gcal
+
+#+BEGIN_SRC emacs-lisp
+  (message "Loading org-cal")
+
+  (defcustom org-gcal-client-id nil
+    "Client id for Google oauth"
+    :type 'string
+    :tag "Org-gcal client id")
+
+  (defcustom org-gcal-client-secret nil
+    "Client secret from Google."
+    :type 'string
+    :tag "Org-gcal client secret")
+
+  (defcustom org-gcal-file-alist nil
+    "Files to sync"
+    :type '(list '(cons 'string 'string))
+    :tag "Org-gcal file alist")
+
+  (defun rhol--setup-org-gcal ()
+    "Configure org-gcal on first setup."
+    (if org-gcal-client-id nil
+      (customize-save-variable
+       'org-gcal-client-id
+       (read-string "org-gcal client id: ")))
+    (if org-gcal-client-secret nil
+      (customize-save-variable
+       'org-gcal-client-secret
+       (read-string "org-gcal client secret: ")))
+    (if org-gcal-file-alist nil
+      (progn
+        (let ((calendar-name (read-string "calendar name: "))
+              (calendar-file (read-string "calendar file: ")))
+          (customize-save-variable
+           'org-gcal-file-alist
+           (list (cons calendar-name (concat "%s/%s" rhol-org-directory calendar-file))))))))
+
+  (use-package org-gcal
+    :ensure t
+    :config
+    (rhol--setup-org-gcal)
+    (add-hook 'org-agenda-mode-hook (lambda () (org-gcal-sync)))
+    (add-hook 'org-capture-after-finalize-hook (lambda () (org-gcal-sync))))
 #+END_SRC
 
 * Mail
