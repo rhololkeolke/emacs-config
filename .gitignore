@@ -85,3 +85,4 @@ emacs.d/irony
 /emacs.d/projectile.cache
 /emacs.d/bookmarks
 /emacs.d/org-gcal
+emacs.d/url
