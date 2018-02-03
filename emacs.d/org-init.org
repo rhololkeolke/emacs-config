@@ -30,9 +30,72 @@ Start Emacs server if not already running.
                 (unless (server-running-p)
                   (server-start)))))
 #+END_SRC
-** Bash Environment
+
+
+** Shell Environment
 Set Emacs environment variables to the same values that a user would
 have after sourcing .bash_profile.
+*** Fish Environment
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: Fish Environment")
+
+  (defun rhol--get-fish-env ()
+    "Return the environment variables set by fish config"
+    (let ((fish-shell (executable-find "fish")))
+      (shell-command-to-string (format "%s -ilc 'set -L'" fish-shell))))
+
+  (defun rhol--format-fish-env-for-emacs (env-line)
+    "Convert fish set variable to emacs process-environment var.
+
+     ENV-LINE A line from the 'set' command in fish shell.
+
+     Emacs process-environment expects variables in the form of:
+     VAR=VAL. But fish outputs them in the form VAR VAL1 VAL2. This
+     command converts from the fish syntax to the emacs syntax."
+    (let ((space-split-env-var (split-string env-line "[[:space:]]+")))
+      (let ((no-single-quotes (mapcar (lambda (s) (remove (aref "'" 0) s)) space-split-env-var)))
+        (if (= (length no-single-quotes) 2)
+            (format "%s=%s"
+                    (car no-single-quotes)
+                    (car (last no-single-quotes)))
+          (format "%s=%s" (car no-single-quotes)
+                  (mapconcat 'identity (cdr no-single-quotes) ":"))))))
+
+  (defun rhol--fish-apply-set-string (raw-set-str)
+    "Set environment variables from env string.
+
+     RAW-SET-STR the output of 'set' in fish shell"
+    (let ((line-split-env-strings (split-string raw-set-str "\n")))
+      (let ((emacs-env-strings (mapcar 'rhol--format-fish-env-for-emacs  line-split-env-strings)))
+        (setq process-environment emacs-env-strings))))
+
+  (defun rhol-eval-fish-env ()
+    "Overwrite `process-environment' with the environment variables set in fish config."
+    (interactive)
+    (rhol--fish-apply-set-string (rhol--get-fish-env)))
+
+  (defun rhol--get-fish-path ()
+    "Return PATH variable after evaluating fish config."
+    (let ((line-split-env-strings (split-string (rhol--get-fish-env) "\n")))
+      (let ((filtered-env-strings (-filter (lambda (line) (string-prefix-p "PATH " line)) line-split-env-strings)))
+        (let ((no-single-quotes (mapcar (lambda (s) (remove (aref "'" 0) s)) filtered-env-strings)))
+          (cond
+           ((= (length filtered-env-strings) 1)
+            (cdr (split-string (car no-single-quotes) "[[:space:]]+")))
+           ((> (length no-single-quotes) 1)
+            (error "More than one PATH string found in fish env vars: %s" no-single-quotes))
+           ((not no-single-quotes)
+            (error "No PATH string found in fish env vars")))))))
+
+  (defun rhol-eval-fish-path ()
+    "Set `exec-path' based on fish PATH variable."
+    (interactive)
+    (let ((fish-path (rhol--get-fish-path)))
+      (let ((fish-path-with-exec (append fish-path (list exec-directory))))
+        (setq exec-path fish-path-with-exec))))
+#+END_SRC
+
+*** Bash Environment
 #+BEGIN_SRC emacs-lisp
   (message "org-init.org: Bash Environment")
 
@@ -40,9 +103,9 @@ have after sourcing .bash_profile.
     "Return the environment variable string set by .bash_profile."
     (shell-command-to-string "/bin/bash -c \"source ~/.bash_profile; env\""))
 
-  (defun rhol--apply-env-string (raw-env-str)
+  (defun rhol--bash-apply-env-string (raw-env-str)
     "Set environment variables from env string.
-  
+
     RAW-ENV-STR the output of env command"
     (let ((env-strings (split-string raw-env-str "\n")))
       (setq process-environment env-strings)))
@@ -50,7 +113,7 @@ have after sourcing .bash_profile.
   (defun rhol-eval-bash-env ()
     "Overwrite `process-environment' with the environment variables set by .bash_profile."
     (interactive)
-    (rhol--apply-env-string (rhol--get-bash-env)))
+    (rhol--bash-apply-env-string (rhol--get-bash-env)))
 
   (defun rhol--get-bash-path ()
     "Return PATH variable after evaluating bash profile."
@@ -62,9 +125,22 @@ have after sourcing .bash_profile.
     (interactive)
     (let ((env-strings (split-string (rhol--get-bash-path) ":")))
       (setq exec-path env-strings)))
+#+END_SRC
 
-  (rhol-eval-bash-env)
-  (rhol-eval-bash-path)
+*** Eval ENV and PATH
+
+#+BEGIN_SRC emacs-lisp
+  (cond
+   ((string= "/usr/bin/fish" (getenv "SHELL"))
+    (message "Getting env and path from fish shell")
+    (rhol-eval-fish-env)
+    (rhol-eval-fish-path))
+   ((string= "/bin/bash" (getenv "SHELL"))
+    (message "Getting env and path from bash shell")
+    (rhol-eval-bash-env)
+    (rhol-eval-bash-path))
+   (t
+    (error "Unknown shell type: %s" (getenv "SHELL"))))
 #+END_SRC
 
 ** Open Default Directory
@@ -200,53 +276,55 @@ the user to press =C-x C-r= to reload the buffer with sudo privileges.
 #+END_SRC
 ** Font
 #+BEGIN_SRC emacs-lisp
-    (message "org-init.org: Font")
+  (message "org-init.org: Font")
 
-    (defcustom rhol-default-font nil
-      "Font name used in graphical mode."
-      :type 'string
-      :group 'rhol-appearance
-      :tag "Default Font")
+  (defcustom rhol-default-font nil
+    "Font name used in graphical mode."
+    :type 'string
+    :group 'rhol-appearance
+    :tag "Default Font")
 
-    (if rhol-default-font
-        nil
-      (customize-save-variable 'rhol-default-font
-                               (let ((choice (completing-read "What font do you want to use? ((D)efault, (I)nconsolata, (S)ource Code Pro, (O)ther): "
-                                                              '(("D" 1)
-                                                                ("I" 2)
-                                                                ("S" 3)
-                                                                ("O" 4))
-                                                              nil t "D")))
-                                 (cond
-                                  ((string= choice "D")
-                                   "DejaVu Sans Mono")
-                                  ((string= choice "I")
-                                   "Inconsolata")
-                                  ((string= choice "S")
-                                   "Source Code Pro")
-                                  ((string= choice "O")
-                                   (read-string "Enter desired font-name: "))))))
+  (if rhol-default-font
+      nil
+    (customize-save-variable 'rhol-default-font
+                             (let ((choice (completing-read "What font do you want to use? ((D)efault, (I)nconsolata, (S)ource Code Pro, (O)ther): "
+                                                            '(("D" 1)
+                                                              ("I" 2)
+                                                              ("S" 3)
+                                                              ("O" 4))
+                                                            nil t "D")))
+                               (cond
+                                ((string= choice "D")
+                                 "DejaVu Sans Mono")
+                                ((string= choice "I")
+                                 "Inconsolata")
+                                ((string= choice "S")
+                                 "Source Code Pro")
+                                ((string= choice "O")
+                                 (read-string "Enter desired font-name: "))))))
 
-    (defcustom rhol-default-font-size nil
-      "Font size used in graphical mode."
-      :type 'integer
-      :group 'rhol-appearance
-      :tag "Font Size")
+  (defcustom rhol-default-font-size nil
+    "Font size used in graphical mode."
+    :type 'integer
+    :group 'rhol-appearance
+    :tag "Font Size")
 
-    (if rhol-default-font-size
-        nil
-      (customize-save-variable 'rhol-default-font-size
-                               (read-number "Enter font size: " 9)))
+  (if rhol-default-font-size
+      nil
+    (customize-save-variable 'rhol-default-font-size
+                             (read-number "Enter font size: " 9)))
 
-    (defun rhol--configure-font ()
-      "Refresh font configuration."
-      (if (member rhol-default-font (font-family-list))
-          (let ((font-name (format "%s %d" rhol-default-font rhol-default-font-size)))
-            (set-frame-font font-name))
-        (user-error "Font %s does not exist" rhol-default-font)))
+  (defun rhol--configure-font ()
+    "Refresh font configuration."
+    (if (member rhol-default-font (font-family-list))
+        (let ((font-name (format "%s %d" rhol-default-font rhol-default-font-size)))
+          (set-frame-font font-name))
+      (user-error "Font %s does not exist" rhol-default-font)))
 
-    (add-hook 'after-make-frame-functions '(lambda (frame)
-                                             (message "running after frame hook") (select-frame frame) (rhol--configure-font)))
+  (add-hook 'after-make-frame-functions '(lambda (frame)
+                                           (select-frame frame)
+                                           (if (display-graphic-p frame)
+                                                 (rhol--configure-font))))
 #+END_SRC
 
 ** Theme

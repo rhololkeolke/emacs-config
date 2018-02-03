@@ -190,6 +190,10 @@
 (use-package org
   :ensure t)
 
+;; Ensure dash is available
+(use-package dash
+  :ensure t)
+
 ;; tangle the org init file
 (org-babel-load-file (concat user-emacs-directory "org-init.org"))
 
