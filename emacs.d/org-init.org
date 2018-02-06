@@ -954,12 +954,11 @@ Stop ediff from opening its interface in a new frame (aka window)
     :init (with-eval-after-load 'python
             (progn              
               (elpy-enable)
-              (if (executable-find "ipython")
-                  (progn 
-                    (elpy-use-ipython)
-                    (setq python-shell-interpreter-args (format "%s --simple-prompt" python-shell-interpreter-args))))
-              (setq elpy-rpc-backend "jedi")
-              (setq elpy-test-runner 'elpy-test-pytest-runner))))
+              (if (executable-find "jupyter")
+                  (setq python-shell-interpreter "jupyter"
+                        python-shell-interpreter-args "console --simple-prompt")
+                (setq elpy-rpc-backend "jedi")
+                (setq elpy-test-runner 'elpy-test-pytest-runner)))))
 #+END_SRC
 
 *** Autofill comments
