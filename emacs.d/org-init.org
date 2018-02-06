@@ -1655,7 +1655,6 @@ Shell script linter
     :tag "Org-mode")
 #+END_SRC
 
-
 ** Basic Config Vars
 
 #+BEGIN_SRC emacs-lisp
@@ -2556,8 +2555,9 @@ Deft for my org-mode wiki
     "Set the proper keybindings in `org-mode'."
     (local-set-key (kbd "M-S-<up>") 'org-move-subtree-up)
     (local-set-key (kbd "M-S-<down>") 'org-move-subtree-down)
-    )
-
+    (define-key pyenv-mode-map (kbd "C-c C-s") nil)
+    (local-set-key (kbd "C-c C-s") 'org-schedule))
+    
   ;; add to hook
   (message "adding org-mode hook")
   (add-hook 'org-mode-hook 'fix-org-keymap)
