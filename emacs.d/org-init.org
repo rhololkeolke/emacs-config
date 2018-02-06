@@ -2265,7 +2265,7 @@ Deft for my org-mode wiki
 #+BEGIN_SRC emacs-lisp
   (use-package deft
     :config
-    (setq deft-directory pow-directory
+    (setq deft-directory (concat rhol-org-directory "/wiki/")
 	  deft-recursive t
 	  deft-extensions '("org" "md")
 	  deft-default-extension "org"
