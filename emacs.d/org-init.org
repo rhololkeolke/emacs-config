@@ -265,6 +265,14 @@ the user to press =C-x C-r= to reload the buffer with sudo privileges.
   (setq browse-url-browser-function 'browse-url-generic
         browse-url-generic-program "firefox-trunk")
 #+END_SRC
+** Save history across sessions
+
+Save minibuffer history across sesssions
+
+#+BEGIN_SRC emacs-lisp
+  (savehist-mode 1)
+#+END_SRC
+
 * Appearance
 ** Customize Group
 #+BEGIN_SRC emacs-lisp
