@@ -181,10 +181,10 @@
   :config
   (pallet-mode t))
 
-;; setup cus-edit+
-;; Better customize behavior
-(use-package cus-edit+
-  :ensure t)
+;; ;; setup cus-edit+
+;; ;; Better customize behavior
+;; (use-package cus-edit+
+;;   :ensure t)
 
 ;; load org mode
 (use-package org

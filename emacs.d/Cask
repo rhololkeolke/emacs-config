@@ -78,3 +78,4 @@
 (depends-on "undo-tree")
 (depends-on "yaml-mode")
 (depends-on "yasnippet")
+(depends-on "yasnippet-snippets")
