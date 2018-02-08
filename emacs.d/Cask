@@ -53,6 +53,8 @@
 (depends-on "monky")
 (depends-on "mu4e-alert")
 (depends-on "nyan-mode")
+(depends-on "ob-ipython")
+(depends-on "org")
 (depends-on "org-gcal")
 (depends-on "org-plus-contrib")
 (depends-on "org-ref")
