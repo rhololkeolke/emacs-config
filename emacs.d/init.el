@@ -188,11 +188,16 @@
 
 ;; load org mode
 (use-package org
-  :ensure t)
+  :ensure t
+  :pin manual)
 
 ;; Ensure dash is available
 (use-package dash
   :ensure t)
+
+;; force reload of org to get the new version, not the built in
+;; version
+(org-reload)
 
 ;; tangle the org init file
 (org-babel-load-file (concat user-emacs-directory "org-init.org"))
