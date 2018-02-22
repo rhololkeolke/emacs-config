@@ -450,7 +450,7 @@ the user to press =C-x C-r= to reload the buffer with sudo privileges.
      (t
       (let ((envrc-path (rhol--find-envrc (buffer-file-name))))
         (if envrc-path
-            (let ((env-str (rhol--get-direnv-str envrc-path)))
+            (let ((env-str (rhol--get-bash-direnv-str envrc-path)))
               ;; (message "%s" env-str)
               (rhol--bash-apply-env-string env-str)))))))
 
@@ -475,7 +475,7 @@ the user to press =C-x C-r= to reload the buffer with sudo privileges.
      (t
       (let ((envrc-path (rhol--find-envrc (buffer-file-name))))
         (if envrc-path
-            (let ((env-str (rhol--get-direnv-str envrc-path)))
+            (let ((env-str (rhol--get-fish-direnv-str envrc-path)))
               (rhol--fish-apply-set-string env-str)))))))
 
   (defun rhol-load-direnv-for-buffer ()
@@ -495,9 +495,7 @@ the user to press =C-x C-r= to reload the buffer with sudo privileges.
     (if (local-variable-p 'process-environment)
         (kill-local-variable 'process-environment)))
 
-  (if rhol-use-direnv
-      (add-hook 'find-file-hook 'rhol-load-direnv-for-buffer))
-
+  (add-hook 'find-file-hook 'rhol-load-direnv-for-buffer)
 #+END_SRC
 
 ** Ace Window
