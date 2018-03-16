@@ -6,6 +6,7 @@
 
 (depends-on "ace-window")
 (depends-on "auctex-latexmk")
+(depends-on "auto-yasnippet")
 (depends-on "calfw")
 (depends-on "calfw-cal")
 (depends-on "calfw-ical")
