@@ -55,6 +55,7 @@
 (depends-on "lua-mode")
 (depends-on "magit")
 (depends-on "markdown-mode")
+(depends-on "matlab-mode")
 (depends-on "monky")
 (depends-on "mu4e-alert")
 (depends-on "nyan-mode")
