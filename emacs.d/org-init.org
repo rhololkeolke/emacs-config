@@ -1702,6 +1702,24 @@ Shell script linter
 #+results:
 : aya-expand
 
+** Agressive Indent Mode
+
+#+BEGIN_SRC emacs-lisp
+  (use-package aggressive-indent
+    :ensure t
+    :config
+    (agressive-indent-global-mode 1))
+#+END_SRC
+
+** Ranger
+
+#+BEGIN_SRC emacs-lisp
+  (use-package ranger
+    :ensure t
+    :config
+    (ranger-override-dired-mode t))
+#+END_SRC
+
 * Org-mode
 ** Customize Group
 
