@@ -42,7 +42,7 @@ have after sourcing .bash_profile.
   (defun rhol--get-fish-env ()
     "Return the environment variables set by fish config"
     (let ((fish-shell (executable-find "fish")))
-      (shell-command-to-string (format "%s -ilc 'set -L'" fish-shell))))
+      (shell-command-to-string (format "%s -ilc 'set -L | grep -v history'" fish-shell))))
 
   (defun rhol--format-fish-env-for-emacs (env-line)
     "Convert fish set variable to emacs process-environment var.
@@ -1403,7 +1403,7 @@ Make Launch files and xacro use xml-mode
 
 
     (global-set-key
-     (kbd "C-n")
+     (kbd "C-S-n")
      (defhydra hydra-move
        (:pre (progn 
 	       (linum-mode 1))
