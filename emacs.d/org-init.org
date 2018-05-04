@@ -449,89 +449,93 @@ Save minibuffer history across sesssions
 ** Direnv
 
 #+BEGIN_SRC emacs-lisp
-  (message "org-init.org: direnv")
-  (defcustom rhol-use-direnv t
-    "Set true to enable direnv parsing."
-    :type 'boolean
-    :group 'rhol-third-party
-    :tag "Use direnv")
+  ;; (message "org-init.org: direnv")
+  ;; (defcustom rhol-use-direnv t
+  ;;   "Set true to enable direnv parsing."
+  ;;   :type 'boolean
+  ;;   :group 'rhol-third-party
+  ;;   :tag "Use direnv")
 
-  (defun rhol--find-envrc (path)
-    "Find path to .envrc.
+  ;; (defun rhol--find-envrc (path)
+  ;;   "Find path to .envrc.
 
-    PATH path to the buffer that you want to find .envrc for."
-    (locate-dominating-file path ".envrc"))
+  ;;   PATH path to the buffer that you want to find .envrc for."
+  ;;   (locate-dominating-file path ".envrc"))
 
-  (defun rhol--get-bash-direnv-str (envrc-path)
-    "Get the direnv environment vars.
+  ;; (defun rhol--get-bash-direnv-str (envrc-path)
+  ;;   "Get the direnv environment vars.
 
-    ENVRC-PATH path to the .envrc to load."
-    (message "%s" envrc-path)
-    (make-local-variable 'process-environment)
-    (shell-command-to-string (format "pushd %s > /dev/null; source .envrc; /usr/bin/env" envrc-path)))
+  ;;   ENVRC-PATH path to the .envrc to load."
+  ;;   (message "%s" envrc-path)
+  ;;   (make-local-variable 'process-environment)
+  ;;   (shell-command-to-string (format "pushd %s > /dev/null; source .envrc; /usr/bin/env" envrc-path)))
 
-  (defun rhol-load-bash-direnv-for-buffer ()
-    "Parse environment specified by direnv for a given buffer."
-    (interactive)
-    (cond
-     ;; Special handling of dired mode files
-     ((eq 'dired-mode major-mode)
-      (let ((envrc-path (rhol--find-envrc (expand-file-name default-directory))))
-        (message "%s" envrc-path)
-        (if envrc-path
-            (let ((env-str (rhol--get-bash-direnv-str envrc-path)))
-              (message "%s" env-str)
-              (rhol--bash-apply-env-string env-str)))))
-     ;; Other files can be handled normally
-     (t
-      (let ((envrc-path (rhol--find-envrc (buffer-file-name))))
-        (if envrc-path
-            (let ((env-str (rhol--get-bash-direnv-str envrc-path)))
-              ;; (message "%s" env-str)
-              (rhol--bash-apply-env-string env-str)))))))
+  ;; (defun rhol-load-bash-direnv-for-buffer ()
+  ;;   "Parse environment specified by direnv for a given buffer."
+  ;;   (interactive)
+  ;;   (cond
+  ;;    ;; Special handling of dired mode files
+  ;;    ((eq 'dired-mode major-mode)
+  ;;     (let ((envrc-path (rhol--find-envrc (expand-file-name default-directory))))
+  ;;       (message "%s" envrc-path)
+  ;;       (if envrc-path
+  ;;           (let ((env-str (rhol--get-bash-direnv-str envrc-path)))
+  ;;             (message "%s" env-str)
+  ;;             (rhol--bash-apply-env-string env-str)))))
+  ;;    ;; Other files can be handled normally
+  ;;    (t
+  ;;     (let ((envrc-path (rhol--find-envrc (buffer-file-name))))
+  ;;       (if envrc-path
+  ;;           (let ((env-str (rhol--get-bash-direnv-str envrc-path)))
+  ;;             ;; (message "%s" env-str)
+  ;;             (rhol--bash-apply-env-string env-str)))))))
 
-  (defun rhol--get-fish-direnv-str (envrc-path)
-    "Get the direnv environment vars.
+  ;; (defun rhol--get-fish-direnv-str (envrc-path)
+  ;;   "Get the direnv environment vars.
 
-    ENVRC-PATH path to .envrc to load."
-    (message "%s" envrc-path)
-    (make-local-variable 'process-environment)
-    (shell-command-to-string (format "fish -ilc 'cd %s; and eval (direnv export fish); and set -L'" envrc-path)))
+  ;;   ENVRC-PATH path to .envrc to load."
+  ;;   (message "%s" envrc-path)
+  ;;   (make-local-variable 'process-environment)
+  ;;   (shell-command-to-string (format "fish -ilc 'cd %s; and eval (direnv export fish); and set -L'" envrc-path)))
 
-  (defun rhol-load-fish-direnv-for-buffer ()
-    "Parse direnv for given buffer."
-    (interactive)
-    (cond
-     ((eq 'dired-mode major-mode)
-      (let ((envrc-path (rhol--find-envrc (expand-file-name default-directory))))
-        (message "%s" envrc-path)
-        (if envrc-path
-            (let ((env-str (rhol--get-fish-direnv-str envrc-path)))
-              (rhol--fish-apply-set-string env-str)))))
-     (t
-      (let ((envrc-path (rhol--find-envrc (buffer-file-name))))
-        (if envrc-path
-            (let ((env-str (rhol--get-fish-direnv-str envrc-path)))
-              (rhol--fish-apply-set-string env-str)))))))
+  ;; (defun rhol-load-fish-direnv-for-buffer ()
+  ;;   "Parse direnv for given buffer."
+  ;;   (interactive)
+  ;;   (cond
+  ;;    ((eq 'dired-mode major-mode)
+  ;;     (let ((envrc-path (rhol--find-envrc (expand-file-name default-directory))))
+  ;;       (message "%s" envrc-path)
+  ;;       (if envrc-path
+  ;;           (let ((env-str (rhol--get-fish-direnv-str envrc-path)))
+  ;;             (rhol--fish-apply-set-string env-str)))))
+  ;;    (t
+  ;;     (let ((envrc-path (rhol--find-envrc (buffer-file-name))))
+  ;;       (if envrc-path
+  ;;           (let ((env-str (rhol--get-fish-direnv-str envrc-path)))
+  ;;             (rhol--fish-apply-set-string env-str)))))))
 
-  (defun rhol-load-direnv-for-buffer ()
-    "Call the appropriate direnv load function for the current shell."
-    (interactive)
-    (cond
-     ((string= "/usr/bin/fish" (getenv "SHELL"))
-      (rhol-load-fish-direnv-for-buffer))
-     ((string= "/bin/bash" (getenv "SHELL"))
-      (rhol-load-bash-direnv-for-buffer))
-     (t
-      (error "Unknown shell type: %s" (getenv "SHELL")))))
+  ;; (defun rhol-load-direnv-for-buffer ()
+  ;;   "Call the appropriate direnv load function for the current shell."
+  ;;   (interactive)
+  ;;   (cond
+  ;;    ((string= "/usr/bin/fish" (getenv "SHELL"))
+  ;;     (rhol-load-fish-direnv-for-buffer))
+  ;;    ((string= "/bin/bash" (getenv "SHELL"))
+  ;;     (rhol-load-bash-direnv-for-buffer))
+  ;;    (t
+  ;;     (error "Unknown shell type: %s" (getenv "SHELL")))))
 
-  (defun rhol-unload-direnv ()
-    "Unload changed env from direnv."
-    (interactive)
-    (if (local-variable-p 'process-environment)
-        (kill-local-variable 'process-environment)))
+  ;; (defun rhol-unload-direnv ()
+  ;;   "Unload changed env from direnv."
+  ;;   (interactive)
+  ;;   (if (local-variable-p 'process-environment)
+  ;;       (kill-local-variable 'process-environment)))
 
-  (add-hook 'find-file-hook 'rhol-load-direnv-for-buffer)
+  ;; (add-hook 'find-file-hook 'rhol-load-direnv-for-buffer)
+
+  (use-package direnv
+    :ensure t
+    :config (direnv-mode))
 #+END_SRC
 
 ** Ace Window
@@ -1710,7 +1714,7 @@ Shell script linter
   (use-package aggressive-indent
     :ensure t
     :config
-    (agressive-indent-global-mode 1))
+    (aggressive-indent-global-mode 1))
 #+END_SRC
 
 ** Ranger

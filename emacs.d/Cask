@@ -36,6 +36,7 @@
 (depends-on "darkokai-theme")
 (depends-on "dash")
 (depends-on "deft")
+(depends-on "direnv")
 (depends-on "elpy")
 (depends-on "emojify")
 (depends-on "find-file-in-project")
