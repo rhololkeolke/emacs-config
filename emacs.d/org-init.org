@@ -1102,10 +1102,12 @@ Stop ediff from opening its interface in a new frame (aka window)
 *** Clang-format
 
 #+BEGIN_SRC emacs-lisp
-  (load "~/.emacs.d/lisp/third-party/clang-format.el")
-  (add-hook 'c++-mode-hook '(lambda()
+  (use-package clang-format
+    :config
+    (setq clang-format-executable "/usr/bin/clang-format-6.0")
+    (add-hook 'c++-mode-hook '(lambda()
                               (local-set-key (kbd "C-c C-r f") 'clang-format-region)
-                              (local-set-key (kbd "C-c C-r b") 'clang-format-buffer)))
+                              (local-set-key (kbd "C-c C-r b") 'clang-format-buffer))))
 #+END_SRC
 
 *** Clang-rename
