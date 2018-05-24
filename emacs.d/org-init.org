@@ -2414,49 +2414,49 @@ Deft for my org-mode wiki
 
 ** org-gcal
 
-#+BEGIN_SRC emacs-lisp
-  (message "Loading org-cal")
+# #+BEGIN_SRC emacs-lisp
+#   (message "Loading org-cal")
 
-  (defcustom org-gcal-client-id nil
-    "Client id for Google oauth"
-    :type 'string
-    :tag "Org-gcal client id")
+#   (defcustom org-gcal-client-id nil
+#     "Client id for Google oauth"
+#     :type 'string
+#     :tag "Org-gcal client id")
 
-  (defcustom org-gcal-client-secret nil
-    "Client secret from Google."
-    :type 'string
-    :tag "Org-gcal client secret")
+#   (defcustom org-gcal-client-secret nil
+#     "Client secret from Google."
+#     :type 'string
+#     :tag "Org-gcal client secret")
 
-  (defcustom org-gcal-file-alist nil
-    "Files to sync"
-    :type '(list '(cons 'string 'string))
-    :tag "Org-gcal file alist")
+#   (defcustom org-gcal-file-alist nil
+#     "Files to sync"
+#     :type '(list '(cons 'string 'string))
+#     :tag "Org-gcal file alist")
 
-  (defun rhol--setup-org-gcal ()
-    "Configure org-gcal on first setup."
-    (if org-gcal-client-id nil
-      (customize-save-variable
-       'org-gcal-client-id
-       (read-string "org-gcal client id: ")))
-    (if org-gcal-client-secret nil
-      (customize-save-variable
-       'org-gcal-client-secret
-       (read-string "org-gcal client secret: ")))
-    (if org-gcal-file-alist nil
-      (progn
-        (let ((calendar-name (read-string "calendar name: "))
-              (calendar-file (read-string "calendar file: ")))
-          (customize-save-variable
-           'org-gcal-file-alist
-           (list (cons calendar-name (concat rhol-org-directory calendar-file))))))))
+#   (defun rhol--setup-org-gcal ()
+#     "Configure org-gcal on first setup."
+#     (if org-gcal-client-id nil
+#       (customize-save-variable
+#        'org-gcal-client-id
+#        (read-string "org-gcal client id: ")))
+#     (if org-gcal-client-secret nil
+#       (customize-save-variable
+#        'org-gcal-client-secret
+#        (read-string "org-gcal client secret: ")))
+#     (if org-gcal-file-alist nil
+#       (progn
+#         (let ((calendar-name (read-string "calendar name: "))
+#               (calendar-file (read-string "calendar file: ")))
+#           (customize-save-variable
+#            'org-gcal-file-alist
+#            (list (cons calendar-name (concat rhol-org-directory calendar-file))))))))
 
-  (use-package org-gcal
-    :ensure t
-    :config
-    (rhol--setup-org-gcal)
-    (add-hook 'org-agenda-mode-hook (lambda () (org-gcal-sync)))
-    (add-hook 'org-capture-after-finalize-hook (lambda () (org-gcal-sync))))
-#+END_SRC
+#   (use-package org-gcal
+#     :ensure t
+#     :config
+#     (rhol--setup-org-gcal)
+#     (add-hook 'org-agenda-mode-hook (lambda () (org-gcal-sync)))
+#     (add-hook 'org-capture-after-finalize-hook (lambda () (org-gcal-sync))))
+# #+END_SRC
 
 * Mail
 
