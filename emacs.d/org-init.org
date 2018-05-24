@@ -1134,6 +1134,7 @@ Stop ediff from opening its interface in a new frame (aka window)
   (use-package rtags 
     :ensure t
     :if (executable-find "rdm")
+    :load-path "/usr/local/share/emacs/site-lisp/rtags"
     :config
     (defun rhol/rtags-hook ()
       (message "rhol/rtags-hook on %s" (buffer-name))
