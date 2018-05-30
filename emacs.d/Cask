@@ -32,7 +32,6 @@
 (depends-on "company-racer")
 (depends-on "company-rtags")
 (depends-on "company-web")
-(depends-on "cus-edit+")
 (depends-on "darkokai-theme")
 (depends-on "dash")
 (depends-on "deft")
