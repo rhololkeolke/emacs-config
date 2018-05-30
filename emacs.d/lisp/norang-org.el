@@ -447,7 +447,7 @@ Skip project and sub-project tasks, habits, and loose non-project tasks."
           (subtree-end (save-excursion (org-end-of-subtree t))))
       (if (member (org-get-todo-state) org-todo-keywords-1)
           (if (member (org-get-todo-state) org-done-keywords)
-              (let* ((daynr (string-to-int (format-time-string "%d" (current-time))))
+              (let* ((daynr (string-to-number (format-time-string "%d" (current-time))))
                      (a-week-ago (* 60 60 24 7))
                      (last-week (format-time-string "%Y-%m-%d" (time-subtract (current-time) (seconds-to-time a-week-ago))))
                      (this-week (format-time-string "%Y-%m-%d" (current-time)))
