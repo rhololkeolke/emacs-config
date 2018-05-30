@@ -1707,10 +1707,30 @@ Shell script linter
 ** Agressive Indent Mode
 
 #+BEGIN_SRC emacs-lisp
-  (use-package aggressive-indent
-    :ensure t
-    :config
-    (aggressive-indent-global-mode 1))
+  (message "org-init.org: aggressive-indent")
+  (defcustom rhol-use-aggressive-indent t
+    "Set true to enable aggressive-indent package."
+    :type 'boolean
+    :group 'rhol-third-party
+    :tag "Use aggressive-indent package")
+
+  (defcustom rhol-use-aggressive-indent-globally t
+    "Set true to enable aggressive-indent globally."
+    :type 'boolean
+    :group 'rhol-third-party
+    :tag "Use aggressive-indent globally")
+
+
+  (if rhol-use-aggressive-indent
+      (use-package aggressive-indent
+        :ensure t
+        :mode (("\\.py\\'" . python-mode)
+               ("\\.el\\'" . emacs-lisp-mode)
+               ("\\.yaml\\'" . yaml-mode)
+               ("\\.yml\\'" . yaml-mode))
+        :config
+        (if rhol-use-aggressive-indent-globally
+            (aggressive-indent-global-mode 1))))
 #+END_SRC
 
 ** Ranger
@@ -2452,98 +2472,154 @@ Deft for my org-mode wiki
 # #+END_SRC
 
 * Mail
+** Customize Group
 
 #+BEGIN_SRC emacs-lisp
-  (message "Loading mu4e")
+  (message "org-init.org: Creating customize group rhol-emacs/rhol-email")
+  (defgroup rhol-email nil
+    "Email customization."
+    :group 'rhol-emacs
+    :tag "Email")
+#+END_SRC
 
-  (use-package mu4e)
-  (use-package smtpmail)
+** Customize Options
 
-  (setq
-   ;; basic mu4e config
-   mu4e-sent-messages-behavior 'delete
-   mu4e-maildir "~/mail"
-   mu4e-trash-folder "/digidevin/trash"
-   mu4e-refile-folder "/digidevin/allmail"
-   mu4e-sent-folder "/digidevin/sent"
-   mu4e-drafts-folder "/digidevin/drafts"
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org Setting mu4e customize options")
 
-   mu4e-view-show-images t
-   mu4e-view-show-addresses t
-   mu4e-attachment-dir "~/Downloads"
-   mu4e-use-fancy-chars t 
+  (defcustom rhol-use-mu4e nil
+    "Set true to enable email and set default mail settings"
+    :type 'boolean
+    :group 'rhol-email
+    :tag "Set true to enable email and set default mail settings")
 
-   user-mail-address "digidevin@gmail.com"
-   mu4e-reply-to-address "digidevin@gmail.com"
-   user-full-name "Devin Schwab"
+  (if rhol-use-mu4e
+      (defcustom rhol-mu4e-maildir (expand-file-name "~/mail")
+        "Set the maildir."
+        :type 'boolean
+        :group 'rhol-email
+        :tag "Set the maildir")
 
-   mu4e-compose-siganture (concat "--\n" "Devin\n")
-   mu4e-compose-signature-auto-include nil 
+    (defcustom rhol-gmail-prefix "/digidevin"
+      "Set the gmail prefix"
+      :type 'string
+      :group 'rhol-email
+      :tag "Set the email prefix")
 
-   ;; smtp config
-   message-send-mail-function 'smtpmail-send-it
-   starttls-use-gnutls t
-   smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil))
-   smtpmail-auth-credentials
-   '(("smtp.gmail.com" 587 "digidevin@gmail.com" nil))
-   smtpmail-default-smtp-server "smtp.gmail.com"
-   smtpmail-smtp-server "smtp.gmail.com"
-   smtpmail-smtp-service 587
+    (defcustom rhol-gmail-address "digidevin@gmail.com"
+      "Set the email address"
+      :type 'string
+      :group 'rhol-email
+      :tag "Set the mail address")
 
-   message-kill-buffer-on-exit t
+    (defcustom rhol-email-name "Devin Schwab"
+      "Set the full name of the email user."
+      :type 'string
+      :group 'rhol-email
+      :tag "Set the full name of email user.")
 
-   ;; html renderer
-   mu4e-html2text-command "w3m -T text/html"
+    (defcustom rhol-email-sig (concat "--\n" "Devin\n")
+      "Set the default email signature."
+      :type 'string
+      :group 'rhol-email
+      :tag "Set the email signature."))
 
-   mu4e-update-interval 120
-   mu4e-headers-auto-update t
+#+END_SRC
 
-   ;; fix uid errors with mbsync
-   mu4e-change-filenames-when-moving t
+** Configure mu4e
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: Loading mu4e")
 
-   mu4e-headers-draft-mark     '("D" . "⚒")
-   mu4e-headers-flagged-mark   '("F" . "✚")
-   mu4e-headers-new-mark       '("N" . "✱")
-   mu4e-headers-passed-mark    '("P" . "❯")
-   mu4e-headers-replied-mark   '("R" . "❮")
-   mu4e-headers-seen-mark      '("S" . "✔")
-   mu4e-headers-trashed-mark   '("T" . "✀")
-   mu4e-headers-attach-mark    '("a" . "⚓")
-   mu4e-headers-encrypted-mark '("x" . "⚴")
-   mu4e-headers-signed-mark    '("s" . "☡")
-   mu4e-headers-unread-mark    '("u" . "🖂")
-   mu4e-headers-has-child-prefix    '("+"  . "◼")
-   mu4e-headers-empty-parent-prefix '("-"  . "◽")
-   mu4e-headers-first-child-prefix  '("\\" . "┗▶")
-   mu4e-headers-duplicate-prefix    '("="  . "≡")
-   mu4e-headers-default-prefix      '("|"  . "│"))
+  (if rhol-use-mu4e
+      (progn
+        (use-package mu4e)
+        (use-package smtpmail)
 
-  (when (fboundp 'imagemagick-register-types)
-    (imagemagick-register-types))
+        (setq
+         ;; basic mu4e config
+         mu4e-sent-messages-behavior 'delete
+         mu4e-maildir rhol-mu4e-maildir
+         mu4e-trash-folder (format "%s/trash" rhol-gmail-prefix)
+         mu4e-refile-folder (format "%s/allmail" rhol-gmail-prefix)
+         mu4e-sent-folder (format "%s/sent" rhol-gmail-prefix)
+         mu4e-drafts-folder (format "%s/drafts" rhol-gmail-prefix)
 
-  (setq mu4e-maildir-shortcuts
-        '(("/digidevin/INBOX" . ?i)
-          ("/digidevin/sent" . ?s)
-          ("/digidevin/drafts" . ?d)
-          ("/digidevin/trash" . ?t)
-          ("/digidevin/allmail" . ?a)))
+         mu4e-view-show-images t
+         mu4e-view-show-addresses t
+         mu4e-attachment-dir (expand-file-name "~/Downloads")
+         mu4e-use-fancy-chars t 
 
-  (setq mu4e-get-mail-command "mbsync gmail")
+         user-mail-address rhol-gmail-address
+         mu4e-reply-to-address rhol-gmail-address
+         user-full-name rhol-email-name
 
-  (add-to-list 'mu4e-view-actions '("ViewInBrowser" . mu4e-action-view-in-browser) t)
+         mu4e-compose-siganture rhol-email-sig
+         mu4e-compose-signature-auto-include nil 
 
-  (use-package org-mu4e)
-  (setq org-mu4e-convert-to-html t)
+         ;; smtp config
+         message-send-mail-function 'smtpmail-send-it
+         starttls-use-gnutls t
+         smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil))
+         smtpmail-auth-credentials
+         '(("smtp.gmail.com" 587 rhol-gmail-address nil))
+         smtpmail-default-smtp-server "smtp.gmail.com"
+         smtpmail-smtp-server "smtp.gmail.com"
+         smtpmail-smtp-service 587
 
-  (use-package mu4e-alert
-    :ensure t)
+         message-kill-buffer-on-exit t
+
+         ;; html renderer
+         mu4e-html2text-command "w3m -T text/html"
+
+         mu4e-update-interval 120
+         mu4e-headers-auto-update t
+
+         ;; fix uid errors with mbsync
+         mu4e-change-filenames-when-moving t
+
+         mu4e-headers-draft-mark     '("D" . "⚒")
+         mu4e-headers-flagged-mark   '("F" . "✚")
+         mu4e-headers-new-mark       '("N" . "✱")
+         mu4e-headers-passed-mark    '("P" . "❯")
+         mu4e-headers-replied-mark   '("R" . "❮")
+         mu4e-headers-seen-mark      '("S" . "✔")
+         mu4e-headers-trashed-mark   '("T" . "✀")
+         mu4e-headers-attach-mark    '("a" . "⚓")
+         mu4e-headers-encrypted-mark '("x" . "⚴")
+         mu4e-headers-signed-mark    '("s" . "☡")
+         mu4e-headers-unread-mark    '("u" . "🖂")
+         mu4e-headers-has-child-prefix    '("+"  . "◼")
+         mu4e-headers-empty-parent-prefix '("-"  . "◽")
+         mu4e-headers-first-child-prefix  '("\\" . "┗▶")
+         mu4e-headers-duplicate-prefix    '("="  . "≡")
+         mu4e-headers-default-prefix      '("|"  . "│"))
+
+        (when (fboundp 'imagemagick-register-types)
+          (imagemagick-register-types))
+
+        (setq mu4e-maildir-shortcuts
+              '(((format "%s/INBOX" rhol-gmail-prefix) . ?i)
+                ((format "%s/sent" rhol-gmail-prefix) . ?s)
+                ((format "%s/drafts" rhol-gmail-prefix) . ?d)
+                ((format "%s/trash" rhol-gmail-prefix) . ?t)
+                ((format "%s/allmail" rhol-gmail-prefix) . ?a)))
+
+        (setq mu4e-get-mail-command "mbsync gmail")
+
+        (add-to-list 'mu4e-view-actions '("ViewInBrowser" . mu4e-action-view-in-browser) t)
+
+        (use-package org-mu4e)
+        (setq org-mu4e-convert-to-html t)
+
+        (use-package mu4e-alert
+          :ensure t)
 
 
-  (mu4e-alert-set-default-style 'libnotify)
-  (add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
-  (add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display)
+        (mu4e-alert-set-default-style 'libnotify)
+        (add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
+        (add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display)
 
-  (use-package subr-x)
+        (use-package subr-x)))
 #+END_SRC
 
 ** GPG Default Encrypt
