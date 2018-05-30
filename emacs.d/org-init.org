@@ -353,14 +353,9 @@ Save minibuffer history across sesssions
   (defun rhol--configure-font ()
     "Refresh font configuration."
     (if (member rhol-default-font (font-family-list))
-        (let ((font-name (format "%s %d" rhol-default-font rhol-default-font-size)))
-          (set-frame-font font-name))
+        (let ((font-name (format "%s-%d" rhol-default-font rhol-default-font-size)))
+          (set-frame-font font-name nil t))
       (user-error "Font %s does not exist" rhol-default-font)))
-
-  (add-hook 'after-make-frame-functions '(lambda (frame)
-                                           (select-frame frame)
-                                           (if (display-graphic-p frame)
-                                                 (rhol--configure-font))))
 #+END_SRC
 
 ** Theme
