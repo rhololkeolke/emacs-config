@@ -1125,31 +1125,31 @@ Stop ediff from opening its interface in a new frame (aka window)
 *** Rtags
 
 #+BEGIN_SRC emacs-lisp
-  (message "org-init.org: Rtags")
-  (use-package rtags 
-    :ensure t
-    :if (executable-find "rdm")
-    :load-path "/usr/local/share/emacs/site-lisp/rtags"
-    :config
-    (defun rhol/rtags-hook ()
-      (message "rhol/rtags-hook on %s" (buffer-name))
-      (rtags-start-process-unless-running)
-      (local-set-key (kbd "M-.") 'rtags-find-symbol-at-point)
-      (local-set-key (kbd "M-,") 'rtags-find-references-at-point)
-      (local-set-key (kbd "C-M-;") 'rtags-find-file)
-      (local-set-key (kbd "C-.") 'rtags-find-symbol)
-      (local-set-key (kbd "C-,") 'rtags-find-references)
-      (local-set-key (kbd "C-<") 'rtags-find-virtuals-at-point)
-      (local-set-key (kbd "M-i") 'rtags-imenu)
-      (local-set-key (kbd "C-M-,") 'rtags-location-stack-back)
-      (local-set-key (kbd "C-M-.") 'rtags-location-stack-forward)
-      )
-    (add-hook 'c-mode-hook 'rhol/rtags-hook)
-    (add-hook 'c++-mode-hook 'rhol/rtags-hook))
+  ;; (message "org-init.org: Rtags")
+  ;; (use-package rtags 
+  ;;   :ensure t
+  ;;   :if (executable-find "rdm")
+  ;;   :load-path "/usr/local/share/emacs/site-lisp/rtags"
+  ;;   :config
+  ;;   (defun rhol/rtags-hook ()
+  ;;     (message "rhol/rtags-hook on %s" (buffer-name))
+  ;;     (rtags-start-process-unless-running)
+  ;;     (local-set-key (kbd "M-.") 'rtags-find-symbol-at-point)
+  ;;     (local-set-key (kbd "M-,") 'rtags-find-references-at-point)
+  ;;     (local-set-key (kbd "C-M-;") 'rtags-find-file)
+  ;;     (local-set-key (kbd "C-.") 'rtags-find-symbol)
+  ;;     (local-set-key (kbd "C-,") 'rtags-find-references)
+  ;;     (local-set-key (kbd "C-<") 'rtags-find-virtuals-at-point)
+  ;;     (local-set-key (kbd "M-i") 'rtags-imenu)
+  ;;     (local-set-key (kbd "C-M-,") 'rtags-location-stack-back)
+  ;;     (local-set-key (kbd "C-M-.") 'rtags-location-stack-forward)
+  ;;     )
+  ;;   (add-hook 'c-mode-hook 'rhol/rtags-hook)
+  ;;   (add-hook 'c++-mode-hook 'rhol/rtags-hook))
 
-  (use-package company-rtags
-    :config
-    (add-to-list 'company-backends 'company-rtags))
+  ;; (use-package company-rtags
+  ;;   :config
+  ;;   (add-to-list 'company-backends 'company-rtags))
 #+END_SRC
 
 *** Irony Mode
@@ -1157,10 +1157,10 @@ Stop ediff from opening its interface in a new frame (aka window)
 Eldoc integration
 
 #+BEGIN_SRC emacs-lisp
-  (use-package irony-eldoc
-    :ensure t
-    :config
-    (add-hook 'irony-mode-hook 'irony-eldoc))
+  ;; (use-package irony-eldoc
+  ;;   :ensure t
+  ;;   :config
+  ;;   (add-hook 'irony-mode-hook 'irony-eldoc))
 #+END_SRC
 
 *** hs-mode (code folding)
@@ -1197,13 +1197,13 @@ Eldoc integration
 *** CMake IDE
 
 #+BEGIN_SRC emacs-lisp
-  (use-package rtags
-    :ensure t
-    :defer nil)
-  (use-package cmake-ide
-    :ensure t
-    :config
-    (cmake-ide-setup))
+  ;; (use-package rtags
+  ;;   :ensure t
+  ;;   :defer nil)
+  ;; (use-package cmake-ide
+  ;;   :ensure t
+  ;;   :config
+  ;;   (cmake-ide-setup))
 #+END_SRC
 
 *** Open header files in C++ Mode by default
@@ -1293,6 +1293,39 @@ Better C++ syntax highlighting
                :ensure t
                :config 
                (modern-c++-font-lock-global-mode t))
+#+END_SRC
+
+*** Cquery Config
+
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: cquery")
+  (use-package lsp-mode
+    :bind (("C-M-," . xref-pop-marker-stack)
+           ("C-M-." . xref-push-marker-stack)
+           ("M-." . xref-find-definitions)
+           ("M-," . xref-find-references)))
+
+  (use-package company-lsp
+    :config
+    (push 'company-lsp company-backends))
+
+  (use-package lsp-ui
+    :config
+    (add-hook 'lsp-mode-hook 'lsp-ui-mode)
+    (add-hook 'c++-mode-hook 'flycheck-mode)
+
+    ;; enable peek
+    (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
+    (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references))
+
+  (defun cquery//enable ()
+    (condition-case nil
+        (lsp-cquery-enable)
+      (user-error nil)))
+
+  (use-package cquery
+    :commands lsp-cquery-enable
+    :init (add-hook 'c-mode-common-hook #'cquery//enable))
 #+END_SRC
 
 *** C++ Mode Hooks
