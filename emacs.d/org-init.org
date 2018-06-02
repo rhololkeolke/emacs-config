@@ -1284,6 +1284,17 @@ cmake-ide-build-dir as the -p argument.
   (add-hook 'c++-mode-hook '(lambda() (local-set-key (kbd "C-c C-r i") 'cmake-ide-clang-include-fixer)))
 #+END_SRC
 
+*** Modern C++ Font Lock
+Better C++ syntax highlighting
+
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: modern-cpp-font-lock")
+  (use-package modern-cpp-font-lock
+               :ensure t
+               :config 
+               (modern-c++-font-lock-global-mode t))
+#+END_SRC
+
 *** C++ Mode Hooks
 
 #+BEGIN_SRC emacs-lisp
