@@ -1806,6 +1806,16 @@ Shell script linter
     (ranger-override-dired-mode t))
 #+END_SRC
 
+** Capn Proto
+
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: Cap'n Proto")
+
+  (use-package capnp-mode
+    :load-path "~/.emacs.d/lisp/third-party"
+    :mode ("\\.capnp\\'" . capnp-mode))
+#+END_SRC
+
 * Org-mode
 ** Customize Group
 
