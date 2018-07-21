@@ -64,6 +64,7 @@
 (depends-on "ivy")
 (depends-on "json-mode")
 (depends-on "lsp-mode")
+(depends-on "lsp-rust")
 (depends-on "lsp-ui")
 (depends-on "lua-mode")
 (depends-on "magit")
