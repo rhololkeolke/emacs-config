@@ -1715,9 +1715,12 @@ Shell script linter
 #+BEGIN_SRC emacs-lisp
   (message "org-init.org: cmdragons")
   (add-to-list 'auto-mode-alist '("\\.cfg\\'" . lua-mode))
-  (use-package cmdragons-plays
+  (use-package cmdragons-play-mode
     :load-path "~/.emacs.d/lisp"
     :mode ("\\.ply\\'" . cmdragons-play-mode))
+  (use-package cmdragons-playbook-mode
+    :load-path "~/.emacs.d/lisp"
+    :mode ("\\.plb\\'" . cmdragons-playbook-mode))
 #+END_SRC
 
 ** Kerboscript

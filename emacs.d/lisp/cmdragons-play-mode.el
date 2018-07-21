@@ -8,7 +8,7 @@
 
 ;; define keyword categories
 
-(setq cmdragons-play-keywords '("PLAY" "GAMESTATE" "PRECOND" "INVARIANT" "NUMROBOTS" "FLAGS" "ROLE"))
+(setq cmdragons-play-keywords '("PLAY" "GAMESTATE" "PRECOND" "INVARIANT" "NUMROBOTS" "FLAGS" "ROLE" "ABORT"))
 (setq cmdragons-play-constants '("game_on"
 				 "game_off"
 				 "our_kickoff"
@@ -75,5 +75,5 @@
 ;; coding: utf-8
 ;; End:
 
-;;; cmdragons_plays.el ends here
+;;; cmdragons-play-mode.el ends here
 
