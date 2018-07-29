@@ -74,6 +74,7 @@
 (depends-on "modern-cpp-font-lock")
 (depends-on "monky")
 (depends-on "mu4e-alert")
+(depends-on "nhexl-mode")
 (depends-on "nyan-mode")
 (depends-on "ob-ipython")
 (depends-on "org")
