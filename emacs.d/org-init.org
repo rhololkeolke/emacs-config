@@ -42,7 +42,7 @@ have after sourcing .bash_profile.
   (defun rhol--get-fish-env ()
     "Return the environment variables set by fish config"
     (let ((fish-shell (executable-find "fish")))
-      (shell-command-to-string (format "%s -ilc 'set -L | grep -v history'" fish-shell))))
+      (shell-command-to-string (format "%s -lc 'set -L | grep -v history'" fish-shell))))
 
   (defun rhol--format-fish-env-for-emacs (env-line)
     "Convert fish set variable to emacs process-environment var.
@@ -93,6 +93,11 @@ have after sourcing .bash_profile.
     (let ((fish-path (rhol--get-fish-path)))
       (let ((fish-path-with-exec (append fish-path (list exec-directory))))
         (setq exec-path fish-path-with-exec))))
+
+  (defun refresh-ssh-agent ()
+    (interactive)
+    (let ((fish-shell (executable-find "fish")))
+      (setenv "SSH_AUTH_SOCK" (shell-command-to-string (format "%s -lc 'echo -n $SSH_AUTH_SOCK'" fish-shell)))))
 #+END_SRC
 
 *** Bash Environment
@@ -130,18 +135,28 @@ have after sourcing .bash_profile.
 *** Eval ENV and PATH
 
 #+BEGIN_SRC emacs-lisp
-  (cond
-   ((string= "/usr/bin/fish" (getenv "SHELL"))
-    (message "Getting env and path from fish shell")
-    (rhol-eval-fish-env)
-    (rhol-eval-fish-path))
-   ((string= "/bin/bash" (getenv "SHELL"))
-    (message "Getting env and path from bash shell")
-    (rhol-eval-bash-env)
-    (rhol-eval-bash-path))
-   (t
-    (error "Unknown shell type: %s" (getenv "SHELL"))))
+  ;; (cond
+  ;;  ((string= "/usr/bin/fish" (getenv "SHELL"))
+  ;;   (message "Getting env and path from fish shell")
+  ;;   (rhol-eval-fish-env)
+  ;;   (rhol-eval-fish-path))
+  ;;  ((string= "/bin/bash" (getenv "SHELL"))
+  ;;   (message "Getting env and path from bash shell")
+  ;;   (rhol-eval-bash-env)
+  ;;   (rhol-eval-bash-path))
+  ;;  (t
+  ;;   (error "Unknown shell type: %s" (getenv "SHELL"))))
+
+  (use-package exec-path-from-shell
+    :config
+    (when (memq window-system '(mac ns x))
+      (progn (exec-path-from-shell-initialize)
+             (add-to-list 'exec-path "/home/dschwab/.nix-profile/bin")
+             (add-to-list 'exec-path "/home/dschwab/.cargo/bin"))))
 #+END_SRC
+
+#+results:
+: t
 
 ** Open Default Directory
 
