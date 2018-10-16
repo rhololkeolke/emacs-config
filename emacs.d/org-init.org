@@ -1018,18 +1018,33 @@ Stop ediff from opening its interface in a new frame (aka window)
 
 #+BEGIN_SRC emacs-lisp
   (use-package pyenv-mode
-    :ensure t
-    :config (pyenv-mode))
+    :init
+    (add-to-list 'exec-path "~/.pyenv/shims")
+    (setenv "WORKON_HOME" "~/.pyenv/versions/")
+    :config
+    (pyenv-mode)
+    :ensure t)
 
-  (defun ssbb-pyenv-hook ()
+  (defun pyenv-activate-current-project ()
     "Automatically activates pyenv version if .python-version file exists."
-    (f-traverse-upwards
-     (lambda (path)
-       (let ((pyenv-version-path (f-expand ".python-version" path)))
-         (if (f-exists? pyenv-version-path)
-             (pyenv-mode-set (s-trim (f-read-text pyenv-version-path 'utf-8))))))))
+    (interactive)
+    (let ((python-version-directory (locate-dominating-file (buffer-file-name) ".python-version")))
+      (if python-version-directory
+          (let* ((pyenv-version-path (f-expand ".python-version" python-version-directory))
+                 (pyenv-current-version (s-trim (f-read-text pyenv-version-path 'utf-8))))
+            (pyenv-mode-set pyenv-current-version)
+            (message (concat "Setting virtualenv to " pyenv-current-version))))))
 
-  (add-hook 'find-file-hook 'ssbb-pyenv-hook)
+  (defvar pyenv-current-version nil nil)
+
+  (defun pyenv-init()
+    "Initialize pyenv's current version to the global one."
+    (let ((global-pyenv (replace-regexp-in-string "\n" "" (shell-command-to-string "pyenv global"))))
+      (message (concat "Setting pyenv version to " global-pyenv))
+      (pyenv-mode-set global-pyenv)
+      (setq pyenv-current-version global-pyenv)))
+
+  (add-hook 'after-init-hook 'pyenv-init)
 #+END_SRC
 
 *** Elpy
