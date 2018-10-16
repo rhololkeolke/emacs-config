@@ -88,3 +88,4 @@ emacs.d/irony
 emacs.d/url
 /emacs.d/history
 emacs.d/workspace
+emacs.d/eshell
