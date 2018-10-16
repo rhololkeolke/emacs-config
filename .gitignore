@@ -88,4 +88,5 @@ emacs.d/irony
 emacs.d/url
 /emacs.d/history
 emacs.d/workspace
-emacs.d/eshell
+/emacs.d/srecode-map.el
+/emacs.d/eshell
