@@ -71,6 +71,7 @@
 (depends-on "ivy")
 (depends-on "json-mode")
 (depends-on "keychain-environment")
+(depends-on "ledger-mode")
 (depends-on "lua-mode")
 (depends-on "magit")
 (depends-on "magit-popup")

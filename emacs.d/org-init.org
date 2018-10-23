@@ -2575,6 +2575,13 @@ Deft for my org-mode wiki
 #     (add-hook 'org-capture-after-finalize-hook (lambda () (org-gcal-sync))))
 # #+END_SRC
 
+** Ledger
+
+#+BEGIN_SRC emacs-lisp
+  (use-package ledger
+    :config (add-to-list 'auto-mode-alist '("personal\\.dat\\'" . ledger-mode)))
+#+END_SRC
+
 * Mail
 ** Customize Group
 
