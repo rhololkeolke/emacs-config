@@ -102,6 +102,7 @@
 (depends-on "ranger")
 (depends-on "realgud")
 (depends-on "rg")
+(depends-on "rmsbolt")
 (depends-on "rtags")
 (depends-on "rust-mode")
 (depends-on "s")

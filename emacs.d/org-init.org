@@ -1846,6 +1846,12 @@ Shell script linter
     :mode ("\\.capnp\\'" . capnp-mode))
 #+END_SRC
 
+** RMSBolt
+
+#+BEGIN_SRC emacs-lisp
+  (use-package rmsbolt)
+#+END_SRC
+
 * Org-mode
 ** Customize Group
 
