@@ -1858,7 +1858,6 @@ Shell script linter
     :config (add-to-list 'auto-mode-alist '("personal\\.dat\\'" . ledger-mode)))
 #+END_SRC
 
-
 * Org-mode
 ** Customize Group
 
