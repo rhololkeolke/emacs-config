@@ -1868,6 +1868,18 @@ Shell script linter
     (add-hook 'go-mode-hook 'rhol--go-mode-hook))
 #+END_SRC
 
+** RMSBolt
+
+#+BEGIN_SRC emacs-lisp
+  (use-package rmsbolt)
+#+END_SRC
+** Ledger
+
+#+BEGIN_SRC emacs-lisp
+  (use-package ledger
+    :config (add-to-list 'auto-mode-alist '("personal\\.dat\\'" . ledger-mode)))
+#+END_SRC
+
 * Org-mode
 ** Customize Group
 
@@ -2596,13 +2608,6 @@ Deft for my org-mode wiki
 #     (add-hook 'org-agenda-mode-hook (lambda () (org-gcal-sync)))
 #     (add-hook 'org-capture-after-finalize-hook (lambda () (org-gcal-sync))))
 # #+END_SRC
-
-** Ledger
-
-#+BEGIN_SRC emacs-lisp
-  (use-package ledger
-    :config (add-to-list 'auto-mode-alist '("personal\\.dat\\'" . ledger-mode)))
-#+END_SRC
 
 * Mail
 ** Customize Group
