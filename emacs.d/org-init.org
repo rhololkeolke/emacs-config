@@ -1881,7 +1881,6 @@ Shell script linter
 #+END_SRC
 
 ** Helpful
-
 Better help buffers
 
 #+BEGIN_SRC emacs-lisp
@@ -1889,6 +1888,34 @@ Better help buffers
     :bind (("C-h f" . helpful-callable)
            ("C-h v" . helpful-variable)
            ("C-h k" . helpful-key)))
+#+END_SRC
+
+** Tabnine
+#+BEGIN_SRC emacs-lisp
+  (use-package company-tabnine :ensure t
+    :config (add-to-list 'company-backends #'company-tabnine))
+#+END_SRC
+
+** Golang
+
+#+BEGIN_SRC emacs-lisp
+  (defun rhol--go-mode-hook()
+    ;; use goimports instead of go-fmt
+    (setq gofmt-command "goimports")
+    ;; run gofmt before saving
+    (add-hook 'before-save-hook 'gofmt-before-save)
+    ;; if go file then customize compile-command
+    (if (not (string-match "go" compile-command))
+        (set (make-local-variable 'compile-command) "go build -v ;and go test -v ;and go vet"))
+    ;; Godef jump key binding
+    (local-set-key (kbd "M-.") 'godef-jump)
+    (local-set-key (kbd "M-*") 'pop-tag-mark))
+
+  (use-package go-mode
+    :config
+    (add-to-list 'exec-path (format "%s/go/bin" (getenv "HOME")))
+    (add-hook 'go-mode-hook 'rhol--go-mode-hook)
+    (use-package go-guru))
 #+END_SRC
 
 * Org-mode
