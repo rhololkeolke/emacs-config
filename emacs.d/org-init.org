@@ -1880,6 +1880,17 @@ Shell script linter
     :config (add-to-list 'auto-mode-alist '("personal\\.dat\\'" . ledger-mode)))
 #+END_SRC
 
+** Helpful
+
+Better help buffers
+
+#+BEGIN_SRC emacs-lisp
+  (use-package helpful
+    :bind (("C-h f" . helpful-callable)
+           ("C-h v" . helpful-variable)
+           ("C-h k" . helpful-key)))
+#+END_SRC
+
 * Org-mode
 ** Customize Group
 
@@ -1909,7 +1920,7 @@ Shell script linter
     (progn (customize-save-variable
      'rhol-org-directory
      (expand-file-name (read-directory-name "Org-mode Directory: "
-                                            "~/Dropbox/org-mode"
+                                            "~/Sync/org-mode"
                                             nil
                                             t)))
            (customize-save-variable 'rhol-org-agenda-files (list rhol-org-directory))))

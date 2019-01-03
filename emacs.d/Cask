@@ -67,6 +67,7 @@
 (depends-on "helm-core")
 (depends-on "helm-projectile")
 (depends-on "helm-swoop")
+(depends-on "helpful")
 (depends-on "ht")
 (depends-on "htmlize")
 (depends-on "hydra")
