@@ -1888,7 +1888,7 @@ Shell script linter
 
 #+BEGIN_SRC emacs-lisp
   (use-package ledger-mode
-    :config (add-to-list 'auto-mode-alist '("personal\\.dat\\'" . ledger-mode)))
+    :config (add-to-list 'auto-mode-alist '("finances\\.dat\\'" . ledger-mode)))
 #+END_SRC
 
 ** Helpful
