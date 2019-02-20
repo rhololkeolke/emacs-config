@@ -1861,7 +1861,7 @@ Shell script linter
 
 #+BEGIN_SRC emacs-lisp
   (use-package go-mode
-    :configure
+    :config
     (use-package company-go)  
     (defun rhol--go-mode-hook ()
                                           ; Use goimports instead of go-fmt
@@ -1887,7 +1887,7 @@ Shell script linter
 ** Ledger
 
 #+BEGIN_SRC emacs-lisp
-  (use-package ledger
+  (use-package ledger-mode
     :config (add-to-list 'auto-mode-alist '("personal\\.dat\\'" . ledger-mode)))
 #+END_SRC
 
