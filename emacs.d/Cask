@@ -105,6 +105,7 @@
 (depends-on "projectile-ripgrep")
 (depends-on "protobuf-mode")
 (depends-on "pyenv-mode")
+(depends-on "pyenv-mode-auto")
 (depends-on "pythonic")
 (depends-on "pyvenv")
 (depends-on "qml-mode")
