@@ -2659,6 +2659,7 @@ Deft for my org-mode wiki
 #+END_SRC
 
 ** Customize Options
+*** Mu4e
 
 #+BEGIN_SRC emacs-lisp
   (message "org-init.org Setting mu4e customize options")
@@ -2701,8 +2702,37 @@ Deft for my org-mode wiki
       :tag "Set the email signature."))
 
 #+END_SRC
+*** Notmuch
 
-** Configure mu4e
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org Setting mu4e customize options")
+
+  (defcustom rhol-use-notmuch nil
+    "Set true to enable notmuch email and set default mail settings"
+    :type 'boolean
+    :group 'rhol-email
+    :tag "Set true to enable notmuch email and set default mail settings")
+
+  (if rhol-use-notmuch
+      (defcustom notmuch-delete-tags '("-inbox" "+trash")
+    "List of tag changes to apply to a message or thread when it is trashed.
+  
+  Tags starting with \"+\" (or not starting with either \"+\" or
+  \"-\") in the list will be added, and tags starting with \"-\"
+  will be removed from the message or thread being archived.
+
+  For example, if you wanted to remove an \"inbox\" tag and add a \"deleted\" tag, you would set: (\"-inbox\" \"+archived\")"
+    :type '(repeat string)
+    :group 'notmuch-search
+    :group 'notmuch-show))
+
+#+END_SRC
+
+#+results:
+: notmuch-delete-tags
+
+** Configure
+*** Mu4e
 #+BEGIN_SRC emacs-lisp
   (message "org-init.org: Loading mu4e")
 
@@ -2797,6 +2827,31 @@ Deft for my org-mode wiki
 
         (use-package subr-x)))
 #+END_SRC
+*** Notmuch
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: loading notmuch")
+
+  (if rhol-use-notmuch
+      (use-package notmuch
+        :ensure t
+        :config
+        (defun notmuch-search-delete-thread (&optional undelete beg end)
+          "Delete the currently selected thread or region.
+
+  Delete each message in the currently selected thread by applying the tag changes in `notmuch-delete-tags' to each (remove the \"inbox\" tag and add the \"trash\" tag by default). If a prefix argument is given, the message will be \"undeleted\" (i.e. the tag changes in `notmuch-archive-tags' will be reversed).
+
+  This function advances the next thread when finished."
+          (interactive (cons current-prefix-arg (notmuch-search-interactive-region)))
+          (when notmuch-delete-tags
+            (notmuch-search-tag (notmuch-tag-change-list notmuch-delete-tags undelete) beg end))
+          (when (eq beg end)
+            (notmuch-search-next-thread)))
+        :bind (:map notmuch-search-mode-map
+                    ("T" . notmuch-search-delete-thread))))
+#+END_SRC
+
+#+results:
+: notmuch-search-delete-thread
 
 ** GPG Default Encrypt
 
@@ -2870,7 +2925,7 @@ Deft for my org-mode wiki
   (global-set-key (kbd "<f9> B") (lambda () (interactive) (helm-bibtex (universal-argument))))
   (global-set-key (kbd "<f9> f") 'boxquote-insert-file)
   (global-set-key (kbd "<f9> h") 'bh/hide-other)
-  (global-set-key (kbd "<f9> m") 'mu4e)
+  (global-set-key (kbd "<f9> m") 'notmuch)
   (global-set-key (kbd "<f9> n") 'bh/toggle-next-task-display)
   (global-set-key (kbd "<f9> I") 'bh/punch-in)
   (global-set-key (kbd "<f9> O") 'bh/punch-out)

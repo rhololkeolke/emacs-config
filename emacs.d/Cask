@@ -90,6 +90,7 @@
 (depends-on "monky")
 (depends-on "mu4e-alert")
 (depends-on "nhexl-mode")
+(depends-on "notmuch")
 (depends-on "nyan-mode")
 (depends-on "ob-ipython")
 (depends-on "org")
