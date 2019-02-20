@@ -1841,10 +1841,10 @@ Shell script linter
 ** Ranger
 
 #+BEGIN_SRC emacs-lisp
-  (use-package ranger
-    :ensure t
-    :config
-    (ranger-override-dired-mode t))
+  ;; (use-package ranger
+  ;;   :ensure t
+  ;;   :config
+  ;;   (ranger-override-dired-mode nil))
 #+END_SRC
 
 ** Capn Proto
