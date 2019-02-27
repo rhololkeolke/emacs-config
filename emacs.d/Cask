@@ -34,7 +34,6 @@
 (depends-on "company-lua")
 (depends-on "company-racer")
 (depends-on "company-rtags")
-(depends-on "company-tabnine")
 (depends-on "company-web")
 (depends-on "cquery")
 (depends-on "darkokai-theme")
