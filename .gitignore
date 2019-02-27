@@ -6,6 +6,7 @@
 #                                 
 # 
 # -*- mode: gitignore; -*-
+emacs.d/transient/
 *~
 \#*\#
 /.emacs.desktop
