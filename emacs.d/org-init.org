@@ -1940,6 +1940,16 @@ Better help buffers
     :tag "Org-mode")
 #+END_SRC
 
+** Org-modules
+#+begin_src emacs-lisp
+  (message "org-init.org: Configuring org modules")
+  (add-to-list 'org-modules 'org-id)
+  (add-to-list 'org-modules 'org-habit)
+  (add-to-list 'org-modules 'org-depend)
+
+  ;; I thought org-modules will load this, but doesn't seem to be the case
+  (use-package org-habit)
+#+end_src
 ** Basic Config Vars
 
 #+BEGIN_SRC emacs-lisp
@@ -1974,42 +1984,56 @@ Better help buffers
      'rhol-org-default-notes-file
      (expand-file-name
       (read-file-name "Org default notes file: " rhol-org-directory "refile.org" nil "refile.org"))))
+
+
+  ;; Set the actual org-variables based on the customized variables
+  ;; TODO(dschwab): Can we just set these directly? I think the only
+  ;; issue is that it might not be possible to tell if a default is
+  ;; used, or if they've been configured, so we won't be able to prompt
+  ;; on first checkout.
+  (defun rhol--configure-org-dirs ()
+    (setq org-default-notes-file rhol-org-default-notes-file
+          org-directory rhol-org-directory
+          org-agenda-files rhol-org-agenda-files))
+  (rhol--configure-org-dirs)
 #+END_SRC
 
-** Basic Setup
-#+BEGIN_SRC emacs-lisp
-  (message "org-init.org: Org basic setup")
-  (use-package org-id)
-  (use-package org-habit)
-  (use-package org-depend)
-  (load-file "~/.emacs.d/lisp/norang-org.el")
-  (use-package plain-org-wiki
-               :load-path "~/.emacs.d/lisp/")
+** Enable spellcheck and autofill
 
-  (defun rhol/org-mode-hook ()
-    (turn-on-flyspell)
-    (auto-fill-mode 1))
-  (add-hook 'org-mode-hook 'rhol/org-mode-hook)
-  (global-set-key (kbd "C-c l") 'org-store-link)
-  (global-set-key (kbd "C-c a") 'org-agenda)
-  (global-set-key (kbd "C-c b") 'org-iswitchb)
+#+begin_src emacs-lisp
+  (add-hook 'org-mode-hook 'turn-on-flyspell)
+  (add-hook 'org-mode-hook 'turn-on-auto-fill)
+#+end_src
 
-                                          ; TODO: Check if the files exist before choosing this dir
+** Configure file mode alist
 
-  (setq org-default-notes-file rhol-org-default-notes-file
-        org-directory rhol-org-directory
-        org-agenda-files rhol-org-agenda-files)
-
-  (setq org-support-shift-select t)
-
+#+begin_src emacs-lisp
   (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
   (add-to-list 'auto-mode-alist '("\\.org_archive$" . org-mode))
-  (add-to-list 'auto-mode-alist '("\\.txt$" . org-mode))
+#+end_src
 
-  ;; Make the latex preview fragments larger
-  (setq org-format-latex-options (plist-put org-format-latex-options :scale 2.0))
+** Latex preview tweaks
+#+begin_src emacs-lisp
+  (defcustom rhol-org-latex-preview-scale 2.0
+    "Size of latex preview fragments"
+    :type 'number
+    :group 'rhol-org-mode
+    :tag "Org Latex Preview Scale")
 
+  (defun rhol--configure-org-latex-preview ()
+    (setq org-format-latex-options (plist-put org-format-latex-options
+                                              :scale rhol-org-latex-preview-scale)))
+  (rhol--configure-org-latex-preview)
+#+end_src
+
+** Function to reload all open buffers
+
+#+begin_src emacs-lisp
   (defun rhol/reload-org-buffers ()
+    "Org buffers for files stored in an auto syncing folder (Dropbox,
+  Syncthing, etc.)  can be out of date vs the on disk version. Forces a
+  reload of all open org-mode buffers."
+  
     (interactive)
     (mapc #'(lambda (buffer-name)
               (condition-case ex
@@ -2018,25 +2042,45 @@ Better help buffers
                         (revert-buffer t t)))
                 ('error (message "Failed to revert buffer %s. [%s]" buffer-name ex))))
           (buffer-list)))
-#+END_SRC
+#+end_src
+
+** Turn on shift-select
+
+#+begin_src emacs-lisp
+  (setq org-support-shift-select t)
+#+end_src
+
+** Norang
+
+#+begin_src emacs-lisp
+  (load-file "~/.emacs.d/lisp/norang-org.el")
+#+end_src
 
 ** Todo Setup
 
 #+BEGIN_SRC emacs-lisp
   (message "org-init.org: Org todo setup")
   (setq org-todo-keywords
-        (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
-                (sequence "WAITING(@w/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)" "EVENT"))))
+        (quote ((sequence "TODO(t)" "IN-PROGRESS(p)" "|" "DONE(d!)")
+                (sequence "WAITING(@w/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)")
+                (sequence "|" "EVENT")
+                (sequence "SOMEDAY" "MAYBE" "CHECK" "TO-READ" "TO-WATCH" "TO-PLAY"))))
 
 
   (setq org-todo-keyword-faces
         (quote (("TODO" :foreground "red" :weight bold)
-                ("NEXT" :foreground "blue" :weight bold)
+                ("IN-PROGRESS" :foreground "blue" :weight bold)
                 ("DONE" :foreground "forest green" :weight bold)
                 ("WAITING" :foreground "orange" :weight bold)
                 ("HOLD" :foreground "magenta" :weight bold)
                 ("CANCELLED" :foreground "forest green" :weight bold)
-                ("EVENT" :foreground "forest green" :weight bold))))
+                ("EVENT" :foreground "forest green" :weight bold)
+                ("SOMEDAY" :foreground "coral3" :weight bold)
+                ("MAYBE" :foreground "coral3" :weight bold)
+                ("CHECK" :foreground "yellow" :weight bold)
+                ("TO-READ" :foreground "pink" :weight bold)
+                ("TO-WATCH" :foreground "pink" :weight bold)
+                ("TO-PLAY" :foreground "pink" :weight bold))))
 
   (setq org-use-fast-todo-selection t)
   (setq org-treat-S-cursor-todo-selection-as-state-change nil)
@@ -2046,7 +2090,7 @@ Better help buffers
                 ("WAITING" ("WAITING" . t))
                 ("HOLD" ("WAITING") ("HOLD" . t))
                 ("TODO" ("WAITING") ("CANCELLED") ("HOLD"))
-                ("NEXT" ("WAITING") ("CANCELLED") ("HOLD"))
+                ("IN-PROGRESS" ("WAITING") ("CANCELLED") ("HOLD"))
                 ("DONE" ("WAITING") ("CANCELLED") ("HOLD")))))
 #+END_SRC
 
@@ -2055,26 +2099,36 @@ Better help buffers
 #+BEGIN_SRC emacs-lisp
   (message "org-init.org: Org capture templates")
   (setq org-capture-templates
-        '(("t" "todo" entry (file (lambda () (expand-file-name (format "%s/refile.org" rhol-org-directory))))
+        '(("t" "todo" entry (file org-default-notes-file)
            "* TODO %?\n%U\n" :clock-in t :clock-resume t)
-          ("n" "note" entry (file (lambda ()(expand-file-name (format "%s/notes.org" rhol-org-directory))))
-           "* %? :NOTE:\n%U\n" :clock-in t :clock-resume t)
           ("j" "Journal" entry (file+datetree (lambda () (expand-file-name (format "~/%s/diary.org" rhol-org-directory))))
            "* %? :crypt:\n%U\n" :clock-in t :clock-resume t)
-          ("e" "Event" entry (file (lambda () (expand-file-name (format "%s/calendar.org" rhol-org-directory))))
-           "* %^{Name} \n%U\n:PROPERTIES:\n:CATEGORY: Event\n:LOCATION: %^{Location}\n:END:\n%^T\n\n%?")
-          ("h" "Habit" entry (file (lambda () (expand-file-name (format "%s/refile.org" rhol-org-directory))))
-           "* NEXT %?\n%U\nSCHEDULED: %(format-time-string \"<%Y-%m-%d %a .+1d/3d>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n")
-          ("c" "Contacts" entry (file (lambda () (expand-file-name (format "%s/contacts.org" rhol-org-directory))))
-           "* %^{Name} \n:PROPERTIES:\n:EMAIL: %^{Email}\n:PHONE:\n:NICKNAME:\n:IGNORE:\n:ICON:\n:NOTE:\n:ADDRESS:\n:BIRTHDAY:\n:END:\n%?")
-          ("i" "Ideas" entry (file (lambda () (expand-file-name (format "%s/ideas.org" rhol-org-directory))))
-           "* %?\n%U\n" :clock-in t :clock-resume t)
-          ))
+          ("h" "Habit" entry (file org-default-notes-file)
+           "* IN-PROGRESS %?\n%U\nSCHEDULED: %(format-time-string \"<%Y-%m-%d %a .+1d/3d>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: IN-PROGRESS\n:END:\n")
+          ("s" "Someday" entry (file org-default-notes-file)
+           "* SOMEDAY %?\n%U\n" :clock-in t :clock-resume t)
+          ("m" "Maybe" entry (file org-default-notes-file)
+           "* MAYBE %?\n%U\n" :clock-in t :clock-resume t)
+          ("c" "Check" entry (file org-default-notes-file)
+           "* CHECK %?\n%U\n" :clock-in t :clock-resume t)
+          ("r" "To read" entry (file org-default-notes-file)
+           "* TO-READ %?\n%U\n" :clock-in t :clock-resume t)
+          ("w" "To watch" entry (file org-default-notes-file)
+           "* TO-WATCH %?\n%U\n" :clock-in t :clock-resume t)
+          ("p" "To play" entry (file org-default-notes-file) 
+           "* TO-PLAY %?\n%U\n" :clock-in t :clock-resume t)))
 #+END_SRC
 
 ** Refile Settings
 #+BEGIN_SRC emacs-lisp
   (message "org-init.org: Refile settings")
+
+  ; Exclude DONE state tasks from refile targets
+  (defun rhol--verify-refile-target ()
+    "Exclude todo keywords with a done state from refile targets"
+    (not (member (nth 2 (org-heading-components)) org-done-keywords)))
+
+
   ;; Targets include this file and any file contributing to the agenda - up to 9 levels deep
   (setq org-refile-targets (quote ((nil :maxlevel . 9)
                                    (org-agenda-files :maxlevel . 9))))
@@ -2088,157 +2142,110 @@ Better help buffers
   ; Allow refile to create parent tasks with confirmation
   (setq org-refile-allow-creating-parent-nodes (quote confirm))
 
-  (setq org-refile-target-verify-function 'bh/verify-refile-target)
+  (setq org-refile-target-verify-function 'rhol--verify-refile-target)
+
 #+END_SRC
 
-** Agenda Settings
-*** Agenda Log Mode
+** Super Agenda
 
-# #+BEGIN_SRC emacs-lisp
-#   (org-agenda-log-mode)
-# #+END_SRC
-
-*** Super Agenda
-
-#+BEGIN_SRC emacs-lisp
+*** Load the package
+#+begin_src emacs-lisp
   (use-package org-super-agenda
+    :ensure t
     :config (org-super-agenda-mode))
+#+end_src
 
-  (defun rhol/org-super-agenda-list ()
-    (interactive)
-    (let ((org-super-agenda-groups
-           '((:order-multi (1 (:name "Done today"
-                                     :and (:regexp "State \"DONE\""
-                                                   :log t))
-                              (:name "Clocked today"
-                                     :log t)))
-             (:name "Schedule"
-                    :time-grid t)
-             (:name "Today"
-                    :scheduled today)
-             (:name "Refile - Super"
-                    :tag "REFILE")
-             (:habit t)
-             (:name "Due today"
-                    :deadline today)
-             (:name "Overdue"
-                    :deadline past)
-             (:name "Due soon"
-                    :deadline future)
-             (:name "Projects - Super"
-                    :children t)
-             (:name "Waiting..."
-                    :todo "WAITING"
-                    :order 98)
-             (:name "On Hold..."
-                    :todo "HOLD"
-                    :order 98)
-             (:name "Scheduled earlier"
-                    :scheduled past)
-             (:auto-group t))))
-      (org-agenda)))
-#+END_SRC
+*** Skip Functions
+
+#+begin_src emacs-lisp
+  (defun rhol--skip-parent-match-regexp (REGEXP)
+    (save-restriction
+      (widen)
+      ;; go up a maximum of 50 headings
+      (ignore-errors (org-up-heading-all 50))
+      (let ((header (org-get-heading 'notags 'notodo 'nopriority 'nocomment)))
+        (string-match REGEXP header))))
+#+end_src
+
+
+*** Forward Looking Agenda
+
+#+begin_src emacs-lisp
+    (message "org-init.org: Defining super agenda groups")
+
+    (defvar rhol-agenda-super-agenda-groups
+      '((:log t)  ; Automatically named "Log"
+        (:name "Schedule"
+               :time-grid t)
+        (:name "Today"
+               :scheduled today)
+        (:habit t)
+        (:name "Due today"
+               :deadline today)
+        (:name "Overdue"
+               :deadline past)
+        (:name "Due soon"
+               :deadline future)
+        (:name "Scheduled earlier"
+               :scheduled past)    
+        (:order-multi (1 (:name "Done today"
+                                :and (:regexp ("State \"DONE\"" "State \"CANCELLED\"")
+                                              :log t))
+                         (:name "Clocked today"
+                                :log t))))
+      "Basic super-agenda-groups for agenda queries")
+
+    (defvar rhol-by-project-super-agenda-groups
+      '((:auto-parent))
+      "Automatically group by parent task. Useful if filtering by subtree")
+
+    (defvar rhol-alltodo-super-agenda-groups
+      '((:name "In Progress"
+               :todo "IN-PROGRESS")
+        (:name "Check"
+               :todo "CHECK")
+        (:name "Todo"
+               :todo "TODO")
+        (:name "Hold"
+               :todo "HOLD")
+        (:name "Waiting"
+                :todo "WAITING")
+        (:name "Unimportant"
+               :todo ("SOMEDAY" "MAYBE")
+               :order 100)
+        (:name "Check it out"
+               :todo ("TO-READ" "TO-WATCH" "TO-PLAY")
+               :order 103)
+        (:name "Done"
+               :todo "DONE"
+               :order 101)
+        (:name "Cancelled"
+               :todo "CANCELLED"
+               :order 102))
+      "Detailed grouping of todo")
+#+end_src
 
 #+results:
-: rhol/org-super-agenda-list
+: rhol-alltodo-super-agenda-groups
 
-*** no-cal
-#+BEGIN_SRC emacs-lisp
-  (message "org-init.org: Agenda settings")
-  ;; Do not dim blocked tasks
-  (setq org-agenda-dim-blocked-tasks nil)
 
-  ;; Compact the block agenda view
-  (setq org-agenda-compact-blocks t)
-
-  ;; Custom agenda command definitions
+*** Custom agenda commands
+#+begin_src emacs-lisp
   (setq org-agenda-custom-commands
-        (quote (("W" "Wiki" tags "WIKI"
-                 ((org-agenda-overriding-header "Wiki Pages")
-                  (org-tags-match-list-sublevels t)))
-                ("N" "Notes" tags "NOTE"
-                 ((org-agenda-overriding-header "Notes")
-                  (org-tags-match-list-sublevels t)))
-                ("h" "Habits" tags-todo "STYLE=\"habit\""
-                 ((org-agenda-overriding-header "Habits")
-                  (org-agenda-sorting-strategy
-                   '(todo-state-down effort-up category-keep))))
-                (" " "Agenda"
-                 ((agenda "" nil)
-                  (tags "REFILE-DISABLED"
-                        ((org-agenda-overriding-header "Tasks to Refile")
-                         (org-tags-match-list-sublevels nil)))
-                  (tags-todo "-CANCELLED-DISABLED/!"
-                             ((org-agenda-overriding-header "Stuck Projects")
-                              (org-agenda-skip-function 'bh/skip-non-stuck-projects)
-                              (org-agenda-sorting-strategy
-                               '(category-keep))))
-                  (tags-todo "-HOLD-CANCELLED-DISABLED/!"
-                             ((org-agenda-overriding-header "Projects")
-                              (org-agenda-skip-function 'bh/skip-non-projects)
-                              (org-tags-match-list-sublevels 'indented)
-                              (org-agenda-sorting-strategy
-                               '(category-keep))))
-                  (tags-todo "-CANCELLED-DISABLED/!NEXT"
-                             ((org-agenda-overriding-header (concat "Project Next Tasks"
-                                                                    (if bh/hide-scheduled-and-waiting-next-tasks
-                                                                        ""
-                                                                      " (including WAITING and SCHEDULED tasks)")))
-                              (org-agenda-skip-function 'bh/skip-projects-and-habits-and-single-tasks)
-                              (org-tags-match-list-sublevels t)
-                              (org-agenda-todo-ignore-scheduled bh/hide-scheduled-and-waiting-next-tasks)
-                              (org-agenda-todo-ignore-deadlines bh/hide-scheduled-and-waiting-next-tasks)
-                              (org-agenda-todo-ignore-with-date bh/hide-scheduled-and-waiting-next-tasks)
-                              (org-agenda-sorting-strategy
-                               '(todo-state-down effort-up category-keep))))
-                  (tags-todo "-REFILE-CANCELLED-WAITING-HOLD-DISABLED/!"
-                             ((org-agenda-overriding-header (concat "Project Subtasks"
-                                                                    (if bh/hide-scheduled-and-waiting-next-tasks
-                                                                        ""
-                                                                      " (including WAITING and SCHEDULED tasks)")))
-                              (org-agenda-skip-function 'bh/skip-non-project-tasks)
-                              (org-agenda-todo-ignore-scheduled bh/hide-scheduled-and-waiting-next-tasks)
-                              (org-agenda-todo-ignore-deadlines bh/hide-scheduled-and-waiting-next-tasks)
-                              (org-agenda-todo-ignore-with-date bh/hide-scheduled-and-waiting-next-tasks)
-                              (org-agenda-sorting-strategy
-                               '(category-keep))))
-                  (tags-todo "-REFILE-CANCELLED-WAITING-HOLD-DISABLED/!"
-                             ((org-agenda-overriding-header (concat "Standalone Tasks"
-                                                                    (if bh/hide-scheduled-and-waiting-next-tasks
-                                                                        ""
-                                                                      " (including WAITING and SCHEDULED tasks)")))
-                              (org-agenda-skip-function 'bh/skip-project-tasks)
-                              (org-agenda-todo-ignore-scheduled bh/hide-scheduled-and-waiting-next-tasks)
-                              (org-agenda-todo-ignore-deadlines bh/hide-scheduled-and-waiting-next-tasks)
-                              (org-agenda-todo-ignore-with-date bh/hide-scheduled-and-waiting-next-tasks)
-                              (org-agenda-sorting-strategy
-                               '(category-keep))))
-                  (tags-todo "-CANCELLED+WAITING-DISABLED|HOLD-DISABLED/!"
-                             ((org-agenda-overriding-header (concat "Waiting and Postponed Tasks"
-                                                                    (if bh/hide-scheduled-and-waiting-next-tasks
-                                                                        ""
-                                                                      " (including WAITING and SCHEDULED tasks)")))
-                              (org-agenda-skip-function 'bh/skip-non-tasks)
-                              (org-tags-match-list-sublevels nil)
-                              (org-agenda-todo-ignore-scheduled bh/hide-scheduled-and-waiting-next-tasks)
-                              (org-agenda-todo-ignore-deadlines bh/hide-scheduled-and-waiting-next-tasks)))
-                  (tags "-REFILE-DISABLED/"
-                        ((org-agenda-overriding-header "Tasks to Archive")
-                         (org-agenda-skip-function 'bh/skip-non-archivable-tasks)
-                         (org-tags-match-list-sublevels nil))))
-                 nil))))
- 
-  (setq org-agenda-auto-exclude-function 'bh/org-auto-exclude-function)
+        '((" " "Super View"
+           ((agenda "" ((org-agenda-span 'day)
+                        (org-super-agenda-groups rhol-agenda-super-agenda-groups)))
+            (tags "REFILE+TODO={.+}" ((org-agenda-overriding-header "Refile")
+                            (org-super-agenda-groups rhol-alltodo-super-agenda-groups)))
+            (tags "-REFILE+TODO={.+}" ((org-agenda-overriding-header "Tasks")
+                             (org-super-agenda-groups rhol-alltodo-super-agenda-groups)))))))
+#+end_src
 
-  (setq org-agenda-log-mode-items (quote (closed state)))
-
-  (setq org-agenda-span 'day)
-  (setq org-stuck-projects (quote ("" nil nil "")))
-
-  (setq org-archive-mark-done nil)
-  (setq org-archive-location "%s_archive::* Archived Tasks")
-#+END_SRC
-
+** Archive Settings
+#+begin_src emacs-lisp
+  (setq org-archive-mark-done nil
+        org-archive-location "%s_archive::* Archived Tasks")
+#+end_src
 ** Clocking
 #+BEGIN_SRC emacs-lisp
   (message "org-init.org: Clocking")
@@ -2956,6 +2963,9 @@ Deft for my org-mode wiki
   (global-set-key (kbd "C-<f11>") 'org-clock-in)
   (global-set-key (kbd "C-s-<f12>") 'bh/save-then-publish)
   (global-set-key (kbd "C-c c") 'org-capture)
+  (global-set-key (kbd "C-c l") 'org-store-link)
+  (global-set-key (kbd "C-c b") 'org-switchb)
+
 
   (global-set-key (kbd "<f9> c") 'rhol/open-calendar)
 
@@ -2970,7 +2980,7 @@ Deft for my org-mode wiki
     (local-set-key (kbd "M-S-<down>") 'org-move-subtree-down)
     (define-key pyenv-mode-map (kbd "C-c C-s") nil)
     (local-set-key (kbd "C-c C-s") 'org-schedule))
-    
+
   ;; add to hook
   (message "adding org-mode hook")
   (add-hook 'org-mode-hook 'fix-org-keymap)

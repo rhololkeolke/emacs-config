@@ -37,10 +37,6 @@
     (beginning-of-line 0)
     (org-remove-empty-drawer-at "LOGBOOK" (point))))
 
-; Exclude DONE state tasks from refile targets
-(defun bh/verify-refile-target ()
-  "Exclude todo keywords with a done state from refile targets"
-  (not (member (nth 2 (org-heading-components)) org-done-keywords)))
 
 (defun bh/org-auto-exclude-function (tag)
   "Automatic task exclusion in the agenda with / RET"
@@ -59,8 +55,8 @@ Switch projects and subprojects from NEXT back to TODO"
     (cond
      ((and (member (org-get-todo-state) (list "TODO"))
            (bh/is-task-p))
-      "NEXT")
-     ((and (member (org-get-todo-state) (list "NEXT"))
+      "IN-PROGRESS")
+     ((and (member (org-get-todo-state) (list "IN-PROGRESS"))
            (bh/is-project-p))
       "TODO"))))
 
