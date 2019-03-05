@@ -2345,6 +2345,7 @@ Better help buffers
          (plantuml . t)
          (python . t)
          (ruby . t)
+         (shell . t)
          (sql . t)
          (sqlite . t))))
 
