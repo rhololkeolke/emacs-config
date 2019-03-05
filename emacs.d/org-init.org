@@ -670,6 +670,15 @@ Autocomplete module. See [[https://company-mode.github.io/][https://company-mode
         (add-to-list 'company-backends 'company-math-symbols-unicode)))
 
 #+END_SRC
+** LSP
+#+begin_src emacs-lisp
+  (use-package lsp-mode
+    :commands lsp
+    :config (require 'lsp-clients))
+
+  (use-package lsp-ui)
+#+end_src
+
 ** Helm
 
 Auto-completion library
@@ -1435,6 +1444,7 @@ Emacs project management.
 ** ROS
 Make Launch files and xacro use xml-mode
 #+BEGIN_SRC emacs-lisp
+  (message "org-init.org: ROS")
   (add-to-list 'auto-mode-alist '("\\.launch$" . xml-mode))
   (add-to-list 'auto-mode-alist '("\\.xacro$" . xml-mode))
   (add-to-list 'auto-mode-alist '("\\.sdf$" . xml-mode))
@@ -1443,58 +1453,32 @@ Make Launch files and xacro use xml-mode
 #+END_SRC
 
 ** Rust
+#+begin_src emacs-lisp
+  (message "org-init.org: rust")
+  (with-eval-after-load 'lsp-mode
+    (use-package lsp-rust)
+    (add-hook 'rust-mode-hook #'lsp-rust-enable))
 
-*** Racer
-#+BEGIN_SRC emacs-lisp
+  (use-package toml-mode)
+
   (use-package rust-mode
-    :ensure t
-    :mode "\\.rs$"
-    :config
-    (add-hook 'rust-mode-hook '(lambda ()
-                                 (setq-local cargo-compile-command "cargo build")
-                                 (setq-local cargo-test-command "cargo test")
-                                 (setq-local compilation-read-command nil)
-                                 (local-set-key (kbd "<f5>") '(lambda () (interactive) (compile cargo-compile-command)))
-                                 (local-set-key (kbd "<f6>") '(lambda () (interactive) (compile cargo-test-command)))))
-    (add-hook 'rust-mode-hook #'racer-mode)
-    (add-hook 'racer-mode-hook #'eldoc-mode)
+    :hook (rust-mode . lsp))
 
-    (add-hook 'racer-mode-hook #'company-mode)
-
-    (define-key rust-mode-map (kbd "C-TAB") #'company-indent-or-complete-common)
-    (setq company-tooltip-align-annotations t))
-
+  ;; add keybindings for cargo
   (use-package cargo
-    :ensure t
-    :config
-    (add-to-list 'auto-mode-alist '("\\.toml$" . conf-mode))
-    (add-hook 'conf-mode-hook '(lambda () (if (eq "toml" (file-name-extension (buffer-name)))
-                                              (progn (cargo-minor-mode 1)                                                   
-                                                     (setq-local cargo-compile-command "cargo build")
-                                                     (setq-local cargo-test-command "cargo test")
-                                                     (setq-local compilation-read-command nil)
-                                                     (local-set-key (kbd "<f5>") '(lambda ()
-                                                                                    (interactive)
-                                                                                    (compile cargo-compile-command)))
-                                                     (local-set-key (kbd "<f6>") '(lambda ()
-                                                                                    (interactive)
-                                                                                    (compile cargo-test-command))))))))
-#+END_SRC
+    :hook (rust-mode . cargo-minor-mode))
 
-*** RLS
+  (use-package flycheck-rust
+    :config (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
+#+end_src
 
-#+BEGIN_SRC emacs-lisp
-  ;; (with-eval-after-load 'lsp-mode
-  ;;   (setq lsp-rust-rls-command '("rustup" "run" "nightly" "rls"))
-  ;;   (use-package lsp-rust))
-
-  ;; (add-hook 'rust-mode-hook #'lsp-rust-enable)
-  ;; (add-hook 'rust-mode-hook #'flycheck-mode)
-#+END_SRC
+#+results:
+| lsp-rust-enable |
 
 ** Hydra
 
 #+BEGIN_SRC emacs-lisp
+  (message "org-init.org: hydra")
   (use-package hydra
     :ensure t
     :config
@@ -1505,8 +1489,8 @@ Make Launch files and xacro use xml-mode
      (kbd "C-S-n")
      (defhydra hydra-move
        (:pre (progn 
-	       (linum-mode 1))
-	     :post (linum-mode -1))
+               (linum-mode 1))
+             :post (linum-mode -1))
        "
      Movement
      ---------
@@ -1552,33 +1536,33 @@ Make Launch files and xacro use xml-mode
       "Move window splitter left."
       (interactive "p")
       (if (let ((windmove-wrap-around))
-	    (windmove-find-other-window 'right))
-	  (shrink-window-horizontally arg)
-	(enlarge-window-horizontally arg)))
+            (windmove-find-other-window 'right))
+          (shrink-window-horizontally arg)
+        (enlarge-window-horizontally arg)))
 
     (defun hydra-move-splitter-right (arg)
       "Move window splitter right."
       (interactive "p")
       (if (let ((windmove-wrap-around))
-	    (windmove-find-other-window 'right))
-	  (enlarge-window-horizontally arg)
-	(shrink-window-horizontally arg)))
+            (windmove-find-other-window 'right))
+          (enlarge-window-horizontally arg)
+        (shrink-window-horizontally arg)))
 
     (defun hydra-move-splitter-up (arg)
       "Move window splitter up."
       (interactive "p")
       (if (let ((windmove-wrap-around))
-	    (windmove-find-other-window 'up))
-	  (enlarge-window arg)
-	(shrink-window arg)))
+            (windmove-find-other-window 'up))
+          (enlarge-window arg)
+        (shrink-window arg)))
 
     (defun hydra-move-splitter-down (arg)
       "Move window splitter down."
       (interactive "p")
       (if (let ((windmove-wrap-around))
-	    (windmove-find-other-window 'up))
-	  (shrink-window arg)
-	(enlarge-window arg)))
+            (windmove-find-other-window 'up))
+          (shrink-window arg)
+        (enlarge-window arg)))
 
     (global-set-key
      (kbd "C-x w")
@@ -1607,48 +1591,48 @@ Make Launch files and xacro use xml-mode
        ("f" helm-find-files)
        ("F" follow-mode)
        ("a" (lambda ()
-	      (interactive)
-	      (ace-window 1)
-	      (add-hook 'ace-window-end-once-hook
-			'hydra-window/body))
-	)
+              (interactive)
+              (ace-window 1)
+              (add-hook 'ace-window-end-once-hook
+                        'hydra-window/body))
+        )
        ("|" (lambda ()
-	      (interactive)
-	      (split-window-right)
-	      (windmove-right))
-	)
+              (interactive)
+              (split-window-right)
+              (windmove-right))
+        )
        ("_" (lambda ()
-	      (interactive)
-	      (split-window-below)
-	      (windmove-down))
-	)
+              (interactive)
+              (split-window-below)
+              (windmove-down))
+        )
        ("s" (lambda ()
-	      (interactive)
-	      (ace-window 4)
-	      (add-hook 'ace-window-end-once-hook
-			'hydra-window/body)))
+              (interactive)
+              (ace-window 4)
+              (add-hook 'ace-window-end-once-hook
+                        'hydra-window/body)))
        ("S" save-buffer)
        ("d" delete-window)
        ("D" (lambda ()
-	      (interactive)
-	      (ace-window 16)
-	      (add-hook 'ace-window-end-once-hook
-			'hydra-window/body))
-	)
+              (interactive)
+              (ace-window 16)
+              (add-hook 'ace-window-end-once-hook
+                        'hydra-window/body))
+        )
        ("o" delete-other-windows)
        ("m" ace-maximize-window)
        ("t" transpose-frame)
        ("z" (progn
-	      (winner-undo)
-	      (setq this-command 'winner-undo))
-	)
+              (winner-undo)
+              (setq this-command 'winner-undo))
+        )
        ("Z" winner-redo)
        ("q" nil)))
 
     (global-set-key
      (kbd "C-x p")
      (defhydra hydra-projectile (:color teal
-					:hint nil)
+                                        :hint nil)
        "
        PROJECTILE: %(projectile-project-root)
 
@@ -1685,9 +1669,9 @@ Make Launch files and xacro use xml-mode
     (global-set-key
      (kbd "C-x SPC")
      (defhydra hydra-rectangle (:body-pre (rectangle-mark-mode 1)
-					  :color pink
-					  :hint nil
-					  :post (deactivate-mark))
+                                          :color pink
+                                          :hint nil
+                                          :post (deactivate-mark))
        "
     ^_k_^       _w_ copy      _o_pen       _N_umber-lines            |\\     -,,,--,,_
   _h_   _l_     _y_ank        _t_ype       _e_xchange-point          /,`.-'`'   ..  \-;;,_
@@ -1707,8 +1691,8 @@ Make Launch files and xacro use xml-mode
        ("e" rectangle-exchange-point-and-mark) ;; C-x C-x
        ("N" rectangle-number-lines)            ;; C-x r N
        ("r" (if (region-active-p)
-		(deactivate-mark)
-	      (rectangle-mark-mode 1)))
+                (deactivate-mark)
+              (rectangle-mark-mode 1)))
        ("u" undo nil)
        ("g" nil))))
 #+END_SRC
@@ -1899,12 +1883,6 @@ Better help buffers
     :bind (("C-h f" . helpful-callable)
            ("C-h v" . helpful-variable)
            ("C-h k" . helpful-key)))
-#+END_SRC
-
-** Tabnine
-#+BEGIN_SRC emacs-lisp
-  (use-package company-tabnine :ensure t
-    :config (add-to-list 'company-backends #'company-tabnine))
 #+END_SRC
 
 ** Golang
@@ -2985,4 +2963,3 @@ Deft for my org-mode wiki
   (message "adding org-mode hook")
   (add-hook 'org-mode-hook 'fix-org-keymap)
 #+END_SRC
-
