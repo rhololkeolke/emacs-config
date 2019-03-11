@@ -2665,7 +2665,7 @@ Deft for my org-mode wiki
     "Set true to enable email and set default mail settings"
     :type 'boolean
     :group 'rhol-email
-    :tag "Set true to enable email and set default mail settings")
+    :tag "Set true to enable mu4e email and set default mail settings")
 
   (if rhol-use-mu4e
       (defcustom rhol-mu4e-maildir (expand-file-name "~/mail")
@@ -2843,6 +2843,27 @@ Deft for my org-mode wiki
             (notmuch-search-tag (notmuch-tag-change-list notmuch-delete-tags undelete) beg end))
           (when (eq beg end)
             (notmuch-search-next-thread)))
+        (use-package smtpmail-multi
+          :config (setq smtpmail-multi-accounts '((uni . ("digidevin@gmail.com"
+                                                          "smtp.gmail.com"
+                                                          587
+                                                          "dschwab@andrew.cmu.edu"
+                                                          starttls
+                                                          nil nil nil))
+                                                  (gmail . ("digidevin@gmail.com"
+                                                            "smtp.gmail.com"
+                                                            587
+                                                            "digidevin@gmail.com"
+                                                            starttls
+                                                            nil nil nil))))
+          (setq smtpmail-multi-associations
+                '(("digidevin@gmail.com" gmail)
+                  ("dschwab@andrew.cmu.edu" uni)))
+          (setq smtpmail-multi-default-account 'gmail)
+          (setq message-send-mail-function 'smtpmail-multi-send-it)
+          (setq smtpmail-debug-info t)
+          (setq smtpmail-debug-verbose t))
+
         :bind (:map notmuch-search-mode-map
                     ("T" . notmuch-search-delete-thread))))
 #+END_SRC
