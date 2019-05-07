@@ -1308,10 +1308,6 @@ Make Launch files and xacro use xml-mode
 ** Rust
 #+begin_src emacs-lisp
   (message "org-init.org: rust")
-  (with-eval-after-load 'lsp-mode
-    (use-package lsp-rust)
-    (add-hook 'rust-mode-hook #'lsp-rust-enable))
-
   (use-package toml-mode)
 
   (use-package rust-mode
@@ -1759,6 +1755,18 @@ Better help buffers
     (add-hook 'go-mode-hook 'rhol--go-mode-hook)
     (use-package go-guru))
 #+END_SRC
+
+** Rusty Object Notation (RON)
+
+#+begin_src emacs-lisp
+  (quelpa
+   '(quelpa-use-package :fetcher git
+                        :url "https://github.com/rhololkeolke/ron-mode.git"))
+  (require 'quelpa-use-package)
+
+  (use-package ron-mode
+    :mode "\\.ron\\'")
+#+end_src
 
 * Org-mode
 ** Customize Group
