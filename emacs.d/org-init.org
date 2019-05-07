@@ -1154,7 +1154,6 @@ Stop ediff from opening its interface in a new frame (aka window)
 #+BEGIN_SRC emacs-lisp
   (use-package clang-format
     :config
-    (setq clang-format-executable "/usr/bin/clang-format-6.0")
     (add-hook 'c++-mode-hook '(lambda()
                               (local-set-key (kbd "C-c C-r f") 'clang-format-region)
                               (local-set-key (kbd "C-c C-r b") 'clang-format-buffer))))
@@ -1166,13 +1165,6 @@ Stop ediff from opening its interface in a new frame (aka window)
   (load "~/.emacs.d/lisp/third-party/clang-rename.el")
   (add-hook 'c++-mode-hook '(lambda() (local-set-key (kbd "C-c C-r r") 'clang-rename)))
 #+END_SRC
-
-*** Clang-include-fixer
-
-#+BEGIN_SRC emacs-lisp
-  (load "~/.emacs.d/lisp/third-party/clang-include-fixer.el")
-#+END_SRC
-
 
 *** hs-mode (code folding)
 #+BEGIN_SRC emacs-lisp
@@ -1230,36 +1222,6 @@ Better C++ syntax highlighting
 
 #+results:
 | lambda | nil | (require (quote ccls)) | (lsp) |
-
-*** C++ Mode Hooks
-
-#+BEGIN_SRC emacs-lisp
-  (defun rhol/cmakelists-hook ()
-    (message "rhol/cmakelists-hook %s" (buffer-name))
-    (condition-case ex
-        (if (string-equal (buffer-name) "CMakeLists.txt")
-            (progn
-              (message "buffer is main cmake file")
-              (local-set-key (kbd "<f5>") (lambda () cmake-ide-compile))
-              (local-set-key (kbd "C-<f5>") 'cmake-ide-run-cmake)
-              (local-set-key (kbd "<f6>") 'cmake-ide-run-tests)
-              (local-set-key (kbd "C-<f6>") 'cmake-ide-run-clean))
-          (message "buffer is not main cmake file"))
-      ('error (message "Failed to run rhol/cmakelists-hook on buffer %s. [%s]" (buffer-name) ex))))
-
-  (defun rhol/c++-hook ()
-    (message "rhol/c++-hook %s" (buffer-name))
-    (condition-case ex
-        (progn
-          (local-set-key (kbd "<f5>") 'cmake-ide-compile)
-          (local-set-key (kbd "C-<f5>") 'cmake-ide-run-cmake)
-          (local-set-key (kbd "<f6>") 'cmake-ide-run-tests)
-          (local-set-key (kbd "C-<f6>") 'cmake-ide-run-clean))
-      ('error (message "Failed to run rhol/c++-hook on buffer %s. [%s]" (buffer-name) ex))))
-
-  (add-hook 'c++-mode-hook 'rhol/c++-hook)
-  (add-hook 'cmake-mode-hook 'rhol/cmakelists-hook)
-#+END_SRC
 
 ** Transpose Frame
 Package for rearranging window frames.
