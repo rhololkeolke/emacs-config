@@ -91,3 +91,5 @@ emacs.d/url
 emacs.d/workspace
 /emacs.d/srecode-map.el
 /emacs.d/eshell
+/emacs.d/.lsp-session-v1
+/emacs.d/quelpa
