@@ -71,6 +71,7 @@
 (depends-on "helm-projectile")
 (depends-on "helm-swoop")
 (depends-on "helpful")
+(depends-on "highlight-doxygen")
 (depends-on "ht")
 (depends-on "htmlize")
 (depends-on "hydra")

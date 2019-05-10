@@ -1143,11 +1143,10 @@ Stop ediff from opening its interface in a new frame (aka window)
 ** C/C++ Mode
 #+BEGIN_SRC emacs-lisp
   (message "org-init.org: C/C++ Mode")
-  (add-to-list 'auto-mode-alist '("\\.h$" . c++-mode))
-
-  (add-hook 'c++-mode-hook 'eldoc-mode)
-  (add-hook 'c-mode-hook 'eldoc-mode)
 #+END_SRC
+
+#+results:
+| (lambda nil (require (quote ccls)) (lsp)) | eldoc-mode |
 
 *** Clang-format
 
@@ -1159,12 +1158,18 @@ Stop ediff from opening its interface in a new frame (aka window)
                               (local-set-key (kbd "C-c C-r b") 'clang-format-buffer))))
 #+END_SRC
 
+#+results:
+: t
+
 *** Clang-rename
 
 #+BEGIN_SRC emacs-lisp
   (load "~/.emacs.d/lisp/third-party/clang-rename.el")
   (add-hook 'c++-mode-hook '(lambda() (local-set-key (kbd "C-c C-r r") 'clang-rename)))
 #+END_SRC
+
+#+results:
+| (lambda nil (undo-tree-mode 1)) | (lambda nil (require (quote ccls)) (lsp)) | rhol/hs-hook | (lambda nil (local-set-key (kbd C-c C-r r) (quote clang-rename))) | (lambda nil (local-set-key (kbd C-c C-r f) (quote clang-format-region)) (local-set-key (kbd C-c C-r b) (quote clang-format-buffer))) | eldoc-mode |
 
 *** hs-mode (code folding)
 #+BEGIN_SRC emacs-lisp
@@ -1176,6 +1181,9 @@ Stop ediff from opening its interface in a new frame (aka window)
 
   (add-hook 'c++-mode-hook 'rhol/hs-hook)
 #+END_SRC
+
+#+results:
+| (lambda nil (undo-tree-mode 1)) | (lambda nil (require (quote ccls)) (lsp)) | rhol/hs-hook | (lambda nil (local-set-key (kbd C-c C-r r) (quote clang-rename))) | (lambda nil (local-set-key (kbd C-c C-r f) (quote clang-format-region)) (local-set-key (kbd C-c C-r b) (quote clang-format-buffer))) | eldoc-mode |
 
 *** Colorize compilation buffer
 
@@ -1189,6 +1197,10 @@ Stop ediff from opening its interface in a new frame (aka window)
     :config
     (add-hook 'compilation-filter-hook 'colorize-compilation-buffer))
 #+END_SRC
+
+#+results:
+: t
+
 *** Compilation Mode improvements
 
 #+BEGIN_SRC emacs-lisp
@@ -1196,10 +1208,16 @@ Stop ediff from opening its interface in a new frame (aka window)
   (setq compilation-scroll-output t)  
 #+END_SRC
 
+#+results:
+: t
+
 *** Open header files in C++ Mode by default
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'auto-mode-alist '("\\.h$" . c++-mode))
 #+END_SRC
+
+#+results:
+: ((\.odc\' . archive-mode) (\.odf\' . archive-mode) (\.odi\' . archive-mode) (\.otp\' . archive-mode) (\.odp\' . archive-mode) (\.otg\' . archive-mode) (\.odg\' . archive-mode) (\.ots\' . archive-mode) (\.ods\' . archive-mode) (\.odm\' . archive-mode) (\.ott\' . archive-mode) (\.odt\' . archive-mode) (\.org_archive$ . org-mode) (\.org$ . org-mode) (\.ron\' . ron-mode) (finances\.dat\' . ledger-mode) (\.capnp\' . capnp-mode) (\.yml\' . yaml-mode) (\.yaml\' . yaml-mode) (\.py\' . python-mode) (\.m\' . matlab-mode) (\.ks\' . ks-mode) (\.plb\' . cmdragons-playbook-mode) (\.ply\' . cmdragons-play-mode) (\.cfg\' . lua-mode) (\.fbs\' . flatbuffers-mode) (\.world$ . xml-mode) (^model\.config$ . xml-mode) (\.sdf$ . xml-mode) (\.xacro$ . xml-mode) (\.launch$ . xml-mode) (\.h$ . c++-mode) (\.gpg$ . sensitive-mode) (\(?:\(?:\(?:\.\(?:b\(?:\(?:abel\|ower\)rc\)\|json\(?:ld\)?\)\|composer\.lock\)\)\'\) . json-mode) (\.markdown\' . gfm-mode) (\.md\' . gfm-mode) (README\.md\' . gfm-mode) (\.yaml$ . yaml-mode) (\.yml$ . yaml-mode) (\.cmake\' . cmake-mode) (CMakeLists\.txt\' . cmake-mode) (\.hva\' . latex-mode) (\.drv\' . latex-mode) (\.envrc\' . direnv-envrc-mode) (Dockerfile\(?:\..*\)?\' . dockerfile-mode) (/fish_funced\..*\' . fish-mode) (\.fish\' . fish-mode) (\.glsl\' . glsl-mode) (\.geom\' . glsl-mode) (\.frag\' . glsl-mode) (\.vert\' . glsl-mode) ([\\/]pentadactyl\.\(inbox\|mail\)\.google\..*\.txt\' . gmail-message-mode) ([\\/]itsalltext[\\/]\(inbox\|mail\)\.google\..*\.txt\' . gmail-message-mode) ([\\/]\(inbox\|mail\)-google-com.*\.\(ckr\|html?\|txt\)\' . gmail-message-mode) (\.go\' . go-mode) (\.hsc\' . haskell-mode) (\.l[gh]s\' . literate-haskell-mode) (\.hsig\' . haskell-mode) (\.[gh]s\' . haskell-mode) (\.cabal\' . haskell-cabal-mode) (\.chs\' . haskell-c2hs-mode) (\.ghci\' . ghci-script-mode) (\.dump-simpl\' . ghc-core-mode) (\.hcr\' . ghc-core-mode) (\.jsonnet\' . jsonnet-mode) (\.ledger\' . ledger-mode) (\.lua\' . lua-mode) (/git-rebase-todo\' . git-rebase-mode) (\.md\' . markdown-mode) (\.markdown\' . markdown-mode) (\.tlc$ . tlc-mode) (\.m$ . matlab-mode) (\.proto\' . protobuf-mode) (\.qml$ . qml-mode) (\.rs\' . rust-mode) (\.sls\' . salt-mode) (\.toml\' . toml-mode) (\.\(e?ya?\|ra\)ml\' . yaml-mode) (\.gpg\(~\|\.~[0-9]+~\)?\' nil epa-file) (\.elc\' . elisp-byte-code-mode) (\.zst\' nil jka-compr) (\.dz\' nil jka-compr) (\.xz\' nil jka-compr) (\.lzma\' nil jka-compr) (\.lz\' nil jka-compr) (\.g?z\' nil jka-compr) (\.bz2\' nil jka-compr) (\.Z\' nil jka-compr) (\.vr[hi]?\' . vera-mode) (\(?:\.\(?:rbw?\|ru\|rake\|thor\|jbuilder\|rabl\|gemspec\|podspec\)\|/\(?:Gem\|Rake\|Cap\|Thor\|Puppet\|Berks\|Vagrant\|Guard\|Pod\)file\)\' . ruby-mode) (\.re?st\' . rst-mode) (\.py[iw]?\' . python-mode) (\.less\' . less-css-mode) (\.scss\' . scss-mode) (\.awk\' . awk-mode) (\.\(u?lpc\|pike\|pmod\(\.in\)?\)\' . pike-mode) (\.idl\' . idl-mode) (\.java\' . java-mode) (\.m\' . objc-mode) (\.ii\' . c++-mode) (\.i\' . c-mode) (\.lex\' . c-mode) (\.y\(acc\)?\' . c-mode) (\.h\' . c-or-c++-mode) (\.c\' . c-mode) (\.\(CC?\|HH?\)\' . c++-mode) (\.[ch]\(pp\|xx\|\+\+\)\' . c++-mode) (\.\(cc\|hh\)\' . c++-mode) (\.\(bat\|cmd\)\' . bat-mode) (\.[sx]?html?\(\.[a-zA-Z_]+\)?\' . mhtml-mode) (\.svgz?\' . image-mode) (\.svgz?\' . xml-mode) (\.x[bp]m\' . image-mode) (\.x[bp]m\' . c-mode) (\.p[bpgn]m\' . image-mode) (\.tiff?\' . image-mode) (\.gif\' . image-mode) (\.png\' . image-mode) (\.jpe?g\' . image-mode) (\.te?xt\' . text-mode) (\.[tT]e[xX]\' . tex-mode) (\.ins\' . tex-mode) (\.ltx\' . latex-mode) (\.dtx\' . doctex-mode) (\.org\' . org-mode) (\.el\' . emacs-lisp-mode) (Project\.ede\' . emacs-lisp-mode) (\.\(scm\|stk\|ss\|sch\)\' . scheme-mode) (\.l\' . lisp-mode) (\.li?sp\' . lisp-mode) (\.[fF]\' . fortran-mode) (\.for\' . fortran-mode) (\.p\' . pascal-mode) (\.pas\' . pascal-mode) (\.\(dpr\|DPR\)\' . delphi-mode) (\.ad[abs]\' . ada-mode) (\.ad[bs].dg\' . ada-mode) (\.\([pP]\([Llm]\|erl\|od\)\|al\)\' . perl-mode) (Imakefile\' . makefile-imake-mode) (Makeppfile\(?:\.mk\)?\' . makefile-makepp-mode) (\.makepp\' . makefile-makepp-mode) (\.mk\' . makefile-gmake-mode) (\.make\' . makefile-gmake-mode) ([Mm]akefile\' . makefile-gmake-mode) (\.am\' . makefile-automake-mode) (\.texinfo\' . texinfo-mode) (\.te?xi\' . texinfo-mode) (\.[sS]\' . asm-mode) (\.asm\' . asm-mode) (\.css\' . css-mode) (\.mixal\' . mixal-mode) (\.gcov\' . compilation-mode) (/\.[a-z0-9-]*gdbinit . gdb-script-mode) (-gdb\.gdb . gdb-script-mode) ([cC]hange\.?[lL]og?\' . change-log-mode) ([cC]hange[lL]og[-.][0-9]+\' . change-log-mode) (\$CHANGE_LOG\$\.TXT . change-log-mode) (\.scm\.[0-9]*\' . scheme-mode) (\.[ckz]?sh\'\|\.shar\'\|/\.z?profile\' . sh-mode) (\.bash\' . sh-mode) (\(/\|\`\)\.\(bash_\(profile\|history\|log\(in\|out\)\)\|z?log\(in\|out\)\)\' . sh-mode) (\(/\|\`\)\.\(shrc\|zshrc\|m?kshrc\|bashrc\|t?cshrc\|esrc\)\' . sh-mode) (\(/\|\`\)\.\([kz]shenv\|xinitrc\|startxrc\|xsession\)\' . sh-mode) (\.m?spec\' . sh-mode) (\.m[mes]\' . nroff-mode) (\.man\' . nroff-mode) (\.sty\' . latex-mode) (\.cl[so]\' . latex-mode) (\.bbl\' . latex-mode) (\.bib\' . bibtex-mode) (\.bst\' . bibtex-style-mode) (\.sql\' . sql-mode) (\.m[4c]\' . m4-mode) (\.mf\' . metafont-mode) (\.mp\' . metapost-mode) (\.vhdl?\' . vhdl-mode) (\.article\' . text-mode) (\.letter\' . text-mode) (\.i?tcl\' . tcl-mode) (\.exp\' . tcl-mode) (\.itk\' . tcl-mode) (\.icn\' . icon-mode) (\.sim\' . simula-mode) (\.mss\' . scribe-mode) (\.f9[05]\' . f90-mode) (\.f0[38]\' . f90-mode) (\.indent\.pro\' . fundamental-mode) (\.\(pro\|PRO\)\' . idlwave-mode) (\.srt\' . srecode-template-mode) (\.prolog\' . prolog-mode) (\.tar\' . tar-mode) (\.\(arc\|zip\|lzh\|lha\|zoo\|[jew]ar\|xpi\|rar\|cbr\|7z\|ARC\|ZIP\|LZH\|LHA\|ZOO\|[JEW]AR\|XPI\|RAR\|CBR\|7Z\)\' . archive-mode) (\.oxt\' . archive-mode) (\.\(deb\|[oi]pk\)\' . archive-mode) (\`/tmp/Re . text-mode) (/Message[0-9]*\' . text-mode) (\`/tmp/fol/ . text-mode) (\.oak\' . scheme-mode) (\.sgml?\' . sgml-mode) (\.x[ms]l\' . xml-mode) (\.dbk\' . xml-mode) (\.dtd\' . sgml-mode) (\.ds\(ss\)?l\' . dsssl-mode) (\.jsm?\' . javascript-mode) (\.json\' . javascript-mode) (\.jsx\' . js-jsx-mode) (\.[ds]?vh?\' . verilog-mode) (\.by\' . bovine-grammar-mode) (\.wy\' . wisent-grammar-mode) ([:/\]\..*\(emacs\|gnus\|viper\)\' . emacs-lisp-mode) (\`\..*emacs\' . emacs-lisp-mode) ([:/]_emacs\' . emacs-lisp-mode) (/crontab\.X*[0-9]+\' . shell-script-mode) (\.ml\' . lisp-mode) (\.ld[si]?\' . ld-script-mode) (ld\.?script\' . ld-script-mode) (\.xs\' . c-mode) (\.x[abdsru]?[cnw]?\' . ld-script-mode) (\.zone\' . dns-mode) (\.soa\' . dns-mode) (\.asd\' . lisp-mode) (\.\(asn\|mib\|smi\)\' . snmp-mode) (\.\(as\|mi\|sm\)2\' . snmpv2-mode) (\.\(diffs?\|patch\|rej\)\' . diff-mode) (\.\(dif\|pat\)\' . diff-mode) (\.[eE]?[pP][sS]\' . ps-mode) (\.\(?:PDF\|DVI\|OD[FGPST]\|DOCX?\|XLSX?\|PPTX?\|pdf\|djvu\|dvi\|od[fgpst]\|docx?\|xlsx?\|pptx?\)\' . doc-view-mode-maybe) (configure\.\(ac\|in\)\' . autoconf-mode) (\.s\(v\|iv\|ieve\)\' . sieve-mode) (BROWSE\' . ebrowse-tree-mode) (\.ebrowse\' . ebrowse-tree-mode) (#\*mail\* . mail-mode) (\.g\' . antlr-mode) (\.mod\' . m2-mode) (\.ses\' . ses-mode) (\.docbook\' . sgml-mode) (\.com\' . dcl-mode) (/config\.\(?:bat\|log\)\' . fundamental-mode) (\.\(?:[iI][nN][iI]\|[lL][sS][tT]\|[rR][eE][gG]\|[sS][yY][sS]\)\' . conf-mode) (\.la\' . conf-unix-mode) (\.ppd\' . conf-ppd-mode) (java.+\.conf\' . conf-javaprop-mode) (\.properties\(?:\.[a-zA-Z0-9._-]+\)?\' . conf-javaprop-mode) (\.toml\' . conf-toml-mode) (\.desktop\' . conf-desktop-mode) (\`/etc/\(?:DIR_COLORS\|ethers\|.?fstab\|.*hosts\|lesskey\|login\.?de\(?:fs\|vperm\)\|magic\|mtab\|pam\.d/.*\|permissions\(?:\.d/.+\)?\|protocols\|rpc\|services\)\' . conf-space-mode) (\`/etc/\(?:acpid?/.+\|aliases\(?:\.d/.+\)?\|default/.+\|group-?\|hosts\..+\|inittab\|ksysguarddrc\|opera6rc\|passwd-?\|shadow-?\|sysconfig/.+\)\' . conf-mode) ([cC]hange[lL]og[-.][-0-9a-z]+\' . change-log-mode) (/\.?\(?:gitconfig\|gnokiirc\|hgrc\|kde.*rc\|mime\.types\|wgetrc\)\' . conf-mode) (/\.\(?:enigma\|gltron\|gtk\|hxplayer\|net\|neverball\|qt/.+\|realplayer\|scummvm\|sversion\|sylpheed/.+\|xmp\)rc\' . conf-mode) (/\.\(?:gdbtkinit\|grip\|orbital/.+txt\|rhosts\|tuxracer/options\)\' . conf-mode) (/\.?X\(?:default\|resource\|re\)s\> . conf-xdefaults-mode) (/X11.+app-defaults/\|\.ad\' . conf-xdefaults-mode) (/X11.+locale/.+/Compose\' . conf-colon-mode) (/X11.+locale/compose\.dir\' . conf-javaprop-mode) (\.~?[0-9]+\.[0-9][-.0-9]*~?\' nil t) (\.\(?:orig\|in\|[bB][aA][kK]\)\' nil t) ([/.]c\(?:on\)?f\(?:i?g\)?\(?:\.[a-zA-Z0-9._-]+\)?\' . conf-mode-maybe) (\.[1-9]\' . nroff-mode) (\.tgz\' . tar-mode) (\.tbz2?\' . tar-mode) (\.txz\' . tar-mode) (\.tzst\' . tar-mode))
 
 *** Modern C++ Font Lock
 Better C++ syntax highlighting
@@ -1212,6 +1230,9 @@ Better C++ syntax highlighting
                (modern-c++-font-lock-global-mode t))
 #+END_SRC
 
+#+results:
+: t
+
 *** LSP Setup
 
 #+begin_src emacs-lisp
@@ -1221,6 +1242,73 @@ Better C++ syntax highlighting
 
 #+results:
 | lambda | nil | (require (quote ccls)) | (lsp) |
+
+*** CMake IDE
+
+#+begin_src emacs-lisp
+  (defvar cmake-ide-run-after-build-command nil "Command to run after a successful invocation of cmake-ide-compile.")
+
+  (defun cmake-ide-run-after-build (buffer msg)
+    "Run a command when compilation buffer has finished compiling."
+    (when cmake-ide-run-after-build-command
+      (let ((default-directory cmake-ide-build-dir))
+        (start-process-shell-command
+         "cmake-ide run after build"
+         (get-buffer-create "*cmake-ide run after build*")
+         cmake-ide-run-after-build-command)
+        (switch-to-buffer-other-window buffer-name)
+        ;; make sure this command is only run once
+        (setq cmake-ide-run-after-build-command nil))))
+
+  (defun cmake-ide-compile-target (target)
+    "Compile and run tests."
+    (interactive "sTarget: ")
+    (let ((old-cide--get-compile-command (symbol-function 'cide--get-compile-command)))
+      (cl-letf (((symbol-function 'cide--get-compile-command)
+                 (lambda (dir) (format "%s %s" (funcall old-cide--get-compile-command dir) target))))
+        (cmake-ide-compile))))
+
+  (defun cmake-ide-test ()
+    (interactive)
+    (cmake-ide-compile-target "test"))
+
+  (defun cmake-ide-compile-run (arg)
+    "Compile and run tests."
+    (interactive "P")
+    (if (or arg (not cmake-ide-run-after-build-command))
+        (setq-local cmake-ide-run-after-build-command
+                    (read-string "Run Command: " cmake-ide-run-after-build-command)))
+    (lexical-let ((cmake-ide-build-dir cmake-ide-build-dir)
+                  (COMMAND cmake-ide-run-after-build-command))
+      (defun cmake-ide-run-after-build (buffer msg)
+        (if (string-match "^finished" msg)
+            (let ((process-name "cmake-ide-run-after-build")
+                  (buffer (get-buffer-create "*cmake-ide-run-after-build*"))
+                  (COMMAND (format "%s; %s" cmake-ide-build-dir COMMAND)))
+                (switch-to-buffer-other-window buffer)
+                (make-local-variable 'process-environment)
+                (erase-buffer)                
+                (compilation-mode)
+                (start-process-shell-command process-name buffer COMMAND)))
+        (remove-hook 'compilation-finish-functions 'cmake-ide-run-after-build)))
+    (add-hook 'compilation-finish-functions 'cmake-ide-run-after-build)
+    (cmake-ide-compile))
+
+  (use-package cmake-ide
+    :bind (:map cmake-mode-map
+               ("<f5>" . cmake-ide-compile)
+               ("<f6>" . cmake-ide-test)
+               ("C-<f5>" . cmake-ide-compile-target)
+               ("<f7>" . cmake-ide-compile-run)
+               :map c-mode-base-map
+               ("<f5>" . cmake-ide-compile)
+               ("<f6>" . cmake-ide-test)
+               ("C-<f5>" . cmake-ide-compile-target)
+               ("<f7>" . cmake-ide-compile-run)))
+#+end_src
+
+#+results:
+: cmake-ide-compile-run
 
 ** Transpose Frame
 Package for rearranging window frames.
@@ -1729,62 +1817,6 @@ Better help buffers
     :mode "\\.ron\\'")
 #+end_src
 
-*** CMake IDE
-
-#+begin_src emacs-lisp
-  (defun cmake-ide-run-after-build (buffer msg)
-    "Run a command when compilation buffer has finished compiling."
-    (when cmake-ide-run-after-build-command
-      (let ((default-directory cmake-ide-build-dir))
-        (start-process-shell-command
-         "cmake-ide run after build"
-         (get-buffer-create "*cmake-ide run after build*")
-         cmake-ide-run-after-build-command)
-        (switch-to-buffer-other-window buffer-name)
-        ;; make sure this command is only run once
-        (setq cmake-ide-run-after-build-command nil))))
-
-  (defun cmake-ide-compile-target (target)
-    "Compile and run tests."
-    (interactive "sTarget: ")
-    (let ((old-cide--get-compile-command (symbol-function 'cide--get-compile-command)))
-      (cl-letf (((symbol-function 'cide--get-compile-command)
-                 (lambda (dir) (format "%s %s" (funcall old-cide--get-compile-command dir) target))))
-        (cmake-ide-compile))))
-
-  (defun cmake-ide-test ()
-    (interactive)
-    (cmake-ide-compile-target "test"))
-
-  (defun cmake-ide-compile-run (arg)
-    "Compile and run tests."
-    (interactive "P")
-    (if (or arg (not cmake-ide-run-after-build-command))
-        (setq-local cmake-ide-run-after-build-command
-                    (read-string "Run Command: " cmake-ide-run-after-build-command)))
-    (lexical-let ((cmake-ide-build-dir cmake-ide-build-dir)
-                  (COMMAND cmake-ide-run-after-build-command))
-      (defun cmake-ide-run-after-build (buffer msg)
-        (if (string-match "^finished" msg)
-            (let ((process-name "cmake-ide-run-after-build")
-                  (buffer (get-buffer-create "*cmake-ide-run-after-build*"))
-                  (COMMAND (format "%s; %s" cmake-ide-build-dir COMMAND)))
-                (switch-to-buffer-other-window buffer)
-                (make-local-variable 'process-environment)
-                (erase-buffer)                
-                (compilation-mode)
-                (start-process-shell-command process-name buffer COMMAND)))
-        (remove-hook 'compilation-finish-functions 'cmake-ide-run-after-build)))
-    (add-hook 'compilation-finish-functions 'cmake-ide-run-after-build)
-    (cmake-ide-compile))
-
-  (use-package cmake-ide
-    :config
-    (add-hook 'c-mode-common-hook '(lambda () (local-set-key (kbd "<f5>") 'cmake-ide-compile)))
-    (add-hook 'c-mode-common-hook '(lambda () (local-set-key (kbd "<f6>") 'cmake-ide-test)))
-    (add-hook 'c-mode-common-hook '(lambda () (local-set-key (kbd "C-<f5>") 'cmake-ide-compile-target)))
-    (add-hook 'c-mode-common-hook '(lambda () (local-set-key (kbd "<f7>") 'cmake-ide-compile-run))))
-#+end_src
 
 * Org-mode
 ** Customize Group
