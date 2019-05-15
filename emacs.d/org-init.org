@@ -674,10 +674,13 @@ Autocomplete module. See [[https://company-mode.github.io/][https://company-mode
 #+begin_src emacs-lisp
   (use-package lsp-mode
     :commands lsp
-    :config (require 'lsp-clients))
+    :config (require 'lsp-clients)
+    :ensure t)
 
-  (use-package lsp-ui :commands lsp-ui-mode)
-  (use-package company-lsp :commands company-lsp)
+  (use-package lsp-ui :commands lsp-ui-mode :ensure t)
+  (use-package company-lsp :commands company-lsp
+    :config (push 'company-lsp company-backends)
+    :ensure t)
 #+end_src
 
 ** Helm
@@ -1237,6 +1240,11 @@ Better C++ syntax highlighting
 
 #+begin_src emacs-lisp
   (use-package ccls
+    :ensure t
+    :config
+    (setq ccls-executable "ccls")
+    (setq lsp-prefer-flymake nil)
+    (setq-default flycheck-disabled-checkers '(c/c++-clang c/c++-cppcheck, c/c++-gcc))
     :hook ((c-mode c++-mode objc-mode) . (lambda () (require 'ccls) (lsp))))
 #+end_src
 
