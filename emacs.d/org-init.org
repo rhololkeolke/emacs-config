@@ -1273,12 +1273,25 @@ Better C++ syntax highlighting
     (interactive "sTarget: ")
     (let ((old-cide--get-compile-command (symbol-function 'cide--get-compile-command)))
       (cl-letf (((symbol-function 'cide--get-compile-command)
-                 (lambda (dir) (format "%s %s" (funcall old-cide--get-compile-command dir) target))))
+                 (lambda (dir) (message "dir: %s" dir) (message "compile target cmake-ide-build-dir: %s" cmake-ide-build-dir) (format "%s %s" (funcall old-cide--get-compile-command dir) target)))
+  )
         (cmake-ide-compile))))
 
   (defun cmake-ide-test ()
     (interactive)
-    (cmake-ide-compile-target "test"))
+    (lexical-let ((cmake-ide-build-dir cmake-ide-build-dir)
+                  (COMMAND (format "%s %s" (cide--get-compile-command cmake-ide-build-dir) "test")))
+      (defun cmake-ide-test-after-build (buffer msg)
+        (message "cmake-ide-test-after-build")
+        (if (string-match "^finished" msg)
+            (progn
+              (message "successful")
+              (message "cmake-ide-build-dir: %s" cmake-ide-build-dir)
+              (message "COMMAND: %s" COMMAND)
+              (compile COMMAND)))
+        (remove-hook 'compilation-finish-functions 'cmake-ide-test-after-build)))
+    (add-hook 'compilation-finish-functions 'cmake-ide-test-after-build)
+    (cmake-ide-compile))
 
   (defun cmake-ide-compile-run (arg)
     "Compile and run tests."
