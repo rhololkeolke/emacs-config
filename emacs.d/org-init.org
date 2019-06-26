@@ -1130,6 +1130,15 @@ Stop ediff from opening its interface in a new frame (aka window)
     :ensure t)
 #+END_SRC
 
+** Dap
+
+#+begin_src emacs-lisp
+  (use-package dap-mode
+    :config
+    (dap-mode 1)
+    (dap-ui-mode 1))
+#+end_src
+
 ** Cmake Mode
 #+BEGIN_SRC emacs-lisp
   (message "org-init.org: Cmake mode")
