@@ -1336,6 +1336,12 @@ Better C++ syntax highlighting
 #+results:
 : cmake-ide-compile-run
 
+*** TCC Files
+
+#+begin_src emacs-lisp
+  (add-to-list 'auto-mode-alist '("\\.tcc\\'" . c++-mode))
+#+end_src
+
 *** Desktop Notifications
 
 Notify when compilation finishes
