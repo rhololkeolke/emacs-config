@@ -1352,6 +1352,11 @@ Notify when compilation finishes
 
   (add-hook 'compilation-finish-functions 'notify-compilation-finished)
 #+end_src
+
+*** Dap Debugging
+#+begin_src emacs-lisp
+  (require 'dap-gdb-lldb)
+#+end_src
 ** Transpose Frame
 Package for rearranging window frames.
 
