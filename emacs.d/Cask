@@ -45,6 +45,7 @@
 (depends-on "deadgrep")
 (depends-on "default-text-scale")
 (depends-on "deft")
+(depends-on "dired-toggle")
 (depends-on "direnv")
 (depends-on "dockerfile-mode")
 (depends-on "edit-indirect")
