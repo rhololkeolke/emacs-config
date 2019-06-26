@@ -53,6 +53,7 @@
 (depends-on "elpy")
 (depends-on "emojify")
 (depends-on "exec-path-from-shell")
+(depends-on "eyebrowse")
 (depends-on "find-file-in-project")
 (depends-on "findr")
 (depends-on "fish-completion")
