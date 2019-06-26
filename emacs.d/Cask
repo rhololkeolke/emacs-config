@@ -63,6 +63,7 @@
 (depends-on "gmail-message-mode")
 (depends-on "go-guru")
 (depends-on "go-mode")
+(depends-on "god-mode")
 (depends-on "haskell-mode")
 (depends-on "haskell-snippets")
 (depends-on "helm")
