@@ -1864,6 +1864,33 @@ Better help buffers
     :mode "\\.ron\\'")
 #+end_src
 
+** Keyfreq
+
+#+begin_src emacs-lisp
+  (use-package keyfreq
+    :config
+    (keyfreq-mode 1)
+    (keyfreq-autosave-mode 1))
+#+end_src
+** God Mode
+
+#+begin_src emacs-lisp
+  (use-package god-mode
+    :config (global-set-key (kbd "<escape>") 'god-local-mode))
+#+end_src
+** Sunrise Commander
+
+#+begin_src emacs-lisp
+  (quelpa '(sunrise-commander :fetcher git :url "https://github.com/escherdragon/sunrise-commander.git"))
+  (use-package sunrise)
+#+end_src
+
+** Zeal at Point
+
+#+begin_src emacs-lisp
+  (use-package zeal-at-point
+    :config (global-set-key (kbd "C-c d") 'zeal-at-point))
+#+end_src
 
 * Org-mode
 ** Customize Group
