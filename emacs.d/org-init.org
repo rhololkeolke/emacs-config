@@ -1904,6 +1904,19 @@ Better help buffers
     :config (global-set-key (kbd "C-c d") 'zeal-at-point))
 #+end_src
 
+** All the icons
+
+#+begin_src emacs-lisp
+  (use-package all-the-icons)
+#+end_src
+
+*** All the icons dired
+
+#+begin_src emacs-lisp
+  (use-package all-the-icons-dired
+    :config (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
+#+end_src
+
 * Org-mode
 ** Customize Group
 

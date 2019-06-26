@@ -8,6 +8,8 @@
 (depends-on "ace-window")
 (depends-on "aggressive-indent")
 (depends-on "alert")
+(depends-on "all-the-icons")
+(depends-on "all-the-icons-dired")
 (depends-on "auctex-latexmk")
 (depends-on "auto-yasnippet")
 (depends-on "avy")
