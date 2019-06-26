@@ -40,6 +40,7 @@
 (depends-on "dap-mode")
 (depends-on "darkokai-theme")
 (depends-on "dash")
+(depends-on "deadgrep")
 (depends-on "default-text-scale")
 (depends-on "deft")
 (depends-on "direnv")

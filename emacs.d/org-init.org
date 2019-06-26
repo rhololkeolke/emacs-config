@@ -589,13 +589,14 @@ Save minibuffer history across sesssions
     :tag "Use ripgrep")
   (if rhol-use-ripgrep
       (if (executable-find "cargo")
-          (use-package rg
+          (use-package deadgrep
             :ensure t
             :ensure-system-package 
             (rg . "cargo install --force ripgrep")
-            :config (rg-enable-default-bindings))
+            :config (global-set-key (kbd "<f5>") #'deadgrep))
         (message "cargo not installed. Skipping rg package.")))
 #+END_SRC
+
 ** Flyspell
 #+BEGIN_SRC emacs-lisp
   (message "org-init.org: flyspell")
@@ -1594,10 +1595,10 @@ Make Launch files and xacro use xml-mode
 
        Find File            Search/Tags          Buffers                Cache
   ------------------------------------------------------------------------------------------
-    _f_: file            _a_: ag               _i_: Ibuffer           _c_: cache clear
-    _F_: file dwim       _s_: ripgrep          _b_: switch to buffer  _x_: remove known project
-  _M-f_: file curr dir   _o_: multi-occur      _K_: Kill all buffers  _X_: cleanup non-existing
-    _r_: recent file                                                  _z_: cache current
+    _f_: file            _s_: ripgrep              _i_: Ibuffer           _c_: cache clear
+    _F_: file dwim       _o_: multi-occur          _b_: switch to buffer  _x_: remove known project
+  _M-f_: file curr dir                             _K_: Kill all buffers  _X_: cleanup non-existing
+    _r_: recent file                                                      _z_: cache current
 
     _q_: quit
   "
@@ -1614,7 +1615,7 @@ Make Launch files and xacro use xml-mode
        ("o"   projectile-multi-occur)
        ("p"   projectile-switch-project)
        ("r"   projectile-recentf)
-       ("s"   rg-project)
+       ("s"   deadgrep)
        ("x"   projectile-remove-known-project)
        ("X"   projectile-cleanup-known-projects)
        ("z"   projectile-cache-current-file)
