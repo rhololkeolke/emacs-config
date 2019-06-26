@@ -103,6 +103,7 @@
 (depends-on "ob-ipython")
 (depends-on "org")
 (depends-on "org-gcal")
+(depends-on "org-noter")
 (depends-on "org-plus-contrib")
 (depends-on "org-ref")
 (depends-on "org-super-agenda")

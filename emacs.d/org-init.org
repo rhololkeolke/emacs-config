@@ -2580,6 +2580,13 @@ Enables a nice calendar display
       (require 'org-mu4e))
 #+END_SRC
 
+** Org-noter
+
+#+begin_src emacs-lisp
+  (use-package org-noter
+    :config (setq org-noter-notes-search-path '("~/Sync/org-mode/wiki")))
+#+end_src
+
 ** org-deft
 
 Deft for my org-mode wiki
