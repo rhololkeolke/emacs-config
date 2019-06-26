@@ -70,6 +70,7 @@
 (depends-on "helm-bibtex")
 (depends-on "helm-core")
 (depends-on "helm-projectile")
+(depends-on "helm-rg")
 (depends-on "helm-swoop")
 (depends-on "helpful")
 (depends-on "highlight-doxygen")
