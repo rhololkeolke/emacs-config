@@ -1924,7 +1924,8 @@ Better help buffers
               (lambda () (interactive)
                 (visual-line-mode 1)
                 (setq-local visual-line-fringe-indicators '(nil right-curly-arrow))
-                (setq-local word-wrap nil))))
+                (setq-local word-wrap nil)))
+    (add-hook 'dired-toggle-mode-hook 'all-the-icons-dired-mode))
 #+end_src
 
 ** All the icons
