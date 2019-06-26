@@ -412,6 +412,11 @@ Save minibuffer history across sesssions
   (tool-bar-mode -1)
 #+END_SRC
 * Third-Party Packages
+** Notifications
+#+begin_src emacs-lisp
+  (use-package notifications)
+#+end_src
+
 ** Customize Group
 #+BEGIN_SRC emacs-lisp
   (message "org-init.org: Creating customize group rhol-emacs/rhol-appearance")
@@ -1331,6 +1336,16 @@ Better C++ syntax highlighting
 #+results:
 : cmake-ide-compile-run
 
+*** Desktop Notifications
+
+Notify when compilation finishes
+
+#+begin_src emacs-lisp
+  (defun notify-compilation-finished (buffer msg)
+    (notifications-notify :title "Compilation Finished" :body msg))
+
+  (add-hook 'compilation-finish-functions 'notify-compilation-finished)
+#+end_src
 ** Transpose Frame
 Package for rearranging window frames.
 
