@@ -93,3 +93,5 @@ emacs.d/workspace
 /emacs.d/eshell
 /emacs.d/.lsp-session-v1
 /emacs.d/quelpa
+/emacs.d/.dap-breakpoints
+emacs.d/.extension
