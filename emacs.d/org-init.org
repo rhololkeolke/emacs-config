@@ -340,6 +340,8 @@ Save minibuffer history across sesssions
 #+BEGIN_SRC emacs-lisp
   (message "org-init.org: Font")
 
+  (use-package default-text-scale)
+
   (defcustom rhol-default-font nil
     "Font name used in graphical mode."
     :type 'string
