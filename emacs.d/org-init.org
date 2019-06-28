@@ -1082,17 +1082,23 @@ Stop ediff from opening its interface in a new frame (aka window)
 *** Elpy
 
 #+BEGIN_SRC emacs-lisp
-  (use-package elpy
-    :ensure t
-    :init (with-eval-after-load 'python
-            (progn              
-              (elpy-enable)
-              (if (executable-find "jupyter")
-                  (setq python-shell-interpreter "jupyter"
-                        python-shell-interpreter-args "console --simple-prompt")
-                (setq elpy-rpc-backend "jedi")
-                (setq elpy-test-runner 'elpy-test-pytest-runner)))))
+  ;; (use-package elpy
+  ;;   :ensure t
+  ;;   :init (with-eval-after-load 'python
+  ;;           (progn              
+  ;;             (elpy-enable)
+  ;;             (if (executable-find "jupyter")
+  ;;                 (setq python-shell-interpreter "jupyter"
+  ;;                       python-shell-interpreter-args "console --simple-prompt")
+  ;;               (setq elpy-rpc-backend "jedi")
+  ;;               (setq elpy-test-runner 'elpy-test-pytest-runner)))))
 #+END_SRC
+
+*** Pyls
+
+#+begin_src emacs-lisp
+  (add-hook 'python-mode-hook #'lsp)
+#+end_src
 
 *** Autofill comments
 #+BEGIN_SRC emacs-lisp
@@ -1890,13 +1896,6 @@ Better help buffers
   (use-package god-mode
     :config (global-set-key (kbd "<escape>") 'god-local-mode))
 #+end_src
-** Sunrise Commander
-
-#+begin_src emacs-lisp
-  (quelpa '(sunrise-commander :fetcher git :url "https://github.com/escherdragon/sunrise-commander.git"))
-  (use-package sunrise)
-#+end_src
-
 ** Zeal at Point
 
 #+begin_src emacs-lisp
