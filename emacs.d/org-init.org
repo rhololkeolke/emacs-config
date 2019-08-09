@@ -3038,3 +3038,14 @@ Deft for my org-mode wiki
   (message "adding org-mode hook")
   (add-hook 'org-mode-hook 'fix-org-keymap)
 #+END_SRC
+* Fix org-mode
+
+Sometimes org-mode built into emacs interferes with melpa
+version. Need to force a reload. Do this last to make sure all the
+packages are loaded properly.
+
+#+begin_src emacs-lisp
+  (let ((current-prefix-arg 4))
+    (org-reload)
+    (rhol/reload-org-buffers))
+#+end_src
