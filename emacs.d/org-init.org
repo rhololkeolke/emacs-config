@@ -1879,13 +1879,13 @@ Better help buffers
 ** Rusty Object Notation (RON)
 
 #+begin_src emacs-lisp
-  (quelpa
-   '(quelpa-use-package :fetcher git
-                        :url "https://github.com/rhololkeolke/ron-mode.git"))
-  (require 'quelpa-use-package)
+  ;(quelpa
+  ; '(quelpa-use-package :fetcher git
+  ;                      :url "https://github.com/rhololkeolke/ron-mode.git"))
+  ;(require 'quelpa-use-package)
 
-  (use-package ron-mode
-    :mode "\\.ron\\'")
+  ;(use-package ron-mode
+  ;  :mode "\\.ron\\'")
 #+end_src
 
 ** Keyfreq
