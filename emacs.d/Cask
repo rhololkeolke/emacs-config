@@ -84,6 +84,7 @@
 (depends-on "ht")
 (depends-on "htmlize")
 (depends-on "hydra")
+(depends-on "imenu-list")
 (depends-on "irony")
 (depends-on "irony-eldoc")
 (depends-on "ivy")
