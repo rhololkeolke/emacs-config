@@ -999,6 +999,12 @@ Stop ediff from opening its interface in a new frame (aka window)
     (add-hook 'json-mode '(lambda () (auto-fill-mode -1))))
   (use-package json-reformat
     :ensure t)
+
+  (defun jq-format-json ()
+    (interactive)
+    (let ((before-format-point (point)))
+          (shell-command-on-region (point-min) (point-max) "jq ." (current-buffer))
+          (goto-char before-format-point)))
 #+END_SRC
 
 ** GPG
