@@ -89,6 +89,7 @@
 (depends-on "irony-eldoc")
 (depends-on "ivy")
 (depends-on "jedi-core")
+(depends-on "jq-format")
 (depends-on "json-mode")
 (depends-on "jsonnet-mode")
 (depends-on "keychain-environment")
