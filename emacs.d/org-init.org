@@ -577,8 +577,10 @@ Save minibuffer history across sesssions
   (if rhol-use-ace-window
       (use-package ace-window
         :ensure t
-        :bind ("M-o" . ace-window)))
+        :bind ("M-o" . ace-window)
+        :config (setq aw-dispatch-always t)))
 #+END_SRC
+
 ** Ripgrep
 
 #+BEGIN_SRC emacs-lisp
