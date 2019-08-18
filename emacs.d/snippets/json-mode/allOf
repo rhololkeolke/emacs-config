@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: allOf
+# key: allOf
+# --
+"allOf": [$0]

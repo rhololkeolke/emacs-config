@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: JSON schema
+# key: schema
+# --
+{
+  "title": "$1",
+  "description": "$2",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "$3"$0
+}

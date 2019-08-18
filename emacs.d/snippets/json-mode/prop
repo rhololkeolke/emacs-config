@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: property
+# key: prop
+# --
+"$1": {"type": "$2"}$0
