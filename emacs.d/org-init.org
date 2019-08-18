@@ -1962,6 +1962,11 @@ Better help buffers
     :config (eyebrowse-mode t))
 #+end_src
 
+** ace-jump mode
+#+begin_src emacs-lisp
+  (use-package ace-jump-mode
+    :bind ("C-c C-." . ace-jump-mode))
+#+end_src
 * Org-mode
 ** Customize Group
 

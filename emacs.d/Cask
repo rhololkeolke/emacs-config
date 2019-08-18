@@ -5,6 +5,7 @@
 (source org)
 
 (depends-on "academic-phrases")
+(depends-on "ace-jump-mode")
 (depends-on "ace-window")
 (depends-on "aggressive-indent")
 (depends-on "alert")
