@@ -576,7 +576,8 @@ Save minibuffer history across sesssions
     :tag "Use ace-window")
   (if rhol-use-ace-window
       (use-package ace-window
-        :ensure t))
+        :ensure t
+        :bind ("M-o" . ace-window)))
 #+END_SRC
 ** Ripgrep
 
