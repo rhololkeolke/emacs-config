@@ -1736,6 +1736,11 @@ Shell script linter
 #+END_SRC
 
 #+results:
+** Help-fns+
+#+begin_src emacs-lisp
+  (use-package help-fns+
+    :load-path "~/.emacs.d/lisp/third-party")
+#+end_src
 
 ** Matlab
 
