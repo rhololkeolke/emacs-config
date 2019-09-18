@@ -576,8 +576,11 @@ Save minibuffer history across sesssions
     :tag "Use ace-window")
   (if rhol-use-ace-window
       (use-package ace-window
-        :ensure t))
+        :ensure t
+        :bind ("M-o" . ace-window)
+        :config (setq aw-dispatch-always t)))
 #+END_SRC
+
 ** Ripgrep
 
 #+BEGIN_SRC emacs-lisp
@@ -838,6 +841,12 @@ Stop ediff from opening its interface in a new frame (aka window)
   (setq ediff-window-setup-function 'ediff-setup-windows-plain)
 #+END_SRC
 
+*** Forge
+#+begin_src emacs-lisp
+  (use-package forge
+    :after magit)
+#+end_src
+
 ** Monky (Magit for Hg)
 #+BEGIN_SRC emacs-lisp
   (message "org-init.org: Monky")
@@ -994,6 +1003,10 @@ Stop ediff from opening its interface in a new frame (aka window)
   (use-package json-reformat
     :ensure t)
 #+END_SRC
+*** jq-format
+#+begin_src emacs-lisp
+  (use-package jq-format :demand t :after json-mode)
+#+end_src
 
 ** GPG
 #+BEGIN_SRC emacs-lisp
@@ -1373,7 +1386,7 @@ Notify when compilation finishes
 
 *** Dap Debugging
 #+begin_src emacs-lisp
-  (require 'dap-gdb-lldb)
+  (require 'dap-lldb)
 #+end_src
 ** Transpose Frame
 Package for rearranging window frames.
@@ -1730,6 +1743,11 @@ Shell script linter
 #+END_SRC
 
 #+results:
+** Help-fns+
+#+begin_src emacs-lisp
+  (use-package help-fns+
+    :load-path "~/.emacs.d/lisp/third-party")
+#+end_src
 
 ** Matlab
 
@@ -1873,13 +1891,13 @@ Better help buffers
 ** Rusty Object Notation (RON)
 
 #+begin_src emacs-lisp
-  (quelpa
-   '(quelpa-use-package :fetcher git
-                        :url "https://github.com/rhololkeolke/ron-mode.git"))
-  (require 'quelpa-use-package)
+  ;(quelpa
+  ; '(quelpa-use-package :fetcher git
+  ;                      :url "https://github.com/rhololkeolke/ron-mode.git"))
+  ;(require 'quelpa-use-package)
 
-  (use-package ron-mode
-    :mode "\\.ron\\'")
+  ;(use-package ron-mode
+  ;  :mode "\\.ron\\'")
 #+end_src
 
 ** Keyfreq
@@ -1946,6 +1964,11 @@ Better help buffers
     :config (eyebrowse-mode t))
 #+end_src
 
+** ace-jump mode
+#+begin_src emacs-lisp
+  (use-package ace-jump-mode
+    :bind ("C-c C-." . ace-jump-mode))
+#+end_src
 * Org-mode
 ** Customize Group
 
@@ -3032,3 +3055,14 @@ Deft for my org-mode wiki
   (message "adding org-mode hook")
   (add-hook 'org-mode-hook 'fix-org-keymap)
 #+END_SRC
+* Fix org-mode
+
+Sometimes org-mode built into emacs interferes with melpa
+version. Need to force a reload. Do this last to make sure all the
+packages are loaded properly.
+
+#+begin_src emacs-lisp
+  (let ((current-prefix-arg 4))
+    (org-reload)
+    (rhol/reload-org-buffers))
+#+end_src

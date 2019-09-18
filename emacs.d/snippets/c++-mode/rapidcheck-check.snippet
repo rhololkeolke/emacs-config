@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: Rapidcheck Check
+# key: rc-check
+# --
+rc::check("$1", [&]($2) {
+${0:FAIL("Not implemented!");}
+});
