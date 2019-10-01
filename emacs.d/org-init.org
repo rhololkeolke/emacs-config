@@ -1954,7 +1954,7 @@ Better help buffers
 *** All the icons dired
 
 #+begin_src emacs-lisp
-  use-package all-the-icons-dired
+  (use-package all-the-icons-dired
     :config (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
 #+end_src
 ** eyebrowse
