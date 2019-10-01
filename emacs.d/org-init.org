@@ -1954,12 +1954,13 @@ Better help buffers
 *** All the icons dired
 
 #+begin_src emacs-lisp
-  (use-package all-the-icons-dired
-    :config (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
+  use-package all-the-icons-dired
+    :config (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
 #+end_src
 ** eyebrowse
 
 #+begin_src emacs-lisp
+  (setq eyebrowse-keymap-prefix (kbd "C-c w"))
   (use-package eyebrowse
     :config (eyebrowse-mode t))
 #+end_src
