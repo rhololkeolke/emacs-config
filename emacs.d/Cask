@@ -144,6 +144,7 @@
 (depends-on "salt-mode")
 (depends-on "smartparens")
 (depends-on "smtpmail-multi")
+(depends-on "string-inflection")
 (depends-on "sunshine")
 (depends-on "synosaurus")
 (depends-on "toml-mode")

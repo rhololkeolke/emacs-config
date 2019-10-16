@@ -1976,6 +1976,7 @@ Better help buffers
 ** eyebrowse
 
 #+begin_src emacs-lisp
+  (setq eyebrowse-keymap-prefix (kbd "C-c w"))
   (use-package eyebrowse
     :config (eyebrowse-mode t))
 #+end_src
