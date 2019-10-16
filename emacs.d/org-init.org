@@ -1008,6 +1008,22 @@ Stop ediff from opening its interface in a new frame (aka window)
   (use-package jq-format :demand t :after json-mode)
 #+end_src
 
+** Jsonnet Mode
+
+#+begin_src emacs-lisp
+  (use-package jsonnet-mode
+    :config
+    (defcustom jsonnetfmt-command
+    "jsonnetfmt"
+    "Jsonnet command to run in ‘jsonnetfmt-reformat-buffer’."
+    :type '(string)
+    :group 'jsonnet)
+    (defun jsonnet-reformat-buffer ()
+    "Reformat entire buffer using the Jsonnet format utility."
+    (interactive)
+    (call-process-region (point-min) (point-max) jsonnetfmt-command t t nil "-")))
+#+end_src
+
 ** GPG
 #+BEGIN_SRC emacs-lisp
   (message "org-init.org: EPA")
