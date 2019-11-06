@@ -102,6 +102,7 @@
 (depends-on "lsp-mode")
 (depends-on "lsp-ui")
 (depends-on "lua-mode")
+(depends-on "magic-latex-buffer")
 (depends-on "magit")
 (depends-on "magit-popup")
 (depends-on "markdown-mode")
