@@ -51,6 +51,7 @@
 (depends-on "dockerfile-mode")
 (depends-on "edit-indirect")
 (depends-on "eglot")
+(depends-on "ein")
 (depends-on "elpy")
 (depends-on "emojify")
 (depends-on "exec-path-from-shell")
