@@ -1455,10 +1455,37 @@ Make Launch files and xacro use xml-mode
 
   (use-package flycheck-rust
     :config (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
-#+end_src
 
-#+results:
-| lsp-rust-enable |
+  ;; redefine rust--format-call to pass "--edition 2018" flags
+  (defun rust--format-call (buf)
+    "Format BUF using rustfmt."
+    (with-current-buffer (get-buffer-create "*rustfmt*")
+      (erase-buffer)
+      (insert-buffer-substring buf)
+      (let* ((tmpf (make-temp-file "rustfmt"))
+             (ret (call-process-region (point-min) (point-max) rust-rustfmt-bin
+                                       t `(t ,tmpf) nil "--edition" "2018")))
+        (unwind-protect
+            (cond
+             ((zerop ret)
+              (if (not (string= (buffer-string)
+                                (with-current-buffer buf (buffer-string))))
+                  (copy-to-buffer buf (point-min) (point-max)))
+              (kill-buffer))
+             ((= ret 3)
+              (if (not (string= (buffer-string)
+                                (with-current-buffer buf (buffer-string))))
+                  (copy-to-buffer buf (point-min) (point-max)))
+              (erase-buffer)
+              (insert-file-contents tmpf)
+              (error "Rustfmt could not format some lines, see *rustfmt* buffer for details"))
+             (t
+              (erase-buffer)
+              (insert-file-contents tmpf)
+              (error "Rustfmt failed, see *rustfmt* buffer for details"))))
+        (delete-file tmpf))))
+
+#+end_src
 
 ** Hydra
 
