@@ -1111,6 +1111,15 @@ Stop ediff from opening its interface in a new frame (aka window)
 
 #+begin_src emacs-lisp
   (add-hook 'python-mode-hook #'lsp)
+
+  (defcustom lsp-pyls-plugins-flake8-max-line-length 90
+    "Set maximum allowed line length."
+    :type 'number
+    :group 'lsp-pyls
+    :package-version '(lsp-mode . "6.1"))
+
+  (lsp-register-custom-settings
+   '(("pyls.plugins.flake8.max-line-length" lsp-pyls-plugins-flake8-max-line-length t)))
 #+end_src
 
 *** Autofill comments
