@@ -1191,6 +1191,14 @@ Stop ediff from opening its interface in a new frame (aka window)
     :ensure t)
 #+END_SRC
 
+*** isority mode
+#+begin_src emacs-lisp
+  (use-package isortify
+    :config
+    (add-hook 'python-mode-hook 'isortify-mode))
+#+end_src
+
+
 ** Dap
 
 #+begin_src emacs-lisp
