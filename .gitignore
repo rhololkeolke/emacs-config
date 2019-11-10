@@ -96,3 +96,4 @@ emacs.d/workspace
 /emacs.d/.dap-breakpoints
 emacs.d/.extension
 /emacs.d/forge-database.sqlite
+/emacs.d/elpy/

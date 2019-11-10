@@ -1111,31 +1111,45 @@ Stop ediff from opening its interface in a new frame (aka window)
 *** Elpy
 
 #+BEGIN_SRC emacs-lisp
-  ;; (use-package elpy
-  ;;   :ensure t
-  ;;   :init (with-eval-after-load 'python
-  ;;           (progn              
-  ;;             (elpy-enable)
-  ;;             (if (executable-find "jupyter")
-  ;;                 (setq python-shell-interpreter "jupyter"
-  ;;                       python-shell-interpreter-args "console --simple-prompt")
-  ;;               (setq elpy-rpc-backend "jedi")
-  ;;               (setq elpy-test-runner 'elpy-test-pytest-runner)))))
+  (use-package elpy
+    :ensure t
+    :init (elpy-enable)
+    :config
+    ;; Override format to use black or print error
+    ;;
+    ;; existing function will try yapf and autopep8 too
+    (defun elpy-format-code ()
+      "Format code using the available formatter."
+      (interactive)
+      (cond
+       ((elpy-config--package-available-p "black")
+        (elpy-black-fix-code))
+       (t
+        (message "Install black to format code."))))
+    )
+
+  (with-eval-after-load 'flycheck
+    (add-hook 'flycheck-mode-hook #'flycheck-pycheckers-setup))
+
+  (when (load "flycheck" t t)
+    (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+    (add-hook 'elpy-mode-hook 'flycheck-mode))
 #+END_SRC
 
 *** Pyls
 
 #+begin_src emacs-lisp
-  (add-hook 'python-mode-hook #'lsp)
-
   (defcustom lsp-pyls-plugins-flake8-max-line-length 90
     "Set maximum allowed line length."
     :type 'number
     :group 'lsp-pyls
     :package-version '(lsp-mode . "6.1"))
 
-  (lsp-register-custom-settings
-   '(("pyls.plugins.flake8.max-line-length" lsp-pyls-plugins-flake8-max-line-length t)))
+  ;; (add-hook 'python-mode-hook (lambda ()
+  ;;                               (lsp-register-custom-settings
+  ;;                                '(("pyls.plugins.flake8.max-line-length" lsp-pyls-plugins-flake8-max-line-length t)))))
+
+  ;; (add-hook 'python-mode-hook #'lsp)
 #+end_src
 
 *** Autofill comments
