@@ -7,6 +7,7 @@
 (depends-on "academic-phrases")
 (depends-on "ace-jump-mode")
 (depends-on "ace-window")
+(depends-on "adoc-mode")
 (depends-on "aggressive-indent")
 (depends-on "alert")
 (depends-on "all-the-icons")
