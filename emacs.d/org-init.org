@@ -677,8 +677,7 @@ Autocomplete module. See [[https://company-mode.github.io/][https://company-mode
         (setq company-idle-delay 0.5)
         (add-hook 'after-init-hook 'global-company-mode)
         (global-set-key (kbd "C-<tab>") 'company-complete-common)
-        (company-auctex-init)
-        (add-to-list 'company-backends 'company-math-symbols-unicode)))
+        (company-auctex-init)))
 
 #+END_SRC
 ** LSP
