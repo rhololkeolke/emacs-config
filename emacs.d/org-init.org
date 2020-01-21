@@ -1792,6 +1792,13 @@ Shell script linter
    (setq flycheck-shellcheck-follow-sources nil)
 #+END_SRC
 
+** Fira-code mode
+#+begin_src emacs-lisp
+  (use-package fira-code-mode
+    :load-path "~/.emacs.d/lisp/third-party"
+    :config (add-hook 'prog-mode-hook 'fira-code-mode))
+#+end_src
+
 ** Lua
 #+BEGIN_SRC emacs-lisp
   (use-package lua-mode
