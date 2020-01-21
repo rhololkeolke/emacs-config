@@ -1784,6 +1784,14 @@ Make Launch files and xacro use xml-mode
     :load-path "~/.emacs.d/lisp"
     :mode ("\\.fbs\\'" . flatbuffers-mode))
 #+END_SRC
+** Gin Config
+#+BEGIN_SRC emacs-lisp
+  (message "org-init.org: gin-config")
+  (use-package gin
+    :load-path "~/.emacs.d/lisp"
+    :mode ("\\.gin\\'" . gin-mode))
+#+END_SRC
+
 ** Shellcheck
 
 Shell script linter
@@ -2223,7 +2231,7 @@ Better help buffers
   (setq org-capture-templates
         '(("t" "todo" entry (file org-default-notes-file)
            "* TODO %?\n%U\n" :clock-in t :clock-resume t)
-          ("j" "Journal" entry (file+datetree (lambda () (expand-file-name (format "%sdiary.org" rhol-org-directory))))
+          ("j" "Journal" entry (file+datetree (lambda () (expand-file-name (format "%s/diary.org" rhol-org-directory))))
            "* Recap :crypt:\n** Plans for today\n** What I did\n** What I didn't do\n** What went right\n** What went wrong\n** Ideas for improvement\n" :clock-in t :clock-resume t)
           ("h" "Habit" entry (file org-default-notes-file)
            "* IN-PROGRESS %?\n%U\nSCHEDULED: %(format-time-string \"<%Y-%m-%d %a .+1d/3d>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: IN-PROGRESS\n:END:\n")
