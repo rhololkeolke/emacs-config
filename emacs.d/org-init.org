@@ -2361,13 +2361,13 @@ Better help buffers
 *** Custom agenda commands
 #+begin_src emacs-lisp
   (setq org-agenda-custom-commands
-        '((" " "Super View"
-           ((agenda "" ((org-agenda-span 'day)
-                        (org-super-agenda-groups rhol-agenda-super-agenda-groups)))
-            (tags "REFILE+TODO={.+}" ((org-agenda-overriding-header "Refile")
-                            (org-super-agenda-groups rhol-alltodo-super-agenda-groups)))
-            (tags "-REFILE+TODO={.+}" ((org-agenda-overriding-header "Tasks")
-                             (org-super-agenda-groups rhol-alltodo-super-agenda-groups)))))))
+          '(("A" "Super View"
+             ((agenda "" ((org-agenda-span 'day)
+                          (org-super-agenda-groups rhol-agenda-super-agenda-groups)))
+              (tags "REFILE+TODO={.+}" ((org-agenda-overriding-header "Refile")
+                              (org-super-agenda-groups rhol-alltodo-super-agenda-groups)))
+              (tags "-REFILE+TODO={.+}" ((org-agenda-overriding-header "Tasks")
+                               (org-super-agenda-groups rhol-alltodo-super-agenda-groups)))))))
 #+end_src
 
 ** Archive Settings
