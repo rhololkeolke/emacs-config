@@ -2090,6 +2090,34 @@ Better help buffers
   (use-package ace-jump-mode
     :bind ("C-c C-." . ace-jump-mode))
 #+end_src
+** Web Dev / Electron
+
+#+begin_src emacs-lisp
+  (message "Org-init: Tide")
+  (use-package tide
+    :ensure t
+    :after (typescript-mode company flycheck)
+    :hook ((typescript-mode . tide-setup)
+           (typescript-mode . tide-hl-identifier-mode)
+           (before-save . tide-format-before-save)))
+
+
+  (message "Org-init: web-mode")
+  (use-package web-mode
+    :ensure t
+    :mode ("\\.jsx\\'" . web-mode)
+    :hook (web-mode .
+                    (lambda ()
+                      (when (string-equal "jsx" (file-name-extension buffer-file-name))
+                        (setup-tide-mode))))
+    :config ;; configure jsx-tide checker to run after your default jsx checker
+    (flycheck-add-mode 'javascript-eslint 'web-mode)
+    (flycheck-add-next-checker 'javascript-eslint 'jsx-tide 'append)
+    (add-hook 'js2-mode-hook #'setup-tide-mode)
+    ;; configure javascript-tide checker to run after your default javascript checker
+    (flycheck-add-next-checker 'javascript-eslint 'javascript-tide 'append))
+#+end_src
+
 * Org-mode
 ** Customize Group
 
