@@ -327,6 +327,22 @@ Save minibuffer history across sesssions
     (with-current-buffer reb-target-buffer
       (query-replace-regexp (reb-target-binding reb-regexp) to-string)))
 #+end_src
+** Defer code macro
+
+#+begin_src emacs-lisp
+  ;; Below macro is used to wrap stuff that need to be run only after emacs
+  ;; starts up completely. This is very crucial when calling functions like
+  ;; `find-font' which return correct value only after emacs startup is finished
+  ;; especially when emacs is started in daemon mode.
+  (defmacro do-once-secs-after-emacs-startup (time &rest body)
+    `(run-with-idle-timer ,time ; run this after emacs is idle for time seconds
+                          nil ; do this just once; don't repeat
+                          (lambda () ,@body)))
+#+end_src
+
+#+results:
+: do-once-secs-after-emacs-startup
+
 * Appearance
 ** Customize Group
 #+BEGIN_SRC emacs-lisp
@@ -378,12 +394,28 @@ Save minibuffer history across sesssions
     (customize-save-variable 'rhol-default-font-size
                              (read-number "Enter font size: " 9)))
 
-  (defun rhol--configure-font ()
+  (defun configure-font ()
     "Refresh font configuration."
+    (interactive)
+    (font-family-list)
     (if (member rhol-default-font (font-family-list))
-        (let ((font-name (format "%s-%d" rhol-default-font rhol-default-font-size)))
-          (set-frame-font font-name nil t))
+        (let ((font-name (format "%s-%d" rhol-default-font rhol-default-font-size))) 
+          (set-frame-font font-name nil t)
+          (add-to-list 'default-frame-alist `(font . ,font-name)))
       (user-error "Font %s does not exist" rhol-default-font)))
+
+  (defun rhol/setup-frame (&optional frame)
+    "Configure look of FRAME.
+
+  If FRAME is nil, configure current frame. If non-nil, make FRAME
+  current.
+  "
+    (when frame (select-frame frame))
+    (when (window-system)
+      (configure-font)))
+  (if (daemonp)
+      (add-hook 'after-make-frame-functions #'rhol/setup-frame)
+    (rhol/setup-frame))
 #+END_SRC
 
 ** Theme
@@ -2058,6 +2090,34 @@ Better help buffers
   (use-package ace-jump-mode
     :bind ("C-c C-." . ace-jump-mode))
 #+end_src
+** Web Dev / Electron
+
+#+begin_src emacs-lisp
+  (message "Org-init: Tide")
+  (use-package tide
+    :ensure t
+    :after (typescript-mode company flycheck)
+    :hook ((typescript-mode . tide-setup)
+           (typescript-mode . tide-hl-identifier-mode)
+           (before-save . tide-format-before-save)))
+
+
+  (message "Org-init: web-mode")
+  (use-package web-mode
+    :ensure t
+    :mode ("\\.jsx\\'" . web-mode)
+    :hook (web-mode .
+                    (lambda ()
+                      (when (string-equal "jsx" (file-name-extension buffer-file-name))
+                        (setup-tide-mode))))
+    :config ;; configure jsx-tide checker to run after your default jsx checker
+    (flycheck-add-mode 'javascript-eslint 'web-mode)
+    (flycheck-add-next-checker 'javascript-eslint 'jsx-tide 'append)
+    (add-hook 'js2-mode-hook #'setup-tide-mode)
+    ;; configure javascript-tide checker to run after your default javascript checker
+    (flycheck-add-next-checker 'javascript-eslint 'javascript-tide 'append))
+#+end_src
+
 * Org-mode
 ** Customize Group
 
