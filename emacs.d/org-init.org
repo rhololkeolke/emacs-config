@@ -2161,7 +2161,7 @@ Better help buffers
     (progn (customize-save-variable
      'rhol-org-directory
      (expand-file-name (read-directory-name "Org-mode Directory: "
-                                            "~/Sync/org-mode"
+                                            "~/Dropbox/org-mode"
                                             nil
                                             t)))
            (customize-save-variable 'rhol-org-agenda-files (list rhol-org-directory))))
@@ -2803,7 +2803,7 @@ Enables a nice calendar display
 
 #+begin_src emacs-lisp
   (use-package org-noter
-    :config (setq org-noter-notes-search-path '("~/Sync/org-mode/wiki")))
+    :config (setq org-noter-notes-search-path '("~/Dropbox/org-mode/wiki")))
 #+end_src
 
 ** org-deft
