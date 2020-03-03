@@ -3219,3 +3219,89 @@ packages are loaded properly.
     (org-reload)
     (rhol/reload-org-buffers))
 #+end_src
+* org-roam
+** Straight Package Manager
+
+#+begin_src emacs-lisp
+  (defvar bootstrap-version)
+  (let ((bootstrap-file
+         (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+        (bootstrap-version 5))
+    (unless (file-exists-p bootstrap-file)
+      (with-current-buffer
+          (url-retrieve-synchronously
+           "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+           'silent 'inhibit-cookies)
+        (goto-char (point-max))
+        (eval-print-last-sexp)))
+    (load bootstrap-file nil 'nomessage))
+#+end_src
+
+** Setup roam
+#+begin_src emacs-lisp
+  (use-package org-roam
+        :after org
+        :hook 
+        (after-init . org-roam-mode)
+        :straight (:host github :repo "jethrokuan/org-roam" :branch "develop")
+        :bind (:map org-roam-mode-map
+                (("C-c n l" . org-roam)
+                 ("C-c n f" . org-roam-find-file)
+                 ("C-c n g" . org-roam-show-graph))
+                :map org-mode-map
+                (("C-c n i" . org-roam-insert))))
+#+end_src
+
+#+results:
+: org-roam-insert
+
+** Deft Support
+
+#+begin_src emacs-lisp
+  (global-set-key (kbd "C-c n d") (lambda ()
+                                    (let ((deft-recursive t)
+                                          (deft-use-filter-string-for-filename t)
+                                          (deft-use-default-extension "org")
+                                          (deft-directory org-roam-directory))
+                                      (deft))))
+#+end_src
+
+** Org-journal Support
+#+begin_src emacs-lisp
+  (use-package org-journal
+    :ensure t
+    :bind
+    ("C-c n j" . org-journal-new-entry)
+    :custom
+    (org-journal-date-prefix "#+TITLE: ")
+    (org-journal-file-format "%Y-%m-%d.org")
+    (org-journal-dir org-roam-directory)
+    (org-journal-date-format "%A, %d %B %Y"))
+#+end_src
+
+** Org-download Support
+#+begin_src emacs-lisp
+  (use-package org-download
+    :ensure t
+    :after org
+    :config (add-hook 'dired-mode-hook 'org-download-enable)
+    :bind
+    (:map org-mode-map
+          (("s-Y" . org-download-screenshot)
+           ("s-y" . org-download-yank))))
+#+end_src
+
+** Mathpix
+
+Currently disabled. Requires a billing card because only first 1000
+snips are free.
+
+#+begin_src emacs-lisp
+  ;; (use-package mathpix.el
+  ;;   :straight (:host github :repo "jethrokuan/mathpix.el")
+  ;;   :custom ((mathpix-app-id "app-id")
+  ;;            (mathpix-app-key "app-key"))
+  ;;   :bind
+  ;;   ("C-x m" . mathpix-screenshot))
+#+end_src
+
