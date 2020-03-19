@@ -98,3 +98,4 @@ emacs.d/.extension
 /emacs.d/forge-database.sqlite
 /emacs.d/elpy/
 /emacs.d/request/
+/emacs.d/straight/
