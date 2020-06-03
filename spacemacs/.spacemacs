@@ -517,6 +517,10 @@ before packages are loaded."
 
     ;; Add pyenv mode to magit so that pre-commit hooks work correctly
     (add-to-list 'spacemacs--python-pyenv-modes 'magit)
+
+    ;; Configure emojify
+    (global-emojify-mode)
+    (setq emojify-prog-contexts 'none)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
