@@ -202,8 +202,8 @@ Required library for a lot of the packages in the following sections.
 
 #+BEGIN_SRC emacs-lisp
   (message "org-init.org: Common Lisp package")
-  (use-package cl
-    :ensure t)
+  ;; (use-package cl
+  ;;   :ensure t)
 #+END_SRC
 ** General Tweaks
 
@@ -343,6 +343,26 @@ Save minibuffer history across sesssions
 #+results:
 : do-once-secs-after-emacs-startup
 
+** Straight Package Manager
+
+#+begin_src emacs-lisp
+  (defvar bootstrap-version)
+  (let ((bootstrap-file
+         (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+        (bootstrap-version 5))
+    (unless (file-exists-p bootstrap-file)
+      (with-current-buffer
+          (url-retrieve-synchronously
+           "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+           'silent 'inhibit-cookies)
+        (goto-char (point-max))
+        (eval-print-last-sexp)))
+    (load bootstrap-file nil 'nomessage))
+
+  (straight-use-package 'use-package)
+#+end_src
+
+
 * Appearance
 ** Customize Group
 #+BEGIN_SRC emacs-lisp
@@ -446,6 +466,14 @@ Save minibuffer history across sesssions
   (tool-bar-mode -1)
 #+END_SRC
 * Third-Party Packages
+** Explain Pause Mode
+
+#+begin_src emacs-lisp
+  ;; (use-package explain-pause-mode
+  ;;   :straight (el-patch :type git :host github :repo "lastquestion/explain-pause-mode")
+  ;;   :config (explain-pause-mode nil))
+#+end_src
+
 ** Notifications
 #+begin_src emacs-lisp
   (use-package notifications)
@@ -600,17 +628,17 @@ Save minibuffer history across sesssions
 
 ** Ace Window
 #+BEGIN_SRC emacs-lisp
-  (message "org-init.org: ace-window")
-  (defcustom rhol-use-ace-window t
-    "Set true to enable ace-window package."
-    :type 'boolean
-    :group 'rhol-third-party
-    :tag "Use ace-window")
-  (if rhol-use-ace-window
-      (use-package ace-window
-        :ensure t
-        :bind ("M-o" . ace-window)
-        :config (setq aw-dispatch-always t)))
+  ;; (message "org-init.org: ace-window")
+  ;; (defcustom rhol-use-ace-window t
+  ;;   "Set true to enable ace-window package."
+  ;;   :type 'boolean
+  ;;   :group 'rhol-third-party
+  ;;   :tag "Use ace-window")
+  ;; (if rhol-use-ace-window
+  ;;     (use-package ace-window
+  ;;       :ensure t
+  ;;       :bind ("M-o" . ace-window)
+  ;;       :config (setq aw-dispatch-always t)))
 #+END_SRC
 
 ** Ripgrep
@@ -711,11 +739,19 @@ Autocomplete module. See [[https://company-mode.github.io/][https://company-mode
         (global-set-key (kbd "C-<tab>") 'company-complete-common)
         (company-auctex-init)))
 
+
+  (use-package company-tabnine :ensure t
+               :config
+               (add-to-list 'company-backends #'company-tabnine)
+               (setq company-idle-delay 0)
+               (setq company-show-numbers t))
 #+END_SRC
+
 ** LSP
 #+begin_src emacs-lisp
   (use-package lsp-mode
     :commands lsp
+    :init (setq lsp-keymap-prefix "C-c C-l")
     :config (require 'lsp-clients)
     :ensure t)
 
@@ -1216,11 +1252,11 @@ Stop ediff from opening its interface in a new frame (aka window)
 
 *** Mypy flycheck
 
-#+BEGIN_SRC emacs-lisp
-  (message "Loading flycheck-mypy")
-  (use-package flycheck-mypy
-    :ensure t)
-#+END_SRC
+# #+BEGIN_SRC emacs-lisp
+#   (message "Loading flycheck-mypy")
+#   (use-package flycheck-mypy
+#     :ensure t)
+# #+END_SRC
 
 *** isority mode
 #+begin_src emacs-lisp
@@ -1229,6 +1265,18 @@ Stop ediff from opening its interface in a new frame (aka window)
     (add-hook 'python-mode-hook 'isortify-mode))
 #+end_src
 
+*** Flycheck pycheckers
+
+#+begin_src emacs-lisp
+  (with-eval-after-load 'flycheck (add-hook 'flycheck-mode-hook #'flycheck-pycheckers-setup))
+#+end_src
+
+*** Set WORKON_HOME env var if not set
+
+#+begin_src emacs-lisp
+  (when (string-empty-p (getenv "WORKON_HOME"))
+    (setenv "WORKON_HOME" (expand-file-name "~/.pyenv/versions/")))
+#+end_src
 
 ** Dap
 
@@ -1834,7 +1882,6 @@ Shell script linter
 ** Fira-code mode
 #+begin_src emacs-lisp
   (use-package fira-code-mode
-    :load-path "~/.emacs.d/lisp/third-party"
     :config (add-hook 'prog-mode-hook 'fira-code-mode))
 #+end_src
 
@@ -2121,6 +2168,77 @@ Better help buffers
     ;; configure javascript-tide checker to run after your default javascript checker
     (flycheck-add-next-checker 'javascript-eslint 'javascript-tide 'append))
 #+end_src
+
+** Dhall Config
+#+begin_src emacs-lisp
+  ;; dhall-mode highlight the syntax and run dhall format on save
+  (use-package dhall-mode
+    :ensure t
+    :hook ((dhall-mode . lsp))
+    :config
+    (setq
+      ;; uncomment the next line to disable automatic format
+      ;; dhall-format-at-save nil
+
+      ;; header-line is obsoleted by lsp-mode
+      dhall-use-header-line nil))
+#+end_src
+
+** Switch Window
+#+begin_src emacs-lisp
+  (message "Loading switch-window")
+  (use-package switch-window
+    :config
+    (defun rhol/switch-window ()
+      (interactive)
+      (cond ((equal current-prefix-arg nil)
+             (other-window 1))
+            (t (switch-window))))
+
+    (defun rhol/maximize-window ()
+      (interactive)
+      (cond ((equal current-prefix-arg nil)
+             (maximize-window))
+            (t (switch-window-then-maximize))))
+
+    (defun rhol/split-window-below ()
+      (interactive)
+      (cond ((equal current-prefix-arg nil)
+             (split-window-below))
+            (t (switch-window-then-split-below current-prefix-arg))))
+
+    (defun rhol/split-window-right ()
+      (interactive)
+      (cond ((equal current-prefix-arg nil)
+             (split-window-right))
+            (t (switch-window-then-split-right current-prefix-arg))))
+
+    (defun rhol/delete-window ()
+      (interactive)
+      (cond ((equal current-prefix-arg nil)
+             (delete-window))
+            (t (switch-window-then-delete))))
+
+
+    (global-set-key (kbd "C-x o") 'rhol/switch-window)
+    (global-set-key (kbd "C-x 1") 'rhol/maximize-window)
+    (global-set-key (kbd "C-x 2") 'rhol/split-window-below)
+    (global-set-key (kbd "C-x 3") 'rhol/split-window-right)
+    (global-set-key (kbd "C-x 0") 'rhol/delete-window)
+
+    (global-set-key (kbd "C-x 4 d") 'switch-window-then-dired)
+    (global-set-key (kbd "C-x 4 f") 'switch-window-then-find-file)
+    (global-set-key (kbd "C-x 4 m") 'switch-window-then-compose-mail)
+    (global-set-key (kbd "C-x 4 r") 'switch-window-then-find-file-read-only)
+
+    (global-set-key (kbd "C-x 4 C-f") 'switch-window-then-find-file)
+    (global-set-key (kbd "C-x 4 C-o") 'switch-window-then-display-buffer)
+
+    (global-set-key (kbd "C-x 4 0") 'switch-window-then-kill-buffer))
+#+end_src
+
+#+results:
+: t
 
 * Org-mode
 ** Customize Group
@@ -3087,6 +3205,8 @@ Deft for my org-mode wiki
           (setq smtpmail-debug-info t)
           (setq smtpmail-debug-verbose t))
 
+        (add-hook 'message-setup-hook 'mml-secure-message-sign-pgpmime)
+
         :bind (:map notmuch-search-mode-map
                     ("T" . notmuch-search-delete-thread))))
 #+END_SRC
@@ -3220,40 +3340,21 @@ packages are loaded properly.
     (rhol/reload-org-buffers))
 #+end_src
 * org-roam
-** Straight Package Manager
-
-#+begin_src emacs-lisp
-  (defvar bootstrap-version)
-  (let ((bootstrap-file
-         (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-        (bootstrap-version 5))
-    (unless (file-exists-p bootstrap-file)
-      (with-current-buffer
-          (url-retrieve-synchronously
-           "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-           'silent 'inhibit-cookies)
-        (goto-char (point-max))
-        (eval-print-last-sexp)))
-    (load bootstrap-file nil 'nomessage))
-#+end_src
-
 ** Setup roam
 #+begin_src emacs-lisp
-  (use-package org-roam
-        :after org
-        :hook 
-        (after-init . org-roam-mode)
-        :straight (:host github :repo "jethrokuan/org-roam" :branch "develop")
-        :bind (:map org-roam-mode-map
-                (("C-c n l" . org-roam)
-                 ("C-c n f" . org-roam-find-file)
-                 ("C-c n g" . org-roam-show-graph))
-                :map org-mode-map
-                (("C-c n i" . org-roam-insert))))
+    (use-package org-roam
+          :after org
+          :hook 
+          (after-init . org-roam-mode)
+          :straight (:host github :repo "jethrokuan/org-roam" :branch "develop")
+          :bind (:map org-roam-mode-map
+                  (("C-c n l" . org-roam)
+                   ("C-c n f" . org-roam-find-file)
+                   ("C-c n g" . org-roam-show-graph))
+                  :map org-mode-map
+                  (("C-c n i" . org-roam-insert)))
+          :config (setq org-roam-directory (expand-file-name "~/Dropbox/org-mode/roam")))
 #+end_src
-
-#+results:
-: org-roam-insert
 
 ** Deft Support
 
@@ -3275,7 +3376,7 @@ packages are loaded properly.
     :custom
     (org-journal-date-prefix "#+TITLE: ")
     (org-journal-file-format "%Y-%m-%d.org")
-    (org-journal-dir org-roam-directory)
+    (org-journal-dir (expand-file-name "~/Dropbox/org-mode/roam"))
     (org-journal-date-format "%A, %d %B %Y"))
 #+end_src
 
