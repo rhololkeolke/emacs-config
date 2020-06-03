@@ -62,6 +62,14 @@ This function should only modify configuration layer settings."
            multiple-cursors
            notmuch
            org
+           (python :variables
+               python-backend 'lsp
+               python-lsp-server 'mspyls
+               python-lsp-git-root "~/workspace/third-party/python-language-server"
+               python-test-runner 'pytest
+               python-formatter 'black
+               python-fill-column 88
+               python-sort-imports-on-save t)
            ;; (shell :variables
            ;;        shell-default-height 30
            ;;        shell-default-position 'bottom)
@@ -503,6 +511,9 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
+
+    ;; Add pyenv mode to magit so that pre-commit hooks work correctly
+    (add-to-list 'spacemacs--python-pyenv-modes 'magit)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
