@@ -66,6 +66,7 @@ values."
                enable-flyspell-auto-completion t)
            spotify
            syntax-checking
+           (treemacs :variables treemacs-use-git-mode 'deferred)
            ;; version-control
            )
    ;; List of additional packages that will be installed without being
