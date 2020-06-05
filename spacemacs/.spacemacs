@@ -541,7 +541,65 @@ before packages are loaded."
     ;; Configure emojify
     (global-emojify-mode)
     (setq emojify-prog-contexts 'none)
-  )
+
+    ;; Configure org-mode
+      (setq org-todo-keywords
+        (quote ((sequence "TODO(t)" "IN-PROGRESS(p)" "|" "DONE(d!)")
+                (sequence "WAITING(@w/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)")
+                (sequence "|" "EVENT")
+                (sequence "SOMEDAY" "MAYBE" "CHECK" "TO-READ" "TO-WATCH" "TO-PLAY"))))
+
+
+    (setq org-todo-keyword-faces
+        (quote (("TODO" :foreground "red" :weight bold)
+                   ("IN-PROGRESS" :foreground "blue" :weight bold)
+                   ("DONE" :foreground "forest green" :weight bold)
+                   ("WAITING" :foreground "orange" :weight bold)
+                   ("HOLD" :foreground "magenta" :weight bold)
+                   ("CANCELLED" :foreground "forest green" :weight bold)
+                   ("EVENT" :foreground "forest green" :weight bold)
+                   ("SOMEDAY" :foreground "coral3" :weight bold)
+                   ("MAYBE" :foreground "coral3" :weight bold)
+                   ("CHECK" :foreground "yellow" :weight bold)
+                   ("TO-READ" :foreground "pink" :weight bold)
+                   ("TO-WATCH" :foreground "pink" :weight bold)
+                   ("TO-PLAY" :foreground "pink" :weight bold))))
+
+    (setq org-use-fast-todo-selection t)
+    (setq org-treat-S-cursor-todo-selection-as-state-change nil)
+
+    (setq org-todo-state-tags-triggers
+        (quote (("CANCELLED" ("CANCELLED" . t))
+                   ("WAITING" ("WAITING" . t))
+                   ("HOLD" ("WAITING") ("HOLD" . t))
+                   ("TODO" ("WAITING") ("CANCELLED") ("HOLD"))
+                   ("IN-PROGRESS" ("WAITING") ("CANCELLED") ("HOLD"))
+                   ("DONE" ("WAITING") ("CANCELLED") ("HOLD")))))
+
+  (setq org-capture-templates
+        '(("t" "todo" entry (file org-default-notes-file)
+           "* TODO %?\n%U\n" :clock-in t :clock-resume t)
+          ("j" "Journal" entry (file+datetree (lambda () (expand-file-name (format "%s/diary.org" rhol-org-directory))))
+           "* Recap :crypt:\n** Plans for today\n** What I did\n** What I didn't do\n** What went right\n** What went wrong\n** Ideas for improvement\n" :clock-in t :clock-resume t)
+          ("h" "Habit" entry (file org-default-notes-file)
+           "* IN-PROGRESS %?\n%U\nSCHEDULED: %(format-time-string \"<%Y-%m-%d %a .+1d/3d>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: IN-PROGRESS\n:END:\n")
+          ("s" "Someday" entry (file org-default-notes-file)
+           "* SOMEDAY %?\n%U\n" :clock-in t :clock-resume t)
+          ("m" "Maybe" entry (file org-default-notes-file)
+           "* MAYBE %?\n%U\n" :clock-in t :clock-resume t)
+          ("c" "Check" entry (file org-default-notes-file)
+           "* CHECK %?\n%U\n" :clock-in t :clock-resume t)
+          ("r" "To read" entry (file org-default-notes-file)
+           "* TO-READ %?\n%U\n" :clock-in t :clock-resume t)
+          ("w" "To watch" entry (file org-default-notes-file)
+           "* TO-WATCH %?\n%U\n" :clock-in t :clock-resume t)
+          ("p" "To play" entry (file org-default-notes-file)
+              "* TO-PLAY %?\n%U\n" :clock-in t :clock-resume t)))
+
+      ;; Setup org-agenda
+
+      ;; Setup org-roam
+    )
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
