@@ -93,7 +93,7 @@ This function should only modify configuration layer settings."
    ;; To use a local version of a package, use the `:location' property:
    ;; '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
-   dotspacemacs-additional-packages '(fira-code-mode)
+   dotspacemacs-additional-packages '(fira-code-mode direnv)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -518,6 +518,11 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
+
+    ;; Direnv mode
+    (use-package direnv
+        :config
+        (direnv-mode))
 
     ;; Setup prettify-symbols and fira-code-mode
     (global-prettify-symbols-mode 1)
