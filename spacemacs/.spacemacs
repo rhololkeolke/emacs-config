@@ -93,7 +93,7 @@ This function should only modify configuration layer settings."
    ;; To use a local version of a package, use the `:location' property:
    ;; '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
-   dotspacemacs-additional-packages '()
+   dotspacemacs-additional-packages '(fira-code-mode)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -244,10 +244,14 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-colorize-cursor-according-to-state t
 
    ;; Default font or prioritized list of fonts.
-   dotspacemacs-default-font '("Source Code Pro"
-                               :size 10.0
-                               :weight normal
-                               :width normal)
+      dotspacemacs-default-font '(("Fira Code"
+                                      :size 10.0
+                                      :weight normal
+                                      :width normal)
+                                     ("Source Code Pro"
+                                         :size 8.0
+                                         :weight normal
+                                         :width normal))
 
    ;; The leader key (default "SPC")
    dotspacemacs-leader-key "SPC"
@@ -514,6 +518,12 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
+
+    ;; Setup prettify-symbols and fira-code-mode
+    (global-prettify-symbols-mode 1)
+    (use-package fira-code-mode
+        :custom (fira-code-mode-disabled-ligatures '("[]" "#{" "#(" "#_" "#_(" "x")) ;; List of ligatures to turn off
+        :hook prog-mode)
 
     ;; Add pyenv mode to magit so that pre-commit hooks work correctly
     (add-to-list 'spacemacs--python-pyenv-modes 'magit)
