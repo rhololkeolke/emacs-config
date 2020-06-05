@@ -533,6 +533,11 @@ before packages are loaded."
     ;; Add pyenv mode to magit so that pre-commit hooks work correctly
     (add-to-list 'spacemacs--python-pyenv-modes 'magit)
 
+    ;; add mypy as a checker in the python lsp chain
+    (add-hook 'python-mode-hook #'(lambda ()
+                                 (flycheck-add-next-checker 'lsp 'python-mypy)
+                                 (flycheck-add-next-checker 'lsp 'python-flake8)))
+
     ;; Configure emojify
     (global-emojify-mode)
     (setq emojify-prog-contexts 'none)
