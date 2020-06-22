@@ -630,6 +630,7 @@ This function is called at the very end of Spacemacs initialization."
                  (output-html "xdg-open"))))
  '(evil-want-Y-yank-to-eol nil)
  '(fira-code-mode-disabled-ligatures (quote ("[]" "#{" "#(" "#_" "#_(" "x")))
+ '(flycheck-flake8-maximum-line-length 88)
  '(flycheck-flake8rc ".flake8")
  '(org-agenda-files (quote ("~/Dropbox/org-mode")))
  '(org-default-notes-file "/home/rhol/Dropbox/org-mode/refile.org")
