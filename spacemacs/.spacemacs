@@ -57,6 +57,9 @@ This function should only modify configuration layer settings."
                ibuffer-group-buffers-by 'projects)
            imenu-list
            ipython-notebook
+           (latex :variables
+               latex-enable-folding nil
+               latex-enable-magic nil)
            lsp
            ;; markdown
            multiple-cursors
@@ -613,6 +616,15 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+    '(TeX-view-program-selection
+         (quote
+             (((output-dvi has-no-display-manager)
+                  "dvi2tty")
+                 ((output-dvi style-pstricks)
+                     "dvips and gv")
+                 (output-dvi "xdvi")
+                 (output-pdf "Zathura")
+                 (output-html "xdg-open"))))
  '(evil-want-Y-yank-to-eol nil)
  '(fira-code-mode-disabled-ligatures (quote ("[]" "#{" "#(" "#_" "#_(" "x")))
  '(flycheck-flake8rc ".flake8")
