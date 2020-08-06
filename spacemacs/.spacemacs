@@ -29,7 +29,9 @@ This function should only modify configuration layer settings."
    dotspacemacs-configuration-layer-path '()
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-      '(yaml
+      '(html
+           asciidoc
+           yaml
            ;; ----------------------------------------------------------------
            ;; Example of useful layers you may want to use right away.
            ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
