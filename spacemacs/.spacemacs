@@ -80,7 +80,7 @@ This function should only modify configuration layer settings."
            ;;        shell-default-height 30
            ;;        shell-default-position 'bottom)
            (spell-checking :variables
-               enable-flyspell-auto-completion t)
+               enable-flyspell-auto-completion nil)
            shell-scripts
            spotify
            syntax-checking
